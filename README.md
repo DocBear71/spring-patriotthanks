@@ -1,11 +1,11 @@
-# Spring PetClinic Sample Application [![Build Status](https://github.com/spring-projects/spring-petclinic/actions/workflows/maven-build.yml/badge.svg)](https://github.com/spring-projects/spring-petclinic/actions/workflows/maven-build.yml)[![Build Status](https://github.com/spring-projects/spring-petclinic/actions/workflows/gradle-build.yml/badge.svg)](https://github.com/spring-projects/spring-petclinic/actions/workflows/gradle-build.yml)
+# Spring PetClinic Sample Application [![Build Status](https://github.com/spring-projects/spring-patriotthanks/actions/workflows/maven-build.yml/badge.svg)](https://github.com/spring-projects/spring-patriotthanks/actions/workflows/maven-build.yml)[![Build Status](https://github.com/spring-projects/spring-patriotthanks/actions/workflows/gradle-build.yml/badge.svg)](https://github.com/spring-projects/spring-patriotthanks/actions/workflows/gradle-build.yml)
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/spring-projects/spring-petclinic) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=7517918)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/spring-projects/spring-patriotthanks) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=7517918)
 
 ## Understanding the Spring Petclinic application with a few diagrams
 
 See the presentation here:  
-[Spring Petclinic Sample Application (legacy slides)](https://speakerdeck.com/michaelisvy/spring-petclinic-sample-application?slide=20)
+[Spring Petclinic Sample Application (legacy slides)](https://speakerdeck.com/michaelisvy/spring-patriotthanks-sample-application?slide=20)
 
 > **Note:** These slides refer to a legacy, pre–Spring Boot version of Petclinic and may not reflect the current Spring Boot–based implementation.  
 > For up-to-date information, please refer to this repository and its documentation.
@@ -19,8 +19,8 @@ Java 17 or later is required for the build, and the application can run with Jav
 You first need to clone the project locally:
 
 ```bash
-git clone https://github.com/spring-projects/spring-petclinic.git
-cd spring-petclinic
+git clone https://github.com/spring-projects/spring-patriotthanks.git
+cd spring-patriotthanks
 ```
 If you are using Maven, you can start the application on the command-line as follows:
 
@@ -50,7 +50,7 @@ There is no `Dockerfile` in this project. You can build a container image (if yo
 
 ## In case you find a bug/suggested improvement for Spring Petclinic
 
-Our issue tracker is available [here](https://github.com/spring-projects/spring-petclinic/issues).
+Our issue tracker is available [here](https://github.com/spring-projects/spring-patriotthanks/issues).
 
 ## Database configuration
 
@@ -72,8 +72,8 @@ or
 docker run -e POSTGRES_USER=petclinic -e POSTGRES_PASSWORD=petclinic -e POSTGRES_DB=petclinic -p 5432:5432 postgres:18.1
 ```
 
-Further documentation is provided for [MySQL](https://github.com/spring-projects/spring-petclinic/blob/main/src/main/resources/db/mysql/petclinic_db_setup_mysql.txt)
-and [PostgreSQL](https://github.com/spring-projects/spring-petclinic/blob/main/src/main/resources/db/postgres/petclinic_db_setup_postgres.txt).
+Further documentation is provided for [MySQL](https://github.com/spring-projects/spring-patriotthanks/blob/main/src/main/resources/db/mysql/petclinic_db_setup_mysql.txt)
+and [PostgreSQL](https://github.com/spring-projects/spring-patriotthanks/blob/main/src/main/resources/db/postgres/petclinic_db_setup_postgres.txt).
 
 Instead of vanilla `docker` you can also use the provided `docker-compose.yml` file to start the database containers. Each one has a service named after the Spring profile:
 
@@ -115,7 +115,7 @@ The following items should be installed in your system:
 1. On the command line run:
 
     ```bash
-    git clone https://github.com/spring-projects/spring-petclinic.git
+    git clone https://github.com/spring-projects/spring-patriotthanks.git
     ```
 
 1. Inside Eclipse or STS:
@@ -128,7 +128,7 @@ The following items should be installed in your system:
 
     In the main menu, choose `File -> Open` and select the Petclinic [pom.xml](pom.xml). Click on the `Open` button.
 
-    - CSS files are generated from the Maven build. You can build them on the command line `./mvnw generate-resources` or right-click on the `spring-petclinic` project then `Maven -> Generates sources and Update Folders`.
+    - CSS files are generated from the Maven build. You can build them on the command line `./mvnw generate-resources` or right-click on the `spring-patriotthanks` project then `Maven -> Generates sources and Update Folders`.
 
     - A run configuration named `PetClinicApplication` should have been created for you if you're using a recent Ultimate version. Otherwise, run the application by right-clicking on the `PetClinicApplication` main class and choosing `Run 'PetClinicApplication'`.
 
@@ -140,16 +140,16 @@ The following items should be installed in your system:
 
 |Spring Boot Configuration | Class or Java property files  |
 |--------------------------|---|
-|The Main Class | [PetClinicApplication](https://github.com/spring-projects/spring-petclinic/blob/main/src/main/java/org/springframework/samples/petclinic/PetClinicApplication.java) |
-|Properties Files | [application.properties](https://github.com/spring-projects/spring-petclinic/blob/main/src/main/resources) |
-|Caching | [CacheConfiguration](https://github.com/spring-projects/spring-petclinic/blob/main/src/main/java/org/springframework/samples/petclinic/system/CacheConfiguration.java) |
+|The Main Class | [PetClinicApplication](https://github.com/spring-projects/spring-patriotthanks/blob/main/src/main/java/org/springframework/samples/petclinic/PetClinicApplication.java) |
+|Properties Files | [application.properties](https://github.com/spring-projects/spring-patriotthanks/blob/main/src/main/resources) |
+|Caching | [CacheConfiguration](https://github.com/spring-projects/spring-patriotthanks/blob/main/src/main/java/org/springframework/samples/petclinic/system/CacheConfiguration.java) |
 
 ## Interesting Spring Petclinic branches and forks
 
-The Spring Petclinic "main" branch in the [spring-projects](https://github.com/spring-projects/spring-petclinic)
+The Spring Petclinic "main" branch in the [spring-projects](https://github.com/spring-projects/spring-patriotthanks)
 GitHub org is the "canonical" implementation based on Spring Boot and Thymeleaf. There are
-[quite a few forks](https://spring-petclinic.github.io/docs/forks.html) in the GitHub org
-[spring-petclinic](https://github.com/spring-petclinic). If you are interested in using a different technology stack to implement the Pet Clinic, please join the community there.
+[quite a few forks](https://spring-patriotthanks.github.io/docs/forks.html) in the GitHub org
+[spring-patriotthanks](https://github.com/spring-patriotthanks). If you are interested in using a different technology stack to implement the Pet Clinic, please join the community there.
 
 ## Interaction with other open-source projects
 
@@ -164,7 +164,7 @@ Here is a list of them:
 
 ## Contributing
 
-The [issue tracker](https://github.com/spring-projects/spring-petclinic/issues) is the preferred channel for bug reports, feature requests and submitting pull requests.
+The [issue tracker](https://github.com/spring-projects/spring-patriotthanks/issues) is the preferred channel for bug reports, feature requests and submitting pull requests.
 
 For pull requests, editor preferences are available in the [editor config](.editorconfig) for easy use in common text editors. Read more and download plugins at <https://editorconfig.org>. All commits must include a __Signed-off-by__ trailer at the end of each commit message to indicate that the contributor agrees to the Developer Certificate of Origin.
 For additional details, please refer to the blog post [Hello DCO, Goodbye CLA: Simplifying Contributions to Spring](https://spring.io/blog/2025/01/06/hello-dco-goodbye-cla-simplifying-contributions-to-spring).

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'businesses')}">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Businesses</title>
+</head>
+
+<body>
+
+<h2 th:text="#{businesses.title}">Businesses</h2>
+
+<a class="btn btn-primary mb-3" th:href="@{/businesses/new}" th:text="#{addBusiness}">Add Business</a>
+
+<table id="businessesTable" class="table table-striped">
+  <thead>
+  <tr>
+    <th style="width: 200px;" th:text="#{business.name}">Name</th>
+    <th style="width: 150px;" th:text="#{business.type}">Type</th>
+    <th style="width: 200px;" th:text="#{business.website}">Website</th>
+    <th style="width: 100px;" th:text="#{business.verified}">Verified</th>
+  </tr>
+  </thead>
+  <tbody>
+  <th:block th:each="business : ${listBusinesses}">
+    <!-- Business Row (clickable) -->
+    <tr class="business-row" th:attr="data-business-id=${business.id}">
+      <td>
+        <span class="expand-icon">▶</span>
+        <span th:text="${business.name}"/>
+      </td>
+      <td>
+        <span th:text="${business.businessType.name}"/>
+      </td>
+      <td>
+        <a th:if="${business.website != null and !business.website.isEmpty()}"
+           th:href="${business.website}"
+           th:text="${business.website}"
+           target="_blank"
+           class="business-website-link">Website</a>
+        <span th:if="${business.website == null or business.website.isEmpty()}"
+              th:text="#{business.noWebsite}">N/A</span>
+      </td>
+      <td>
+        <span th:if="${business.isVerified}" th:text="#{business.verified.yes}">Yes</span>
+        <span th:unless="${business.isVerified}" th:text="#{business.verified.no}">No</span>
+      </td>
+    </tr>
+
+    <!-- Incentives Row (hidden by default, content loaded on click) -->
+    <tr class="incentive-row" th:attr="data-business-id=${business.id}">
+      <td colspan="4">
+        <div class="incentive-details" th:id="'incentives-' + ${business.id}">
+          <!-- Content will be loaded here by JavaScript -->
+        </div>
+      </td>
+    </tr>
+  </th:block>
+  </tbody>
+</table>
+
+<!-- Pagination Controls -->
+<div class="row" th:if="${totalPages > 1}">
+  <div class="col-sm-12">
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        <!-- Previous Button -->
+        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+          <a class="page-link"
+             th:href="@{/businesses(page=${currentPage - 1})}"
+             th:text="#{pagination.previous}">Previous</a>
+        </li>
+
+        <!-- Page Numbers -->
+        <li class="page-item"
+            th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+            th:classappend="${pageNum == currentPage} ? 'active'">
+          <a class="page-link"
+             th:href="@{/businesses(page=${pageNum})}"
+             th:text="${pageNum}">1</a>
+        </li>
+
+        <!-- Next Button -->
+        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+          <a class="page-link"
+             th:href="@{/businesses(page=${currentPage + 1})}"
+             th:text="#{pagination.next}">Next</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="text-center">
+      <p th:text="#{pagination.showing(${(currentPage - 1) * 10 + 1}, ${currentPage * 10 > totalItems ? totalItems : currentPage * 10}, ${totalItems})}">
+        Showing 1 to 10 of 42 entries
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- No businesses message -->
+<div th:if="${#lists.isEmpty(listBusinesses)}" class="alert alert-info">
+  <p th:text="#{businesses.notFound}">No businesses found in the system.</p>
+</div>
+
+<!-- JavaScript for expand/collapse functionality -->
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    const businessRows = document.querySelectorAll('.business-row');
+    const loadedBusinesses = new Set();
+
+    // Initialize: Hide all incentive rows on page load
+    document.querySelectorAll('.incentive-row').forEach(row => {
+      row.style.display = 'none';
+    });
+
+    businessRows.forEach(row => {
+      row.addEventListener('click', function(e) {
+        // Don't expand if clicking on a link or if target is inside a link
+        if (e.target.tagName === 'A' || e.target.closest('a')) {
+          return;
+        }
+
+        const businessId = this.getAttribute('data-business-id');
+        const incentiveRow = document.querySelector(`.incentive-row[data-business-id="${businessId}"]`);
+        const expandIcon = this.querySelector('.expand-icon');
+
+        // Toggle the row
+        if (incentiveRow.classList.contains('show')) {
+          // Collapse
+          incentiveRow.classList.remove('show');
+          incentiveRow.style.display = 'none';
+          expandIcon.classList.remove('rotated');
+          expandIcon.textContent = '▶';
+        } else {
+          // Expand
+          incentiveRow.classList.add('show');
+          incentiveRow.style.display = 'table-row';
+          expandIcon.classList.add('rotated');
+          expandIcon.textContent = '▼';
+
+          // Load incentives if not already loaded
+          if (!loadedBusinesses.has(businessId)) {
+            loadIncentives(businessId);
+            loadedBusinesses.add(businessId);
+          }
+        }
+      });
+    });
+
+    function loadIncentives(businessId) {
+      const incentivesContainer = document.getElementById('incentives-' + businessId);
+
+      // Show loading spinner
+      incentivesContainer.innerHTML = `
+            <div class="loading-spinner">
+                <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                Loading incentives...
+            </div>
+        `;
+
+      fetch(`/businesses/${businessId}/incentives`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(incentives => {
+          // Check if incentives is an array
+          if (!Array.isArray(incentives)) {
+            throw new Error('Invalid response format');
+          }
+
+          // Separate currently valid incentives from expired ones
+          const totalReturned = incentives.length;
+          const validIncentives = incentives.filter(i => i.currentlyValid);
+
+          if (totalReturned === 0) {
+            // No incentives exist at all for this business
+            incentivesContainer.innerHTML = '<div class="no-incentives">No incentives available for this business.</div>';
+          } else if (validIncentives.length === 0) {
+            // Incentives exist but all are expired
+            incentivesContainer.innerHTML = '<div class="no-incentives">No current incentives available for this business.</div>';
+          } else {
+            let html = '<div class="row">';
+            validIncentives.forEach(incentive => {
+              html += `
+                            <div class="col-md-6">
+                                <div class="incentive-card">
+                                    <h5>${escapeHtml(incentive.title)}</h5>
+                                    <p><strong>Discount:</strong> ${escapeHtml(incentive.formattedDiscount || 'See details')}</p>
+                                    <p>${escapeHtml(incentive.description)}</p>
+                                    ${incentive.verificationRequired ? `<p><strong>Verification Required:</strong> ${escapeHtml(incentive.verificationRequired)}</p>` : ''}
+                                    ${incentive.validityDisplay ? `<p><small class="text-muted">${escapeHtml(incentive.validityDisplay)}</small></p>` : ''}
+                                    <div>
+                                        ${incentive.incentiveTypes && Array.isArray(incentive.incentiveTypes) ? incentive.incentiveTypes.map(type => `<span class="badge badge-primary">${escapeHtml(type.name)}</span>`).join('') : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+            });
+            html += '</div>';
+            incentivesContainer.innerHTML = html;
+          }
+        })
+        .catch(error => {
+          console.error('Error loading incentives:', error);
+          incentivesContainer.innerHTML = '<div class="alert alert-danger">Error loading incentives. Please try again.</div>';
+        });
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  });
+</script>
+
+</body>
+</html>

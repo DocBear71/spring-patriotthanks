@@ -1,0 +1,64 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'businesses')}">
+
+<body>
+
+<h2 th:text="#{addBusiness}">Add Business</h2>
+
+<form th:object="${business}" class="form-horizontal" id="add-business-form" method="post">
+
+  <input th:replace="~{fragments/inputField :: input ( #{label.business.name}, 'name', 'text')}" />
+
+  <div class="mb-3">
+    <label class="form-label" th:text="#{label.business.type}">Business Type</label>
+    <div class="position-relative">
+      <select th:field="*{businessType}"
+              th:class="${#fields.hasErrors('businessType')} ? 'form-select is-invalid' : 'form-select'">
+        <option value="" th:text="#{business.type.select}">-- Select a Type --</option>
+        <option th:each="type : ${types}"
+                th:value="${type.id}"
+                th:text="${type.name}">Type</option>
+      </select>
+
+      <span th:if="${#fields.hasErrors('businessType')}"
+            class="fa fa-remove position-absolute text-danger"
+            style="top: 10px; right: 10px;"
+            aria-hidden="true"></span>
+
+      <div th:if="${#fields.hasErrors('businessType')}" class="invalid-feedback" style="display:block">
+        <span th:errors="*{businessType}">Error Message</span>
+      </div>
+    </div>
+  </div>
+
+  <input th:replace="~{fragments/inputField :: input (#{label.business.website}, 'website', 'text')}" />
+
+  <div class="mb-3">
+    <label for="description" class="form-label" th:text="#{label.business.description}">Description</label>
+    <div class="position-relative">
+      <textarea id="description"
+                th:field="*{description}"
+                th:class="${#fields.hasErrors('description')} ? 'form-control is-invalid' : 'form-control'"
+                rows="3"></textarea>
+
+      <span th:if="${#fields.hasErrors('description')}"
+            class="fa fa-remove position-absolute text-danger"
+            style="top: 10px; right: 10px;"
+            aria-hidden="true"></span>
+
+      <div th:if="${#fields.hasErrors('description')}" class="invalid-feedback" style="display:block">
+        <span th:errors="*{description}">Error Message</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button class="btn btn-primary" type="submit" th:text="#{addBusiness}">Add Business</button>
+    </div>
+  </div>
+
+</form>
+
+</body>
+</html>

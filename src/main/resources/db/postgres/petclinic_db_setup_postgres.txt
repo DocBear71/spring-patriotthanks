@@ -8,7 +8,7 @@
 
         $ docker-compose up
         ...
-        spring-petclinic-postgres-1  | The files belonging to this database system will be owned by user "postgres".
+        spring-patriotthanks-postgres-1  | The files belonging to this database system will be owned by user "postgres".
         ...
 
 2) Run the app with `spring.profiles.active=postgres` (e.g. as a System property via the command
