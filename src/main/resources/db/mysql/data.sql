@@ -52,11 +52,39 @@ INSERT IGNORE INTO visits VALUES (2, 8, '2011-03-04', 'rabies shot');
 INSERT IGNORE INTO visits VALUES (3, 8, '2009-06-04', 'neutered');
 INSERT IGNORE INTO visits VALUES (4, 7, '2008-09-04', 'spayed');
 
+INSERT IGNORE INTO titles (id, name, description, display_order) VALUES
+                                                            (1, '', 'No Title Chosen', 7),
+                                                            (2, 'Mr.', 'The title of Mister for either married or unmarried men.', 2),
+                                                            (3, 'Mrs.', 'Mrs. is traditionally used for married women.', 3),
+                                                            (4, 'Ms.', 'Ms. is a title that can be used for women regardless of their marital status, or when that status is unknown.', 4),
+                                                            (5, 'Miss', 'Miss is a title traditionally used for unmarried women, particularly younger women or girls.', 5),
+                                                            (6, 'Mx.', 'Mx is a gender-neutral title that is commonly used by non-binary people.', 6),
+                                                            (7, 'Dr.', 'Dr. (Doctor) is an academic title used for individuals who have earned a doctoral degree.', 1);
+
+INSERT IGNORE INTO statuses (id, name, description) VALUES
+                                               (1, 'Veteran', 'A veteran of the uniformed services.'),
+                                               (2, 'Active Duty', 'An active duty member of the uniformed services.'),
+                                               (3, 'First Responder', 'An active Fire, Police, or Emergency personnel'),
+                                               (4, 'Spouse', 'A spouse of a veteran, military, or first responder.'),
+                                               (5, 'Business Owner', 'A business owner'),
+                                               (6, 'Supporter', 'A person that supports veterans, military, and first responders.');
+
 INSERT IGNORE INTO roles (name, description) VALUES
                                                ('SCHOOL_ADMIN', 'Rec Center Admin: Can manage facilities, leagues, scores, and users.'),
-                                               ('STUDENT', 'Student: Can join leagues, create teams, and view schedules.');
+                                               ('STUDENT', 'Student: Can join leagues, create teams, and view schedules.'),
+                                               ('PLATFORM_ADMIN','Platform Administrator: Can manage all users, businesses, incentives, chains, donations, admin codes, and view analytics dashboard.'),
+                                               ('SERVICE_MEMBER','Service Member: Can search for businesses, filter by service type (Veteran/Active Duty/First Responder/Spouse), save favorites, and manage account.'),
+                                               ('BUSINESS_OWNER','Business Owner: Can register business, create and manage incentives, update business information, and view listing analytics.'),
+                                               ('CHAIN_REPRESENTATIVE','Chain Business Representative: Can register chain entity, manage multiple locations, create chain-wide incentives, and oversee all chain properties.'),
+                                               ('DONOR','Donor/Supporter: Can make one-time or recurring donations, view donation history, and receive tax receipts.'),
+                                               ('GUEST','Guest/Visitor: Can browse public information, search businesses without account, and view terms of use.'),
+                                               ('VETERAN','Veteran: Can search for businesses, view discounts, save favorites, and create account to track preferred locations.'),
+                                               ('ACTIVE_DUTY','Active Duty Service Member: Can search for businesses, filter by active duty discounts, and access military benefits.'),
+                                               ('FIRST_RESPONDER','First Responder: Can search for businesses offering fire/police/EMS discounts and access first responder benefits.'),
+                                               ('MILITARY_SPOUSE','Military Spouse: Can search for businesses, view spouse-specific discounts, and access dependent benefits.');
 
-INSERT IGNORE INTO permissions (name, description) VALUES
+
+                                               INSERT IGNORE INTO permissions (name, description) VALUES
                                                      ('MANAGE_OWN_PROFILE', 'Allows user to update their personal info and password.'),
                                                      ('USE_MESSAGING', 'Allows user to send/receive messages with other participants.'),
                                                      ('VIEW_LEAGUES', 'Allows user to browse and search available leagues and activities.'),
@@ -96,9 +124,15 @@ INSERT IGNORE INTO permission_role (role_id, permission_id) VALUES
                                                               ((SELECT id FROM roles WHERE name = 'SCHOOL_ADMIN'), (SELECT id FROM permissions WHERE name = 'MANAGE_SCORES')),
                                                               ((SELECT id FROM roles WHERE name = 'SCHOOL_ADMIN'), (SELECT id FROM permissions WHERE name = 'SEND_ANNOUNCEMENTS'));
 
-INSERT IGNORE INTO users (first_name, last_name, email, password_hash) VALUES
-                                                                         ('Brett', 'School Admin', 'brett.baumgart@kirkwood.edu', 'hashed_password_for_brett'),
-                                                                         ('Alex', 'Student', 'alex.student@student.kirkwood.edu', 'hashed_password_for_alex');
+INSERT IGNORE INTO users (id, first_name, last_name, email, password_hash, title_id, status_id, created_at, updated_at) VALUES
+                                                                                                                          (1, 'Edward', 'McKeown', 'edward@doctormckeown.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 7, 1, NOW(), NOW()),
+                                                                                                                          (2, 'Admin', 'User', 'admin@patriotthanks.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 2, 1, NOW(), NOW()),
+                                                                                                                          (3, 'John', 'Veteran', 'john.veteran@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 2, 1, NOW(), NOW()),
+                                                                                                                          (4, 'Jane', 'ActiveDuty', 'jane.active@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 4, 2, NOW(), NOW()),
+                                                                                                                          (5, 'Mike', 'Firefighter', 'mike.fire@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 2, 3, NOW(), NOW()),
+                                                                                                                          (6, 'Sarah', 'Business', 'sarah.biz@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 4, 5, NOW(), NOW()),
+                                                                                                                          (7, 'Tom', 'Supporter', 'tom.support@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 2, 6, NOW(), NOW()),
+                                                                                                                          (8, 'Guest', 'User', 'guest@patriotthanks.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 6, NOW(), NOW());
 
 INSERT IGNORE INTO user_roles (user_id, role_id) VALUES
                                                    ((SELECT id FROM users WHERE email = 'brett.baumgart@kirkwood.edu'), (SELECT id FROM roles WHERE name = 'SCHOOL_ADMIN')),

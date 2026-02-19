@@ -31,6 +31,7 @@ public class UserServiceImpl implements UserService {
 		Set<Role> roles = new HashSet<>();
 		roles.add(studentRole);
 		user.setRoles(roles);
+		user.setStatusId(6); // Supporter status
 		// Save the user's data
 		return userRepository.save(user);
 	}

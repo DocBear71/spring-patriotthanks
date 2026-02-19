@@ -47,7 +47,7 @@ public class AuthController {
 	 * registration
 	 */
 	public AuthController(UserService userService, SchoolRepository schoolRepository,
-			AuthenticationManager authenticationManager) {
+						  AuthenticationManager authenticationManager) {
 		this.userService = userService;
 		this.schoolRepository = schoolRepository;
 		this.authenticationManager = authenticationManager;
@@ -149,7 +149,7 @@ public class AuthController {
 		// 2. LOGIN using the authenticationManager
 		try {
 			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.getEmail(),
-					rawPassword);
+				rawPassword);
 			Authentication authentication = authenticationManager.authenticate(authToken);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}

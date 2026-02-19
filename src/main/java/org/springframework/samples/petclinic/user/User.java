@@ -40,4 +40,7 @@ public class User {
 	@EqualsAndHashCode.Exclude
 	private Set<Role> roles;
 
+	@Column(name = "status_id", nullable = false)
+	private Integer statusId;
+
 }
