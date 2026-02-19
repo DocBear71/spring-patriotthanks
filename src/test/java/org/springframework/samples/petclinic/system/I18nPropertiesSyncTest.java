@@ -44,8 +44,7 @@ public class I18nPropertiesSyncTest {
 		List<Path> files;
 
 		try (Stream<Path> stream = Files.walk(root)) {
-			files = stream.filter(p -> p.toString().endsWith(".java") ||
-					p.toString().endsWith(".html"))
+			files = stream.filter(p -> p.toString().endsWith(".java") || p.toString().endsWith(".html"))
 				.filter(p -> !p.toString().contains("/test/"))
 				.filter(p -> !p.getFileName().toString().endsWith("Test.java"))
 				.toList();
@@ -59,7 +58,7 @@ public class I18nPropertiesSyncTest {
 				String line = lines.get(i).trim();
 
 				if (line.startsWith("//") || line.startsWith("@") || line.contains("log.")
-					|| line.contains("System.out"))
+						|| line.contains("System.out"))
 					continue;
 
 				if (file.toString().endsWith(".html")) {
@@ -67,8 +66,7 @@ public class I18nPropertiesSyncTest {
 					boolean hasThTextAttribute = HAS_TH_TEXT_ATTRIBUTE.matcher(line).find();
 					boolean isBracketOnly = BRACKET_ONLY.matcher(line).find();
 
-					if (hasLiteralText && !line.contains("#{") && !hasThTextAttribute &&
-						!isBracketOnly) {
+					if (hasLiteralText && !line.contains("#{") && !hasThTextAttribute && !isBracketOnly) {
 						report.append("HTML: ")
 							.append(file)
 							.append(" Line ")

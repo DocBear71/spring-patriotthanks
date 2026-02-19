@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Data Transfer Object for Incentive data. Used to transfer incentive information to
- * the frontend without causing JSON serialization issues from bidirectional JPA
+ * Data Transfer Object for Incentive data. Used to transfer incentive information to the
+ * frontend without causing JSON serialization issues from bidirectional JPA
  * relationships.
  *
  * @author Edward McKeown
@@ -79,9 +79,9 @@ public class IncentiveDTO {
 	/**
 	 * Computes the validity display string based on the incentive's start and end dates.
 	 * <ul>
-	 *     <li>If the start date is in the future: "Starts [start date]"</li>
-	 *     <li>If currently active with an end date: "Valid until [end date]"</li>
-	 *     <li>If no dates are set: empty string (no display needed)</li>
+	 * <li>If the start date is in the future: "Starts [start date]"</li>
+	 * <li>If currently active with an end date: "Valid until [end date]"</li>
+	 * <li>If no dates are set: empty string (no display needed)</li>
 	 * </ul>
 	 * @param incentive the Incentive entity to compute the display string for
 	 * @return the formatted validity display string, or empty string if no dates apply

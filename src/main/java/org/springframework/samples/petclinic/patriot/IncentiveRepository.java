@@ -24,8 +24,8 @@ public interface IncentiveRepository extends Repository<Incentive, Integer> {
 	List<Incentive> findByBusinessId(Integer businessId);
 
 	/**
-	 * Retrieve all active incentives for a specific business with incentive types
-	 * eagerly loaded.
+	 * Retrieve all active incentives for a specific business with incentive types eagerly
+	 * loaded.
 	 * @param businessId the ID of the business
 	 * @param isActive whether the incentive is active
 	 * @return a List of active Incentives for the given business
@@ -33,7 +33,7 @@ public interface IncentiveRepository extends Repository<Incentive, Integer> {
 	@Transactional(readOnly = true)
 	@Query("SELECT DISTINCT i FROM Incentive i LEFT JOIN FETCH i.incentiveTypes WHERE i.business.id = :businessId AND i.isActive = :isActive")
 	List<Incentive> findByBusinessIdAndIsActive(@Param("businessId") Integer businessId,
-												@Param("isActive") Boolean isActive);
+			@Param("isActive") Boolean isActive);
 
 	/**
 	 * Retrieve an Incentive by its ID.

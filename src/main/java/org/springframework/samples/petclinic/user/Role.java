@@ -26,4 +26,5 @@ public class Role {
 	private Set<User> users;
 
 	// We will add the relationship to Permissions later.
+
 }

@@ -80,9 +80,8 @@ public class Incentive extends BaseEntity {
 	private LocalDateTime deletedAt;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "business_incentive_types",
-		joinColumns = @JoinColumn(name = "incentive_id"),
-		inverseJoinColumns = @JoinColumn(name = "incentive_type_id"))
+	@JoinTable(name = "business_incentive_types", joinColumns = @JoinColumn(name = "incentive_id"),
+			inverseJoinColumns = @JoinColumn(name = "incentive_type_id"))
 	private List<IncentiveType> incentiveTypes = new ArrayList<>();
 
 	/**

@@ -72,7 +72,8 @@ public class SchoolController {
 	public ModelAndView showSchoolById(@PathVariable("schoolId") int schoolId) {
 		ModelAndView mav = new ModelAndView("schools/schoolDetails");
 		School school = schoolRepository.findById(schoolId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "School with id " + schoolId + " not found."));
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+					"School with id " + schoolId + " not found."));
 		mav.addObject(school);
 		return mav;
 	}
@@ -85,7 +86,8 @@ public class SchoolController {
 
 		ModelAndView mav = new ModelAndView("schools/schoolDetails");
 		School school = schoolRepository.findByDomain(fullDomain)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "School with domain '" + fullDomain + "' not found."));
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+					"School with domain '" + fullDomain + "' not found."));
 		mav.addObject(school);
 		return mav;
 	}

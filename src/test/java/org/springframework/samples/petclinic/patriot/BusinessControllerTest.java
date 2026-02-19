@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test class for the {@link BusinessController}. Tests the business listing
- * functionality with pagination and the incentives AJAX endpoint.
+ * Test class for the {@link BusinessController}. Tests the business listing functionality
+ * with pagination and the incentives AJAX endpoint.
  *
  * @author Edward McKeown
  */
@@ -244,7 +244,7 @@ class BusinessControllerTest {
 		mockMvc.perform(get("/businesses"))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("listBusinesses",
-				hasItem(hasProperty("businessType", hasProperty("name", is("Restaurant"))))));
+					hasItem(hasProperty("businessType", hasProperty("name", is("Restaurant"))))));
 	}
 
 	@Test
@@ -361,6 +361,7 @@ class BusinessControllerTest {
 			.andExpect(jsonPath("$[0].formattedDiscount", is("25%")))
 			.andExpect(jsonPath("$[1].formattedDiscount", is("$5.00 off")));
 	}
+
 	@Test
 	@DisplayName("User clicks \"Add Business\" -> GET /businesses/new")
 	void testInitCreationForm() throws Exception {
@@ -373,7 +374,8 @@ class BusinessControllerTest {
 	@Test
 	@DisplayName("Validation Passed -> verify save() is called and redirect to /businesses")
 	void testProcessCreationFormSuccess() throws Exception {
-		mockMvc.perform(post("/businesses/new").param("name", "Patriot Burgers")
+		mockMvc
+			.perform(post("/businesses/new").param("name", "Patriot Burgers")
 				.param("businessType.id", "1")
 				.param("website", "https://patriotburgers.com")
 				.param("description", "Great burgers for heroes"))
@@ -387,8 +389,9 @@ class BusinessControllerTest {
 	@Test
 	@DisplayName("Validation Failed -> send a blank name and ensure the form is returned with errors")
 	void testProcessCreationFormHasErrorsBlankName() throws Exception {
-		mockMvc.perform(post("/businesses/new").param("name", "") // Empty name should trigger @NotBlank
-				.param("businessType.id", "1"))
+		mockMvc.perform(post("/businesses/new").param("name", "") // Empty name should
+																	// trigger @NotBlank
+			.param("businessType.id", "1"))
 			.andExpect(status().isOk()) // 200 OK because we are re-rendering the form
 			.andExpect(model().attributeHasErrors("business"))
 			.andExpect(model().attributeHasFieldErrors("business", "name"))
@@ -407,11 +410,3 @@ class BusinessControllerTest {
 	}
 
 }
-
-
-
-
-
-
-
-

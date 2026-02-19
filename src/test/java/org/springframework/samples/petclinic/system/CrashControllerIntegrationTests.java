@@ -92,10 +92,11 @@ class CrashControllerIntegrationTests {
 				"This application has no explicit mapping for");
 	}
 
-//	@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class,
-//			DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
-//	static class TestConfiguration {
-//
-//	}
+	// @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class,
+	// DataSourceTransactionManagerAutoConfiguration.class,
+	// HibernateJpaAutoConfiguration.class })
+	// static class TestConfiguration {
+	//
+	// }
 
 }

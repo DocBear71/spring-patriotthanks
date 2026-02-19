@@ -25,4 +25,5 @@ public interface SchoolRepository extends Repository<School, Integer> {
 	@Transactional(readOnly = true)
 	@Query("SELECT s from School s Where s.domain = :domain")
 	Optional<School> findByDomain(String domain);
+
 }

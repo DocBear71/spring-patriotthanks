@@ -22,7 +22,6 @@ import org.hibernate.annotations.SQLRestriction;
 import org.springframework.samples.petclinic.model.NamedEntity;
 import org.springframework.samples.petclinic.validation.UniqueDomain;
 
-
 /**
  * Simple JavaBean domain object representing a School.
  *

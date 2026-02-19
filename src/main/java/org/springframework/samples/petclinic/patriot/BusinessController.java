@@ -41,7 +41,7 @@ public class BusinessController {
 	 * @param businessTypeRepository the repository for accessing business type data
 	 */
 	public BusinessController(BusinessRepository businessRepository, IncentiveRepository incentiveRepository,
-							  BusinessTypeRepository businessTypeRepository) {
+			BusinessTypeRepository businessTypeRepository) {
 		this.businessRepository = businessRepository;
 		this.incentiveRepository = incentiveRepository;
 		this.businessTypeRepository = businessTypeRepository;
@@ -124,8 +124,8 @@ public class BusinessController {
 	}
 
 	/**
-	 * AJAX endpoint to retrieve incentives for a specific business. Returns JSON data
-	 * for dynamic loading via JavaScript.
+	 * AJAX endpoint to retrieve incentives for a specific business. Returns JSON data for
+	 * dynamic loading via JavaScript.
 	 * @param businessId the ID of the business
 	 * @return list of incentives as JSON
 	 */

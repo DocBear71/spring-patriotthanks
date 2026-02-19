@@ -53,4 +53,5 @@ class UserDetailsServiceImplTest {
 
 		verify(userRepository, times(1)).findByEmail(testUser.getEmail());
 	}
+
 }

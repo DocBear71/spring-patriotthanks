@@ -53,16 +53,17 @@ class AuthControllerTest {
 
 		given(userService.registerNewUser(any(User.class))).willReturn(new User());
 
-		// MOCK THE LOGIN-When the controller asks to authenticate, return a dummy "Success" token
+		// MOCK THE LOGIN-When the controller asks to authenticate, return a dummy
+		// "Success" token
 		given(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
 			.willReturn(new TestingAuthenticationToken("user", "password", "ROLE_STUDENT"));
 
 		// User registers with SUBDOMAIN
-		mockMvc.perform(post("/register")
-				.with(csrf())
-				.param("email", "alex@student.kirkwood.edu") // <--- Subdomain input
-				.param("password", "StrongPass1!"))
+		mockMvc.perform(post("/register").with(csrf())
+			.param("email", "alex@student.kirkwood.edu") // <--- Subdomain input
+			.param("password", "StrongPass1!"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(redirectedUrl("/schools/1")); // Should still find ID 1
 	}
+
 }
