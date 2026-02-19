@@ -42,7 +42,6 @@ class AuthControllerTest {
 	void testProcessRegister_WithSubdomainRedirect() throws Exception {
 		// Mock: School exists for "kirkwood.edu"
 		School kirkwood = new School();
-		kirkwood.setId(1);
 		kirkwood.setName("Kirkwood");
 		kirkwood.setDomain("kirkwood.edu");
 
@@ -63,7 +62,7 @@ class AuthControllerTest {
 			.param("email", "alex@student.kirkwood.edu") // <--- Subdomain input
 			.param("password", "StrongPass1!"))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(redirectedUrl("/schools/1")); // Should still find ID 1
+			.andExpect(redirectedUrl("/schools/kirkwood")); // Should still find ID 1
 	}
 
 }
