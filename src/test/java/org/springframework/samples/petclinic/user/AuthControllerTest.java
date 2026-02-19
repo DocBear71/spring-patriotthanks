@@ -59,8 +59,8 @@ class AuthControllerTest {
 
 		// User registers with SUBDOMAIN
 		mockMvc.perform(post("/register").with(csrf())
-				.param("email", "alex@student.kirkwood.edu") // <--- Subdomain input
-				.param("password", "StrongPass1!"))
+			.param("email", "alex@student.kirkwood.edu") // <--- Subdomain input
+			.param("password", "StrongPass1!"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(redirectedUrl("/schools/kirkwood")); // Should still find ID 1
 	}
