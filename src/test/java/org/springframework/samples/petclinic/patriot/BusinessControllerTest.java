@@ -244,7 +244,7 @@ class BusinessControllerTest {
 		mockMvc.perform(get("/businesses"))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("listBusinesses",
-				hasItem(hasProperty("businessType", hasProperty("name", is("Restaurant"))))));
+					hasItem(hasProperty("businessType", hasProperty("name", is("Restaurant"))))));
 	}
 
 	@Test
@@ -390,8 +390,8 @@ class BusinessControllerTest {
 	@DisplayName("Validation Failed -> send a blank name and ensure the form is returned with errors")
 	void testProcessCreationFormHasErrorsBlankName() throws Exception {
 		mockMvc.perform(post("/businesses/new").param("name", "") // Empty name should
-				// trigger @NotBlank
-				.param("businessType.id", "1"))
+			// trigger @NotBlank
+			.param("businessType.id", "1"))
 			.andExpect(status().isOk()) // 200 OK because we are re-rendering the form
 			.andExpect(model().attributeHasErrors("business"))
 			.andExpect(model().attributeHasFieldErrors("business", "name"))

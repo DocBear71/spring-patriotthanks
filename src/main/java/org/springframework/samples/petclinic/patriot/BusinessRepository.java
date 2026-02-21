@@ -48,18 +48,16 @@ public interface BusinessRepository extends Repository<Business, Integer> {
 	Optional<Business> findById(Integer id);
 
 	/**
-	 * Retrieve a Business by its ID with all associated locations and incentives
-	 * eagerly fetched. Uses {@code LEFT JOIN FETCH} to load the lazy collections in
-	 * a single query, avoiding {@code LazyInitializationException} when rendering
-	 * the business details view.
+	 * Retrieve a Business by its ID with all associated locations and incentives eagerly
+	 * fetched. Uses {@code LEFT JOIN FETCH} to load the lazy collections in a single
+	 * query, avoiding {@code LazyInitializationException} when rendering the business
+	 * details view.
 	 * @param id the ID of the Business to retrieve
-	 * @return an {@link Optional} containing the fully-loaded Business if found, or
-	 * empty if not
+	 * @return an {@link Optional} containing the fully-loaded Business if found, or empty
+	 * if not
 	 */
-	@Query("SELECT DISTINCT b FROM Business b "
-		+ "LEFT JOIN FETCH b.locations "
-		+ "LEFT JOIN FETCH b.incentives "
-		+ "WHERE b.id = :id")
+	@Query("SELECT DISTINCT b FROM Business b " + "LEFT JOIN FETCH b.locations " + "LEFT JOIN FETCH b.incentives "
+			+ "WHERE b.id = :id")
 	@Transactional(readOnly = true)
 	Optional<Business> findByIdWithDetails(@Param("id") Integer id);
 

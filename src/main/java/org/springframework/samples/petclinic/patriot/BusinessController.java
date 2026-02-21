@@ -44,7 +44,7 @@ public class BusinessController {
 	 * @param businessTypeRepository the repository for accessing business type data
 	 */
 	public BusinessController(BusinessRepository businessRepository, IncentiveRepository incentiveRepository,
-							  BusinessTypeRepository businessTypeRepository) {
+			BusinessTypeRepository businessTypeRepository) {
 		this.businessRepository = businessRepository;
 		this.incentiveRepository = incentiveRepository;
 		this.businessTypeRepository = businessTypeRepository;
@@ -131,15 +131,15 @@ public class BusinessController {
 	 * with all locations and incentives eagerly fetched, and returns the business details
 	 * view. Throws a 404 if the business is not found.
 	 * @param businessId the ID of the business to display
-	 * @return a {@link ModelAndView} containing the business details view and the business
-	 * object
+	 * @return a {@link ModelAndView} containing the business details view and the
+	 * business object
 	 */
 	@GetMapping("/businesses/{businessId:\\d+}")
 	public ModelAndView showBusinessDetails(@PathVariable("businessId") int businessId) {
 		ModelAndView mav = new ModelAndView("businesses/businessDetails");
 		Business business = businessRepository.findByIdWithDetails(businessId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-				"Business with id " + businessId + " not found."));
+					"Business with id " + businessId + " not found."));
 		mav.addObject(business);
 		return mav;
 	}
