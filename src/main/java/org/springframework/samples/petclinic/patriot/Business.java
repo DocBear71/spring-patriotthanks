@@ -1,8 +1,8 @@
 package org.springframework.samples.petclinic.patriot;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -68,10 +68,10 @@ public class Business extends NamedEntity {
 	private LocalDateTime deletedAt;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "business", fetch = FetchType.EAGER)
-	private List<BusinessLocation> locations = new ArrayList<>();
+	private Set<BusinessLocation> locations = new LinkedHashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "business", fetch = FetchType.LAZY)
-	private List<Incentive> incentives = new ArrayList<>();
+	private Set<Incentive> incentives = new LinkedHashSet<>();
 
 	/**
 	 * Adds a location to this business. Establishes the bidirectional relationship

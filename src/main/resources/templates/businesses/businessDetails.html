@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'businesses')}">
+
+<body>
+
+<h2 th:text="${business.name}">Business Name</h2>
+
+<div class="container mt-4">
+
+  <!-- Business Information Card -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0" th:text="#{businessDetails.info}">Business Information</h4>
+    </div>
+    <div class="card-body">
+      <table class="table table-striped">
+        <tr>
+          <th style="width: 200px;" th:text="#{business.name}">Name</th>
+          <td><b th:text="${business.name}">Business Name</b></td>
+        </tr>
+        <tr>
+          <th th:text="#{business.type}">Type</th>
+          <td th:text="${business.businessType.name}">Restaurant</td>
+        </tr>
+        <tr>
+          <th th:text="#{business.website}">Website</th>
+          <td>
+            <a th:if="${business.website != null and !business.website.isEmpty()}"
+               th:href="${business.website}"
+               th:text="${business.website}"
+               target="_blank">https://example.com</a>
+            <span th:if="${business.website == null or business.website.isEmpty()}"
+                  th:text="#{business.noWebsite}">N/A</span>
+          </td>
+        </tr>
+        <tr>
+          <th th:text="#{label.business.description}">Description</th>
+          <td>
+            <span th:if="${business.description != null and !business.description.isEmpty()}"
+                  th:text="${business.description}">A great business.</span>
+            <span th:if="${business.description == null or business.description.isEmpty()}"
+                  class="text-muted" th:text="#{businessDetails.noDescription}">No description provided.</span>
+          </td>
+        </tr>
+        <tr>
+          <th th:text="#{business.verified}">Verified</th>
+          <td>
+            <span th:if="${business.isVerified}" class="badge bg-success"
+                  th:text="#{business.verified.yes}">Yes</span>
+            <span th:unless="${business.isVerified}" class="badge bg-secondary"
+                  th:text="#{business.verified.no}">No</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Locations Section -->
+  <div class="card mb-4" th:if="${!business.locations.isEmpty()}">
+    <div class="card-header">
+      <h4 class="mb-0" th:text="#{businessDetails.locations}">Locations</h4>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3" th:each="location : ${business.locations}">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">
+                <span th:if="${location.locationName != null and !location.locationName.isEmpty()}"
+                      th:text="${location.locationName}">Location Name</span>
+                <span th:if="${location.locationName == null or location.locationName.isEmpty()}"
+                      th:text="#{businessDetails.location.primary}">Primary Location</span>
+                <span th:if="${location.isPrimary}" class="badge bg-primary ms-2"
+                      th:text="#{businessDetails.location.primaryBadge}">Primary</span>
+              </h5>
+              <p th:if="${location.address != null}">
+                <span class="fa fa-map-marker me-2"></span>
+                <span th:text="${location.address.fullAddress}">123 Main St, City, ST 12345</span>
+              </p>
+              <p th:if="${location.phone != null and !location.phone.isEmpty()}">
+                <span class="fa fa-phone me-2"></span>
+                <span th:text="${location.phone}">(555) 555-5555</span>
+              </p>
+              <p th:if="${location.email != null and !location.email.isEmpty()}">
+                <span class="fa fa-envelope me-2"></span>
+                <a th:href="'mailto:' + ${location.email}" th:text="${location.email}">email@example.com</a>
+              </p>
+              <p th:if="${location.hoursOfOperation != null and !location.hoursOfOperation.isEmpty()}">
+                <span class="fa fa-clock-o me-2"></span>
+                <span th:text="${location.hoursOfOperation}">Mon-Fri 9-5</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Incentives Section -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0" th:text="#{businessDetails.incentives}">Available Incentives</h4>
+    </div>
+    <div class="card-body">
+      <div th:if="${business.incentives.isEmpty()}" class="text-center text-muted py-3">
+        <p th:text="#{businessDetails.noIncentives}">No incentives available for this business.</p>
+      </div>
+      <div class="row" th:unless="${business.incentives.isEmpty()}">
+        <div class="col-md-6 mb-3" th:each="incentive : ${business.incentives}"
+             th:if="${incentive.isCurrentlyValid()}">
+          <div class="card h-100 incentive-card">
+            <div class="card-body">
+              <h5 class="card-title" th:text="${incentive.title}">10% Veteran Discount</h5>
+              <p class="card-text" th:text="${incentive.description}">Description of the incentive.</p>
+              <p>
+                <strong th:text="#{businessDetails.discount}">Discount:</strong>
+                <span th:text="${incentive.formattedDiscount}">10%</span>
+              </p>
+              <p th:if="${incentive.verificationRequired != null and !incentive.verificationRequired.isEmpty()}">
+                <strong th:text="#{businessDetails.verification}">Verification:</strong>
+                <span th:text="${incentive.verificationRequired}">Military ID</span>
+              </p>
+              <p th:if="${incentive.endDate != null}">
+                <small class="text-muted">
+                  <span th:text="#{businessDetails.validUntil}">Valid until</span>
+                  <span th:text="${#temporals.format(incentive.endDate, 'MMM d, yyyy')}">Dec 31, 2026</span>
+                </small>
+              </p>
+              <div th:if="${!incentive.incentiveTypes.isEmpty()}">
+                <span th:each="type : ${incentive.incentiveTypes}"
+                      class="badge bg-primary me-1"
+                      th:text="${type.name}">Veteran</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back Button -->
+  <a class="btn btn-secondary" th:href="@{/businesses}" th:text="#{businessDetails.backToList}">
+    Back to Business List
+  </a>
+
+</div>
+
+</body>
+</html>

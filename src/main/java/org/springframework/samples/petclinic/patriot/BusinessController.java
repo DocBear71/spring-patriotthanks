@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Controller for handling business-related web requests. Provides endpoints for viewing
@@ -41,7 +44,7 @@ public class BusinessController {
 	 * @param businessTypeRepository the repository for accessing business type data
 	 */
 	public BusinessController(BusinessRepository businessRepository, IncentiveRepository incentiveRepository,
-			BusinessTypeRepository businessTypeRepository) {
+							  BusinessTypeRepository businessTypeRepository) {
 		this.businessRepository = businessRepository;
 		this.incentiveRepository = incentiveRepository;
 		this.businessTypeRepository = businessTypeRepository;
@@ -121,6 +124,24 @@ public class BusinessController {
 		businessRepository.save(business);
 		// 3. Redirect to the list
 		return "redirect:/businesses";
+	}
+
+	/**
+	 * Displays the details page for a single business. Retrieves the business by its ID
+	 * with all locations and incentives eagerly fetched, and returns the business details
+	 * view. Throws a 404 if the business is not found.
+	 * @param businessId the ID of the business to display
+	 * @return a {@link ModelAndView} containing the business details view and the business
+	 * object
+	 */
+	@GetMapping("/businesses/{businessId:\\d+}")
+	public ModelAndView showBusinessDetails(@PathVariable("businessId") int businessId) {
+		ModelAndView mav = new ModelAndView("businesses/businessDetails");
+		Business business = businessRepository.findByIdWithDetails(businessId)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+				"Business with id " + businessId + " not found."));
+		mav.addObject(business);
+		return mav;
 	}
 
 	/**

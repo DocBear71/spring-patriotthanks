@@ -244,7 +244,7 @@ class BusinessControllerTest {
 		mockMvc.perform(get("/businesses"))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("listBusinesses",
-					hasItem(hasProperty("businessType", hasProperty("name", is("Restaurant"))))));
+				hasItem(hasProperty("businessType", hasProperty("name", is("Restaurant"))))));
 	}
 
 	@Test
@@ -390,8 +390,8 @@ class BusinessControllerTest {
 	@DisplayName("Validation Failed -> send a blank name and ensure the form is returned with errors")
 	void testProcessCreationFormHasErrorsBlankName() throws Exception {
 		mockMvc.perform(post("/businesses/new").param("name", "") // Empty name should
-																	// trigger @NotBlank
-			.param("businessType.id", "1"))
+				// trigger @NotBlank
+				.param("businessType.id", "1"))
 			.andExpect(status().isOk()) // 200 OK because we are re-rendering the form
 			.andExpect(model().attributeHasErrors("business"))
 			.andExpect(model().attributeHasFieldErrors("business", "name"))
@@ -407,6 +407,26 @@ class BusinessControllerTest {
 			.andExpect(model().attributeHasErrors("business"))
 			.andExpect(model().attributeHasFieldErrors("business", "businessType"))
 			.andExpect(view().name("businesses/createOrUpdateBusinessForm"));
+	}
+
+	@Test
+	@DisplayName("GET /businesses/{id} -> returns business details view")
+	void testShowBusinessDetails() throws Exception {
+		given(businessRepository.findByIdWithDetails(1)).willReturn(java.util.Optional.of(business1));
+
+		mockMvc.perform(get("/businesses/1"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("businesses/businessDetails"))
+			.andExpect(model().attributeExists("business"))
+			.andExpect(model().attribute("business", hasProperty("name", is("Joe's Pizza"))));
+	}
+
+	@Test
+	@DisplayName("GET /businesses/{id} -> returns 404 when business not found")
+	void testShowBusinessDetailsNotFound() throws Exception {
+		given(businessRepository.findByIdWithDetails(999)).willReturn(java.util.Optional.empty());
+
+		mockMvc.perform(get("/businesses/999")).andExpect(status().isNotFound());
 	}
 
 }

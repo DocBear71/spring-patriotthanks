@@ -53,21 +53,21 @@ INSERT IGNORE INTO visits VALUES (3, 8, '2009-06-04', 'neutered');
 INSERT IGNORE INTO visits VALUES (4, 7, '2008-09-04', 'spayed');
 
 INSERT IGNORE INTO titles (id, name, description, display_order) VALUES
-                                                            (1, '', 'No Title Chosen', 7),
-                                                            (2, 'Mr.', 'The title of Mister for either married or unmarried men.', 2),
-                                                            (3, 'Mrs.', 'Mrs. is traditionally used for married women.', 3),
-                                                            (4, 'Ms.', 'Ms. is a title that can be used for women regardless of their marital status, or when that status is unknown.', 4),
-                                                            (5, 'Miss', 'Miss is a title traditionally used for unmarried women, particularly younger women or girls.', 5),
-                                                            (6, 'Mx.', 'Mx is a gender-neutral title that is commonly used by non-binary people.', 6),
-                                                            (7, 'Dr.', 'Dr. (Doctor) is an academic title used for individuals who have earned a doctoral degree.', 1);
+                                                                   (1, '', 'No Title Chosen', 7),
+                                                                   (2, 'Mr.', 'The title of Mister for either married or unmarried men.', 2),
+                                                                   (3, 'Mrs.', 'Mrs. is traditionally used for married women.', 3),
+                                                                   (4, 'Ms.', 'Ms. is a title that can be used for women regardless of their marital status, or when that status is unknown.', 4),
+                                                                   (5, 'Miss', 'Miss is a title traditionally used for unmarried women, particularly younger women or girls.', 5),
+                                                                   (6, 'Mx.', 'Mx is a gender-neutral title that is commonly used by non-binary people.', 6),
+                                                                   (7, 'Dr.', 'Dr. (Doctor) is an academic title used for individuals who have earned a doctoral degree.', 1);
 
 INSERT IGNORE INTO statuses (id, name, description) VALUES
-                                               (1, 'Veteran', 'A veteran of the uniformed services.'),
-                                               (2, 'Active Duty', 'An active duty member of the uniformed services.'),
-                                               (3, 'First Responder', 'An active Fire, Police, or Emergency personnel'),
-                                               (4, 'Spouse', 'A spouse of a veteran, military, or first responder.'),
-                                               (5, 'Business Owner', 'A business owner'),
-                                               (6, 'Supporter', 'A person that supports veterans, military, and first responders.');
+                                                      (1, 'Veteran', 'A veteran of the uniformed services.'),
+                                                      (2, 'Active Duty', 'An active duty member of the uniformed services.'),
+                                                      (3, 'First Responder', 'An active Fire, Police, or Emergency personnel'),
+                                                      (4, 'Spouse', 'A spouse of a veteran, military, or first responder.'),
+                                                      (5, 'Business Owner', 'A business owner'),
+                                                      (6, 'Supporter', 'A person that supports veterans, military, and first responders.');
 
 INSERT IGNORE INTO roles (name, description) VALUES
                                                ('SCHOOL_ADMIN', 'Rec Center Admin: Can manage facilities, leagues, scores, and users.'),
@@ -84,7 +84,7 @@ INSERT IGNORE INTO roles (name, description) VALUES
                                                ('MILITARY_SPOUSE','Military Spouse: Can search for businesses, view spouse-specific discounts, and access dependent benefits.');
 
 
-                                               INSERT IGNORE INTO permissions (name, description) VALUES
+INSERT IGNORE INTO permissions (name, description) VALUES
                                                      ('MANAGE_OWN_PROFILE', 'Allows user to update their personal info and password.'),
                                                      ('USE_MESSAGING', 'Allows user to send/receive messages with other participants.'),
                                                      ('VIEW_LEAGUES', 'Allows user to browse and search available leagues and activities.'),
@@ -156,10 +156,10 @@ INSERT IGNORE INTO schools (name, domain, status_id) VALUES
                                                        ('St. Ambrose University', 'sau.edu', 'active');
 
 INSERT IGNORE INTO locations (school_id, name, description, address, status_id) VALUES
-                                                                                  (1, 'Main Campus', 'The primary campus in Cedar Rapids', '6301 Kirkwood Blvd SW, Cedar Rapids, IA', 'active');
+  (1, 'Main Campus', 'The primary campus in Cedar Rapids', '6301 Kirkwood Blvd SW, Cedar Rapids, IA', 'active');
 
 INSERT IGNORE INTO locations (school_id, name, description, address, status_id) VALUES
-                                                                                  (2, 'Carver-Hawkeye Arena', 'Main sports arena', '1 Elliott Dr, Iowa City, IA', 'active');
+  (2, 'Carver-Hawkeye Arena', 'Main sports arena', '1 Elliott Dr, Iowa City, IA', 'active');
 
 INSERT IGNORE INTO locations (school_id, parent_location_id, name, description, status_id) VALUES
                                                                                              (1, 1, 'Michael J Gould Rec Center', 'Student recreation facility', 'active'),
@@ -172,3 +172,79 @@ INSERT IGNORE INTO locations (school_id, parent_location_id, name, description, 
 INSERT IGNORE INTO locations (school_id, parent_location_id, name, description, status_id) VALUES
                                                                                              (1, 3, 'Basketball Court 1', 'North court', 'active'),
                                                                                              (1, 3, 'Basketball Court 2', 'South court', 'active');
+
+-- =====================================================================
+-- Patriot Thanks: Business Types (lookup table)
+-- =====================================================================
+INSERT IGNORE INTO business_types (id, name, description, display_order, is_active) VALUES
+                                                                                      (1, 'Restaurant', 'Restaurants, diners, and food service', 1, 1),
+                                                                                      (2, 'Retail', 'Retail stores and shops', 2, 1),
+                                                                                      (3, 'Automotive', 'Auto repair, dealerships, and service', 3, 1),
+                                                                                      (4, 'Entertainment', 'Movies, events, and entertainment venues', 4, 1),
+                                                                                      (5, 'Hardware', 'Hardware and home improvement stores', 5, 1),
+                                                                                      (6, 'Pharmacy', 'Pharmacies and drugstores', 6, 1),
+                                                                                      (7, 'Technology', 'Tech stores and IT services', 7, 1),
+                                                                                      (8, 'Other', 'Other business types', 8, 1);
+
+-- =====================================================================
+-- Patriot Thanks: US States (lookup table - Iowa only for test data)
+-- =====================================================================
+INSERT IGNORE INTO us_states (id, code, name) VALUES
+  (1, 'IA', 'Iowa');
+
+-- =====================================================================
+-- Patriot Thanks: Addresses
+-- =====================================================================
+INSERT IGNORE INTO addresses (id, street_address, city, state_id, zip_code) VALUES
+                                                                              (1, '123 Main St', 'Cedar Rapids', 1, '52401'),
+                                                                              (2, '456 First Ave', 'Iowa City', 1, '52240'),
+                                                                              (3, '789 Center Point Rd', 'Cedar Rapids', 1, '52402');
+
+-- =====================================================================
+-- Patriot Thanks: Businesses
+-- =====================================================================
+INSERT IGNORE INTO businesses (id, name, description, website, business_type_id, submitted_by_user_id, is_verified, is_active) VALUES
+                                                                                                                                 (1, 'Veterans Auto Service', 'Full-service auto repair with military discounts', 'https://veteransauto.com', 3, 1, 1, 1),
+                                                                                                                                 (2, 'Heroes Diner', 'Family restaurant honoring those who serve', 'https://heroesdiner.com', 1, 1, 1, 1),
+                                                                                                                                 (3, 'Freedom Grocers', 'Grocery store supporting military families', 'https://freedomgrocers.com', 2, 6, 0, 1),
+                                                                                                                                 (4, 'Patriot Pharmacy', 'Pharmacy offering veteran discounts', 'https://patriotpharmacy.com', 6, 6, 1, 1),
+                                                                                                                                 (5, 'Liberty Fitness', 'Gym with free memberships for active duty', NULL, 8, NULL, 0, 1);
+
+-- =====================================================================
+-- Patriot Thanks: Business Locations
+-- =====================================================================
+INSERT IGNORE INTO business_locations (id, business_id, address_id, location_name, phone, email, hours_of_operation, is_primary, is_active) VALUES
+                                                                                                                                              (1, 1, 1, 'Main Shop', '319-555-0101', 'info@veteransauto.com', 'Mon-Fri: 8am-6pm', 1, 1),
+                                                                                                                                              (2, 2, 2, 'Iowa City Location', '319-555-0102', 'info@heroesdiner.com', 'Daily: 6am-10pm', 1, 1),
+                                                                                                                                              (3, 3, 3, 'Cedar Rapids Store', '319-555-0103', 'info@freedomgrocers.com', 'Daily: 6am-11pm', 1, 1);
+
+-- =====================================================================
+-- Patriot Thanks: Incentive Types (lookup table)
+-- =====================================================================
+INSERT IGNORE INTO incentive_types (id, name, description, display_order, is_active) VALUES
+                                                                                       (1, 'Veteran', 'Discount for military veterans', 1, 1),
+                                                                                       (2, 'Active Duty', 'Discount for active duty service members', 2, 1),
+                                                                                       (3, 'First Responder', 'Discount for fire, police, and EMS', 3, 1),
+                                                                                       (4, 'Military Spouse', 'Discount for military spouses and dependents', 4, 1);
+
+-- =====================================================================
+-- Patriot Thanks: Incentives
+-- =====================================================================
+INSERT IGNORE INTO incentives (id, title, description, discount_percentage, discount_amount, start_date, end_date, is_active, business_id, submitted_by_user_id) VALUES
+                                                                                                                                                                   (1, '10% Military Discount', '10% off all services for veterans and active duty', 10.00, NULL, '2025-01-01', '2026-12-31', 1, 1, 1),
+                                                                                                                                                                   (2, 'Free Appetizer', 'Free appetizer with entree purchase for service members', NULL, NULL, '2025-01-01', NULL, 1, 2, 1),
+                                                                                                                                                                   (3, '$5 Off Purchase', '$5 off any purchase over $25 for veterans', NULL, 5.00, '2025-06-01', '2025-12-31', 1, 3, 6),
+                                                                                                                                                                   (4, '15% Prescription Discount', '15% off non-insurance prescriptions', 15.00, NULL, NULL, NULL, 1, 4, 6);
+
+-- =====================================================================
+-- Patriot Thanks: Business Incentive Types (junction table)
+-- =====================================================================
+INSERT IGNORE INTO business_incentive_types (incentive_id, incentive_type_id) VALUES
+                                                                                (1, 1), -- Veterans Auto: Veteran
+                                                                                (1, 2), -- Veterans Auto: Active Duty
+                                                                                (2, 1), -- Heroes Diner: Veteran
+                                                                                (2, 2), -- Heroes Diner: Active Duty
+                                                                                (2, 3), -- Heroes Diner: First Responder
+                                                                                (3, 1), -- Freedom Grocers: Veteran
+                                                                                (4, 1), -- Patriot Pharmacy: Veteran
+                                                                                (4, 3); -- Patriot Pharmacy: First Responder

@@ -28,7 +28,7 @@
     <tr class="business-row" th:attr="data-business-id=${business.id}">
       <td>
         <span class="expand-icon">▶</span>
-        <span th:text="${business.name}"/>
+        <a th:href="@{/businesses/__${business.id}__}" th:text="${business.name}">Business Name</a>
       </td>
       <td>
         <span th:text="${business.businessType.name}"/>

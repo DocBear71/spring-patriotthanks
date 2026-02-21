@@ -2,10 +2,13 @@ package org.springframework.samples.petclinic.patriot;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Repository interface for Business entities. Provides methods to retrieve and save
@@ -39,9 +42,25 @@ public interface BusinessRepository extends Repository<Business, Integer> {
 	/**
 	 * Retrieve a Business by its ID.
 	 * @param id the ID of the Business to retrieve
-	 * @return the Business with the given ID, or null if not found
+	 * @return an {@link Optional} containing the Business if found, or empty if not
 	 */
 	@Transactional(readOnly = true)
-	Business findById(Integer id);
+	Optional<Business> findById(Integer id);
+
+	/**
+	 * Retrieve a Business by its ID with all associated locations and incentives
+	 * eagerly fetched. Uses {@code LEFT JOIN FETCH} to load the lazy collections in
+	 * a single query, avoiding {@code LazyInitializationException} when rendering
+	 * the business details view.
+	 * @param id the ID of the Business to retrieve
+	 * @return an {@link Optional} containing the fully-loaded Business if found, or
+	 * empty if not
+	 */
+	@Query("SELECT DISTINCT b FROM Business b "
+		+ "LEFT JOIN FETCH b.locations "
+		+ "LEFT JOIN FETCH b.incentives "
+		+ "WHERE b.id = :id")
+	@Transactional(readOnly = true)
+	Optional<Business> findByIdWithDetails(@Param("id") Integer id);
 
 }
