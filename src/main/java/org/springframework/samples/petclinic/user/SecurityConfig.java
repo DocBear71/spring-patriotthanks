@@ -69,7 +69,7 @@ public class SecurityConfig {
 				.permitAll()
 
 				// Allow POST for user registration and login
-				.requestMatchers("/register", "/login", "/schools/new", "/owners/new")
+				.requestMatchers("/register", "/login", "/schools/new", "/owners/new", "/businesses/new")
 				.permitAll()
 
 				// TEMPORARY: Allow anonymous users to POST to these forms
