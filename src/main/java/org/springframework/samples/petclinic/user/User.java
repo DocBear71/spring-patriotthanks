@@ -38,7 +38,8 @@ public class User extends BaseEntity {
 	private Boolean publicEmail = false;
 
 	@Column(name = "phone", length = 255)
-	@Pattern(regexp = "^$|^(?:\\+\\d{1,3}\\s?)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}$", message = "Please enter a valid phone number")
+	@Pattern(regexp = "^$|^(?:\\+\\d{1,3}\\s?)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}$",
+			message = "Please enter a valid phone number")
 	private String phone;
 
 	@Column(name = "public_phone")
@@ -52,8 +53,7 @@ public class User extends BaseEntity {
 	@NotEmpty(message = "Password is required", groups = OnRegister.class)
 	@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$",
 			message = "Password must be at least 8 characters, contain uppercase, lowercase, and number",
-			groups = OnRegister.class
-	)
+			groups = OnRegister.class)
 	private String password;
 
 	@CreationTimestamp
@@ -68,11 +68,8 @@ public class User extends BaseEntity {
 	private LocalDateTime deletedAt;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-		name = "user_roles",
-		joinColumns = @JoinColumn(name = "user_id"),
-		inverseJoinColumns = @JoinColumn(name = "role_id")
-	)
+	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id"))
 	@EqualsAndHashCode.Exclude
 	private Set<Role> roles;
 

@@ -34,8 +34,8 @@ import java.time.LocalDateTime;
  * <p>
  * Note: {@code @Valid} is intentionally NOT used on the POST method because the
  * {@link PatriotUser} entity has {@code @NotEmpty} and {@code @Pattern} constraints on
- * the password field, which would incorrectly reject blank passwords on the profile
- * form. Password validation is performed manually only when a new password is provided.
+ * the password field, which would incorrectly reject blank passwords on the profile form.
+ * Password validation is performed manually only when a new password is provided.
  * </p>
  *
  * @author Edward McKeown
@@ -54,16 +54,13 @@ public class PatriotProfileController {
 
 	/**
 	 * Constructs a new {@code PatriotProfileController} with the required dependencies.
-	 *
-	 * @param patriotUserRepository     the repository for Patriot Thanks user persistence
-	 * @param passwordEncoder           the encoder for hashing new passwords
+	 * @param patriotUserRepository the repository for Patriot Thanks user persistence
+	 * @param passwordEncoder the encoder for hashing new passwords
 	 * @param patriotUserDetailsService the Patriot Thanks user details service for
-	 *                                  reloading user details after email changes
+	 * reloading user details after email changes
 	 */
-	public PatriotProfileController(PatriotUserRepository patriotUserRepository,
-									PasswordEncoder passwordEncoder,
-									@Qualifier("patriotUserDetailsService")
-									UserDetailsService patriotUserDetailsService) {
+	public PatriotProfileController(PatriotUserRepository patriotUserRepository, PasswordEncoder passwordEncoder,
+			@Qualifier("patriotUserDetailsService") UserDetailsService patriotUserDetailsService) {
 		this.patriotUserRepository = patriotUserRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.patriotUserDetailsService = patriotUserDetailsService;
@@ -74,17 +71,16 @@ public class PatriotProfileController {
 	// ========================================================================
 
 	/**
-	 * Displays the profile editing form for the currently authenticated Patriot
-	 * Thanks user.
+	 * Displays the profile editing form for the currently authenticated Patriot Thanks
+	 * user.
 	 *
 	 * <p>
-	 * The user's password hash is cleared before sending the entity to the view
-	 * to prevent it from being exposed in the HTML form. If the user's phone
-	 * number is stored as a raw 10-digit string, it is formatted to
-	 * {@code (XXX) XXX-XXXX} for display.
+	 * The user's password hash is cleared before sending the entity to the view to
+	 * prevent it from being exposed in the HTML form. If the user's phone number is
+	 * stored as a raw 10-digit string, it is formatted to {@code (XXX) XXX-XXXX} for
+	 * display.
 	 * </p>
-	 *
-	 * @param model     the {@link Model} to populate with the user object
+	 * @param model the {@link Model} to populate with the user object
 	 * @param principal the {@link Principal} representing the currently logged-in user
 	 * @return the view name for the Patriot Thanks profile form template
 	 */
@@ -119,39 +115,37 @@ public class PatriotProfileController {
 	 * <p>
 	 * {@code @Valid} is intentionally omitted because the {@link PatriotUser} entity
 	 * requires a non-empty password matching a complex pattern, but the profile form
-	 * allows blank passwords (meaning "don't change"). Validation is performed
-	 * manually for each field instead.
+	 * allows blank passwords (meaning "don't change"). Validation is performed manually
+	 * for each field instead.
 	 * </p>
 	 *
 	 * <p>
 	 * This method handles several alternative flows:
 	 * </p>
 	 * <ul>
-	 *   <li>Validates that first name and last name are not blank</li>
-	 *   <li>Validates that email is not blank and is a valid format</li>
-	 *   <li>Checks for duplicate emails only if the user is changing their email</li>
-	 *   <li>Validates password strength manually only if a new password was entered</li>
-	 *   <li>Normalizes the phone number by stripping all non-digit characters</li>
-	 *   <li>Refreshes the Spring Security context if the email was changed</li>
+	 * <li>Validates that first name and last name are not blank</li>
+	 * <li>Validates that email is not blank and is a valid format</li>
+	 * <li>Checks for duplicate emails only if the user is changing their email</li>
+	 * <li>Validates password strength manually only if a new password was entered</li>
+	 * <li>Normalizes the phone number by stripping all non-digit characters</li>
+	 * <li>Refreshes the Spring Security context if the email was changed</li>
 	 * </ul>
-	 *
-	 * @param updatedUser        the {@link PatriotUser} populated from the form
-	 * @param result             the {@link BindingResult} containing validation errors
-	 * @param principal          the {@link Principal} representing the logged-in user
+	 * @param updatedUser the {@link PatriotUser} populated from the form
+	 * @param result the {@link BindingResult} containing validation errors
+	 * @param principal the {@link Principal} representing the logged-in user
 	 * @param redirectAttributes the {@link RedirectAttributes} for flash messages
 	 * @return a redirect to the profile page on success, or the form view on errors
 	 */
 	@PostMapping("/profile")
-	public String processProfileUpdate(@ModelAttribute("patriotUser") PatriotUser updatedUser,
-									   BindingResult result,
-									   Principal principal,
-									   RedirectAttributes redirectAttributes) {
+	public String processProfileUpdate(@ModelAttribute("patriotUser") PatriotUser updatedUser, BindingResult result,
+			Principal principal, RedirectAttributes redirectAttributes) {
 
 		String currentEmail = principal.getName();
 		PatriotUser currentUser = patriotUserRepository.findByEmail(currentEmail)
 			.orElseThrow(() -> new RuntimeException("User not found"));
 
-		// 1. Manually validate required fields (bypassing @Valid to avoid password issues)
+		// 1. Manually validate required fields (bypassing @Valid to avoid password
+		// issues)
 		if (updatedUser.getFirstName() == null || updatedUser.getFirstName().trim().isEmpty()) {
 			result.rejectValue("firstName", "NotEmpty", "First name is required");
 		}
@@ -179,7 +173,7 @@ public class PatriotProfileController {
 		if (isUpdatingPassword) {
 			if (!newPassword.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")) {
 				result.rejectValue("password", "weakPassword",
-					"Password must be at least 8 characters with uppercase, lowercase, and a number");
+						"Password must be at least 8 characters with uppercase, lowercase, and a number");
 			}
 		}
 
@@ -213,10 +207,8 @@ public class PatriotProfileController {
 			UserDetails newPrincipal = patriotUserDetailsService.loadUserByUsername(currentUser.getEmail());
 			Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
 
-			Authentication newAuth = new UsernamePasswordAuthenticationToken(
-				newPrincipal,
-				currentAuth.getCredentials(),
-				newPrincipal.getAuthorities());
+			Authentication newAuth = new UsernamePasswordAuthenticationToken(newPrincipal, currentAuth.getCredentials(),
+					newPrincipal.getAuthorities());
 
 			SecurityContextHolder.getContext().setAuthentication(newAuth);
 		}
@@ -234,18 +226,15 @@ public class PatriotProfileController {
 	 * Performs a soft delete on the currently authenticated Patriot Thanks user's
 	 * account. Sets the {@code deletedAt} timestamp, saves the record, destroys the
 	 * session, and redirects to the Patriot Thanks home page with a farewell message.
-	 *
-	 * @param principal          the {@link Principal} representing the logged-in user
-	 * @param request            the {@link HttpServletRequest} for session invalidation
-	 * @param response           the {@link HttpServletResponse} for session invalidation
+	 * @param principal the {@link Principal} representing the logged-in user
+	 * @param request the {@link HttpServletRequest} for session invalidation
+	 * @param response the {@link HttpServletResponse} for session invalidation
 	 * @param redirectAttributes the {@link RedirectAttributes} for the farewell message
 	 * @return a redirect to the Patriot Thanks home page
 	 */
 	@PostMapping("/delete")
-	public String deleteAccount(Principal principal,
-								HttpServletRequest request,
-								HttpServletResponse response,
-								RedirectAttributes redirectAttributes) {
+	public String deleteAccount(Principal principal, HttpServletRequest request, HttpServletResponse response,
+			RedirectAttributes redirectAttributes) {
 
 		String email = principal.getName();
 		PatriotUser currentUser = patriotUserRepository.findByEmail(email)
@@ -263,7 +252,7 @@ public class PatriotProfileController {
 
 		// Redirect with farewell message
 		redirectAttributes.addFlashAttribute("messageSuccess",
-			"Your Patriot Thanks account has been deleted. Thank you for your service!");
+				"Your Patriot Thanks account has been deleted. Thank you for your service!");
 		return "redirect:/patriot";
 	}
 

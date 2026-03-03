@@ -58,7 +58,7 @@ public interface BusinessRepository extends Repository<Business, Integer> {
 	 * if not
 	 */
 	@Query("SELECT DISTINCT b FROM Business b " + "LEFT JOIN FETCH b.locations " + "LEFT JOIN FETCH b.incentives "
-		+ "WHERE b.id = :id")
+			+ "WHERE b.id = :id")
 	@Transactional(readOnly = true)
 	Optional<Business> findByIdWithDetails(@Param("id") Integer id);
 
@@ -72,7 +72,7 @@ public interface BusinessRepository extends Repository<Business, Integer> {
 	 * if not
 	 */
 	@Query("SELECT DISTINCT b FROM Business b " + "LEFT JOIN FETCH b.locations " + "LEFT JOIN FETCH b.incentives "
-		+ "WHERE b.slug = :slug")
+			+ "WHERE b.slug = :slug")
 	@Transactional(readOnly = true)
 	Optional<Business> findBySlugWithDetails(@Param("slug") String slug);
 

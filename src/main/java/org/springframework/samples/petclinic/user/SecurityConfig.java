@@ -15,8 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Spring Security configuration for the AthLeagues application. Defines password encoding,
- * authentication management, and HTTP security rules including URL-based access control.
+ * Spring Security configuration for the AthLeagues application. Defines password
+ * encoding, authentication management, and HTTP security rules including URL-based access
+ * control.
  *
  * <p>
  * This filter chain is marked with {@link Order @Order(2)} so that the Patriot Thanks
@@ -31,10 +32,10 @@ import org.springframework.security.web.SecurityFilterChain;
  * {@link DaoAuthenticationProvider} wired to the AthLeagues
  * {@link UserDetailsServiceImpl} rather than relying on
  * {@link org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration}.
- * This prevents an infinite proxy recursion ({@code StackOverflowError}) that occurs
- * when {@code AuthenticationConfiguration.getAuthenticationManager()} encounters
- * multiple {@link org.springframework.security.core.userdetails.UserDetailsService}
- * beans and wraps the resulting manager in AOP proxies that delegate back to each other.
+ * This prevents an infinite proxy recursion ({@code StackOverflowError}) that occurs when
+ * {@code AuthenticationConfiguration.getAuthenticationManager()} encounters multiple
+ * {@link org.springframework.security.core.userdetails.UserDetailsService} beans and
+ * wraps the resulting manager in AOP proxies that delegate back to each other.
  * </p>
  *
  * @author Edward
@@ -52,16 +53,16 @@ public class SecurityConfig {
 	}
 
 	/**
-	 * Creates a dedicated {@link AuthenticationManager} for the AthLeagues system.
-	 * This manager uses the {@link UserDetailsServiceImpl} bean to look up users in
-	 * the {@code users} table.
+	 * Creates a dedicated {@link AuthenticationManager} for the AthLeagues system. This
+	 * manager uses the {@link UserDetailsServiceImpl} bean to look up users in the
+	 * {@code users} table.
 	 *
 	 * <p>
-	 * Built as an explicit {@link ProviderManager} with a {@link DaoAuthenticationProvider}
-	 * to avoid the infinite proxy recursion that occurs when
-	 * {@code AuthenticationConfiguration.getAuthenticationManager()} is used in the
-	 * presence of multiple {@link org.springframework.security.core.userdetails.UserDetailsService}
-	 * beans.
+	 * Built as an explicit {@link ProviderManager} with a
+	 * {@link DaoAuthenticationProvider} to avoid the infinite proxy recursion that occurs
+	 * when {@code AuthenticationConfiguration.getAuthenticationManager()} is used in the
+	 * presence of multiple
+	 * {@link org.springframework.security.core.userdetails.UserDetailsService} beans.
 	 * </p>
 	 *
 	 * <p>
@@ -69,7 +70,6 @@ public class SecurityConfig {
 	 * multiple {@link AuthenticationManager} beans exist (e.g., the Patriot Thanks
 	 * security configuration also defines its own).
 	 * </p>
-	 *
 	 * @param userDetailsService the AthLeagues {@link UserDetailsServiceImpl}
 	 * @param passwordEncoder the shared password encoder
 	 * @return the configured {@link AuthenticationManager}
@@ -77,7 +77,7 @@ public class SecurityConfig {
 	@Bean
 	@Primary
 	public AuthenticationManager authenticationManager(UserDetailsServiceImpl userDetailsService,
-													   PasswordEncoder passwordEncoder) {
+			PasswordEncoder passwordEncoder) {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
 		provider.setPasswordEncoder(passwordEncoder);
 		return new ProviderManager(provider);
@@ -116,33 +116,28 @@ public class SecurityConfig {
 				.permitAll()
 
 				// Allow POST for user registration and login
-				.requestMatchers("/register-student",
-					"/login",
-					"/schools/new",
-					"/owners/new",
-					"/businesses/new")
-				.permitAll().anyRequest().authenticated()
-			)
+				.requestMatchers("/register-student", "/login", "/schools/new", "/owners/new", "/businesses/new")
+				.permitAll()
+				.anyRequest()
+				.authenticated())
 
 			// Ensure all auto-challenge mechanisms are disabled
 			.httpBasic(AbstractHttpConfigurer::disable) // Disable the login popup
 			// .formLogin(AbstractHttpConfigurer::disable)
-			.formLogin(form -> form
-				.loginPage("/login") // Tells Spring where your custom HTML is
-				.usernameParameter("email") // Tells your security configuration to look for email instead of username.
-				.defaultSuccessUrl("/login-success", true) // Where to go after successful login
+			.formLogin(form -> form.loginPage("/login") // Tells Spring where your custom
+														// HTML is
+				.usernameParameter("email") // Tells your security configuration to look
+											// for email instead of username.
+				.defaultSuccessUrl("/login-success", true) // Where to go after successful
+															// login
 				.failureHandler((request, response, exception) -> {
 					request.getSession().setAttribute("LAST_EMAIL", request.getParameter("email"));
 					response.sendRedirect("/login?error");
 				})
-				.permitAll()
-			)
-			.logout(logout -> logout
-				.logoutUrl("/logout")
+				.permitAll())
+			.logout(logout -> logout.logoutUrl("/logout")
 				.logoutSuccessUrl("/login?logout") // Triggers the green alert box
-				.permitAll()
-			);
-
+				.permitAll());
 
 		return http.build();
 	}

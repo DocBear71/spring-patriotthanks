@@ -45,11 +45,12 @@ import java.util.Optional;
 public class AuthController {
 
 	private final UserService userService;
-	private final SchoolRepository schoolRepository;
-	private final AuthenticationManager authenticationManager;
-	private final SecurityContextRepository securityContextRepository =
-		new HttpSessionSecurityContextRepository();
 
+	private final SchoolRepository schoolRepository;
+
+	private final AuthenticationManager authenticationManager;
+
+	private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
 
 	/**
 	 * Constructs a new {@code AuthController} with the required dependencies.
@@ -59,7 +60,7 @@ public class AuthController {
 	 * registration
 	 */
 	public AuthController(UserService userService, SchoolRepository schoolRepository,
-						  AuthenticationManager authenticationManager) {
+			AuthenticationManager authenticationManager) {
 		this.userService = userService;
 		this.schoolRepository = schoolRepository;
 		this.authenticationManager = authenticationManager;
@@ -95,11 +96,8 @@ public class AuthController {
 	 * registration form view if there are validation errors
 	 */
 	@PostMapping("/register-student")
-	public String registerUser(@Validated(OnRegister.class) @ModelAttribute("user") User user,
-							   BindingResult result,
-							   RedirectAttributes redirectAttributes,
-							   HttpServletRequest request,
-							   HttpServletResponse response) {
+	public String registerUser(@Validated(OnRegister.class) @ModelAttribute("user") User user, BindingResult result,
+			RedirectAttributes redirectAttributes, HttpServletRequest request, HttpServletResponse response) {
 		if (result.hasErrors()) {
 			return "auth/registerForm";
 		}
@@ -118,8 +116,8 @@ public class AuthController {
 		// to do: send email verification before auto log in.
 		// 2. LOGIN using the authenticationManager
 		try {
-			UsernamePasswordAuthenticationToken authToken =
-				new UsernamePasswordAuthenticationToken(user.getEmail(), rawPassword);
+			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.getEmail(),
+					rawPassword);
 			Authentication authentication = authenticationManager.authenticate(authToken);
 
 			// Create a new SecurityContext and persist it to the HTTP session
@@ -138,12 +136,13 @@ public class AuthController {
 
 		if (school.isPresent()) {
 			redirectAttributes.addFlashAttribute("messageSuccess",
-				"Your user account is created. You have been redirected to " + school.get().getName() + "'s school page.");
+					"Your user account is created. You have been redirected to " + school.get().getName()
+							+ "'s school page.");
 			return "redirect:/schools/" + school.get().getDomain().substring(0, school.get().getDomain().length() - 4);
 		}
 		else {
 			redirectAttributes.addFlashAttribute("messageWarning",
-				"Your user account is created, but we could not find a school matching your email domain.");
+					"Your user account is created, but we could not find a school matching your email domain.");
 			// Fallback if no school matches the email domain
 			return "redirect:/";
 		}
@@ -210,17 +209,16 @@ public class AuthController {
 		Optional<School> school = findSchoolByRecursiveDomain(email);
 
 		// 3. Redirect them exactly like you did in the registration POST method
-		if(school.isPresent()) {
+		if (school.isPresent()) {
 			redirectAttributes.addFlashAttribute("messageSuccess",
-				"Welcome back! You have been redirected to " + school.get().getName() + ".");
+					"Welcome back! You have been redirected to " + school.get().getName() + ".");
 			return "redirect:/schools/" + school.get().getDomain().substring(0, school.get().getDomain().length() - 4);
-		} else {
+		}
+		else {
 			redirectAttributes.addFlashAttribute("messageWarning",
-				"Welcome back! We could not find a school matching your email domain.");
+					"Welcome back! We could not find a school matching your email domain.");
 			return "redirect:/schools";
 		}
 	}
-
-
 
 }

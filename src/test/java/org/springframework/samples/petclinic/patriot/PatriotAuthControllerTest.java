@@ -30,8 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * <p>
  * These tests use {@link WebMvcTest} to load only the web layer, with all dependencies
- * mocked via {@link MockitoBean}. The Turnstile CAPTCHA verification is bypassed by
- * using the Cloudflare test token value.
+ * mocked via {@link MockitoBean}. The Turnstile CAPTCHA verification is bypassed by using
+ * the Cloudflare test token value.
  * </p>
  *
  * @author Edward McKeown
@@ -59,8 +59,8 @@ class PatriotAuthControllerTest {
 	private PatriotRole veteranRole;
 
 	/**
-	 * Sets up test data before each test method. Creates a test {@link PatriotUser}
-	 * and {@link PatriotRole} with valid field values.
+	 * Sets up test data before each test method. Creates a test {@link PatriotUser} and
+	 * {@link PatriotRole} with valid field values.
 	 */
 	@BeforeEach
 	void setUp() {
@@ -86,8 +86,8 @@ class PatriotAuthControllerTest {
 	// ========================================================================
 
 	/**
-	 * Verifies that GET /patriot/register returns the registration form view with
-	 * an empty {@code patriotUser} model attribute and the Turnstile site key.
+	 * Verifies that GET /patriot/register returns the registration form view with an
+	 * empty {@code patriotUser} model attribute and the Turnstile site key.
 	 */
 	@Test
 	@DisplayName("GET /patriot/register -> displays registration form")
@@ -104,9 +104,9 @@ class PatriotAuthControllerTest {
 	// ========================================================================
 
 	/**
-	 * Verifies that submitting a valid registration form with all required fields
-	 * saves the user, auto-logs them in, and redirects to the business listings
-	 * with a welcome flash message.
+	 * Verifies that submitting a valid registration form with all required fields saves
+	 * the user, auto-logs them in, and redirects to the business listings with a welcome
+	 * flash message.
 	 */
 	@Test
 	@DisplayName("POST /patriot/register -> valid data redirects to /businesses")
@@ -115,12 +115,11 @@ class PatriotAuthControllerTest {
 		given(patriotUserService.registerNewUser(any(PatriotUser.class))).willReturn(testUser);
 
 		// Mock the authentication manager to return a valid token
-		Authentication mockAuth = new UsernamePasswordAuthenticationToken(
-			"john.doe@example.com", "Password1");
+		Authentication mockAuth = new UsernamePasswordAuthenticationToken("john.doe@example.com", "Password1");
 		given(patriotAuthenticationManager.authenticate(any())).willReturn(mockAuth);
 
-		mockMvc.perform(post("/patriot/register")
-				.param("firstName", "John")
+		mockMvc
+			.perform(post("/patriot/register").param("firstName", "John")
 				.param("lastName", "Doe")
 				.param("email", "john.doe@example.com")
 				.param("password", "Password1")
@@ -134,14 +133,14 @@ class PatriotAuthControllerTest {
 	}
 
 	/**
-	 * Verifies that submitting the registration form with a blank first name
-	 * returns the form with validation errors.
+	 * Verifies that submitting the registration form with a blank first name returns the
+	 * form with validation errors.
 	 */
 	@Test
 	@DisplayName("POST /patriot/register -> blank first name returns form with errors")
 	void testProcessRegistrationBlankFirstName() throws Exception {
-		mockMvc.perform(post("/patriot/register")
-				.param("firstName", "")
+		mockMvc
+			.perform(post("/patriot/register").param("firstName", "")
 				.param("lastName", "Doe")
 				.param("email", "john.doe@example.com")
 				.param("password", "Password1")
@@ -153,14 +152,14 @@ class PatriotAuthControllerTest {
 	}
 
 	/**
-	 * Verifies that submitting the registration form with a blank last name
-	 * returns the form with validation errors.
+	 * Verifies that submitting the registration form with a blank last name returns the
+	 * form with validation errors.
 	 */
 	@Test
 	@DisplayName("POST /patriot/register -> blank last name returns form with errors")
 	void testProcessRegistrationBlankLastName() throws Exception {
-		mockMvc.perform(post("/patriot/register")
-				.param("firstName", "John")
+		mockMvc
+			.perform(post("/patriot/register").param("firstName", "John")
 				.param("lastName", "")
 				.param("email", "john.doe@example.com")
 				.param("password", "Password1")
@@ -172,14 +171,14 @@ class PatriotAuthControllerTest {
 	}
 
 	/**
-	 * Verifies that submitting the registration form with an invalid email
-	 * returns the form with validation errors.
+	 * Verifies that submitting the registration form with an invalid email returns the
+	 * form with validation errors.
 	 */
 	@Test
 	@DisplayName("POST /patriot/register -> invalid email returns form with errors")
 	void testProcessRegistrationInvalidEmail() throws Exception {
-		mockMvc.perform(post("/patriot/register")
-				.param("firstName", "John")
+		mockMvc
+			.perform(post("/patriot/register").param("firstName", "John")
 				.param("lastName", "Doe")
 				.param("email", "not-an-email")
 				.param("password", "Password1")
@@ -191,14 +190,14 @@ class PatriotAuthControllerTest {
 	}
 
 	/**
-	 * Verifies that submitting the registration form with a blank email
-	 * returns the form with validation errors.
+	 * Verifies that submitting the registration form with a blank email returns the form
+	 * with validation errors.
 	 */
 	@Test
 	@DisplayName("POST /patriot/register -> blank email returns form with errors")
 	void testProcessRegistrationBlankEmail() throws Exception {
-		mockMvc.perform(post("/patriot/register")
-				.param("firstName", "John")
+		mockMvc
+			.perform(post("/patriot/register").param("firstName", "John")
 				.param("lastName", "Doe")
 				.param("email", "")
 				.param("password", "Password1")
@@ -210,14 +209,14 @@ class PatriotAuthControllerTest {
 	}
 
 	/**
-	 * Verifies that submitting the registration form with a weak password (no
-	 * uppercase) returns the form with validation errors.
+	 * Verifies that submitting the registration form with a weak password (no uppercase)
+	 * returns the form with validation errors.
 	 */
 	@Test
 	@DisplayName("POST /patriot/register -> weak password returns form with errors")
 	void testProcessRegistrationWeakPassword() throws Exception {
-		mockMvc.perform(post("/patriot/register")
-				.param("firstName", "John")
+		mockMvc
+			.perform(post("/patriot/register").param("firstName", "John")
 				.param("lastName", "Doe")
 				.param("email", "john.doe@example.com")
 				.param("password", "weakpass")
@@ -229,14 +228,14 @@ class PatriotAuthControllerTest {
 	}
 
 	/**
-	 * Verifies that submitting the registration form with a blank password
-	 * returns the form with validation errors.
+	 * Verifies that submitting the registration form with a blank password returns the
+	 * form with validation errors.
 	 */
 	@Test
 	@DisplayName("POST /patriot/register -> blank password returns form with errors")
 	void testProcessRegistrationBlankPassword() throws Exception {
-		mockMvc.perform(post("/patriot/register")
-				.param("firstName", "John")
+		mockMvc
+			.perform(post("/patriot/register").param("firstName", "John")
 				.param("lastName", "Doe")
 				.param("email", "john.doe@example.com")
 				.param("password", "")
@@ -248,8 +247,8 @@ class PatriotAuthControllerTest {
 	}
 
 	/**
-	 * Verifies that a duplicate email during registration returns the form
-	 * with a field-level error on the email field.
+	 * Verifies that a duplicate email during registration returns the form with a
+	 * field-level error on the email field.
 	 */
 	@Test
 	@DisplayName("POST /patriot/register -> duplicate email returns form with error")
@@ -258,8 +257,8 @@ class PatriotAuthControllerTest {
 		given(patriotUserService.registerNewUser(any(PatriotUser.class)))
 			.willThrow(new RuntimeException("Email already registered"));
 
-		mockMvc.perform(post("/patriot/register")
-				.param("firstName", "John")
+		mockMvc
+			.perform(post("/patriot/register").param("firstName", "John")
 				.param("lastName", "Doe")
 				.param("email", "existing@example.com")
 				.param("password", "Password1")
@@ -271,14 +270,14 @@ class PatriotAuthControllerTest {
 	}
 
 	/**
-	 * Verifies that submitting the registration form without a Turnstile CAPTCHA
-	 * token returns the form with a Turnstile error message.
+	 * Verifies that submitting the registration form without a Turnstile CAPTCHA token
+	 * returns the form with a Turnstile error message.
 	 */
 	@Test
 	@DisplayName("POST /patriot/register -> missing CAPTCHA returns form with error")
 	void testProcessRegistrationMissingCaptcha() throws Exception {
-		mockMvc.perform(post("/patriot/register")
-				.param("firstName", "John")
+		mockMvc
+			.perform(post("/patriot/register").param("firstName", "John")
 				.param("lastName", "Doe")
 				.param("email", "john.doe@example.com")
 				.param("password", "Password1")
@@ -311,14 +310,13 @@ class PatriotAuthControllerTest {
 	// ========================================================================
 
 	/**
-	 * Verifies that GET /patriot/login-success redirects authenticated users to
-	 * the business listings with a welcome flash message.
+	 * Verifies that GET /patriot/login-success redirects authenticated users to the
+	 * business listings with a welcome flash message.
 	 */
 	@Test
 	@DisplayName("GET /patriot/login-success -> redirects to /businesses with flash message")
 	void testProcessLoginSuccess() throws Exception {
-		mockMvc.perform(get("/patriot/login-success")
-				.principal(() -> "john.doe@example.com"))
+		mockMvc.perform(get("/patriot/login-success").principal(() -> "john.doe@example.com"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(redirectedUrl("/businesses"))
 			.andExpect(flash().attributeExists("messageSuccess"));
@@ -334,9 +332,7 @@ class PatriotAuthControllerTest {
 	@Test
 	@DisplayName("GET /patriot -> displays Patriot Thanks home page")
 	void testShowHomePage() throws Exception {
-		mockMvc.perform(get("/patriot"))
-			.andExpect(status().isOk())
-			.andExpect(view().name("patriot/patriotHome"));
+		mockMvc.perform(get("/patriot")).andExpect(status().isOk()).andExpect(view().name("patriot/patriotHome"));
 	}
 
 }

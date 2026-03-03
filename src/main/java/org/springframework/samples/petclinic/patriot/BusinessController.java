@@ -51,7 +51,7 @@ public class BusinessController {
 	 * @param businessTypeRepository the repository for accessing business type data
 	 */
 	public BusinessController(BusinessRepository businessRepository, IncentiveRepository incentiveRepository,
-							  BusinessTypeRepository businessTypeRepository) {
+			BusinessTypeRepository businessTypeRepository) {
 		this.businessRepository = businessRepository;
 		this.incentiveRepository = incentiveRepository;
 		this.businessTypeRepository = businessTypeRepository;
@@ -135,9 +135,9 @@ public class BusinessController {
 	}
 
 	/**
-	 * Redirects a numeric business ID URL to the slug-based URL for clean,
-	 * human-readable routing. Retrieves the business by ID, generates the slug from the
-	 * business name, and issues a redirect to the slug-based URL.
+	 * Redirects a numeric business ID URL to the slug-based URL for clean, human-readable
+	 * routing. Retrieves the business by ID, generates the slug from the business name,
+	 * and issues a redirect to the slug-based URL.
 	 *
 	 * <p>
 	 * Example: {@code /businesses/9} redirects to
@@ -150,7 +150,7 @@ public class BusinessController {
 	public String redirectToSlug(@PathVariable("businessId") int businessId) {
 		Business business = businessRepository.findById(businessId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-				"Business with id " + businessId + " not found."));
+					"Business with id " + businessId + " not found."));
 
 		// Use the stored slug, or generate one on the fly as a fallback
 		String slug = business.getSlug();
@@ -179,7 +179,7 @@ public class BusinessController {
 		ModelAndView mav = new ModelAndView("businesses/businessDetails");
 		Business business = businessRepository.findBySlugWithDetails(slug)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-				"Business with slug '" + slug + "' not found."));
+					"Business with slug '" + slug + "' not found."));
 		mav.addObject(business);
 		return mav;
 	}

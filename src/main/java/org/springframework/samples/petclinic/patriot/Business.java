@@ -31,8 +31,8 @@ import org.springframework.samples.petclinic.model.NamedEntity;
  * <p>
  * Each business has a URL-friendly {@code slug} derived from its name, used for
  * human-readable routing (e.g., {@code /businesses/olive-garden}). The slug is
- * automatically generated from the name via {@link #generateSlug()} before persist
- * and update operations.
+ * automatically generated from the name via {@link #generateSlug()} before persist and
+ * update operations.
  * </p>
  *
  * @author Edward McKeown
@@ -109,8 +109,8 @@ public class Business extends NamedEntity {
 	 * Automatically generates a URL-friendly slug from the business name before the
 	 * entity is persisted or updated. The slug is created by converting the name to
 	 * lowercase, replacing {@code &} and {@code +} with "and", removing non-alphanumeric
-	 * characters (except hyphens and spaces), converting spaces to hyphens, and collapsing
-	 * consecutive hyphens.
+	 * characters (except hyphens and spaces), converting spaces to hyphens, and
+	 * collapsing consecutive hyphens.
 	 *
 	 * <p>
 	 * Examples:

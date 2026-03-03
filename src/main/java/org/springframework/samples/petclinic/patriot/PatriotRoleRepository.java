@@ -15,7 +15,7 @@ public interface PatriotRoleRepository extends JpaRepository<PatriotRole, Intege
 	/**
 	 * Finds a Patriot Thanks role by its unique name.
 	 * @param name the role name to search for (e.g., {@code "VETERAN"},
-	 *             {@code "BUSINESS_OWNER"})
+	 * {@code "BUSINESS_OWNER"})
 	 * @return an {@link Optional} containing the role if found, or empty if not
 	 */
 	Optional<PatriotRole> findByName(String name);

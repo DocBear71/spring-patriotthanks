@@ -76,14 +76,13 @@ class PatriotUserDetailsServiceImplTest {
 	}
 
 	/**
-	 * Verifies that a valid, active user is loaded successfully with the correct
-	 * email (username) and roles.
+	 * Verifies that a valid, active user is loaded successfully with the correct email
+	 * (username) and roles.
 	 */
 	@Test
 	@DisplayName("loadUserByUsername -> returns UserDetails for active user")
 	void testLoadActiveUser() {
-		given(patriotUserRepository.findByEmail("john.doe@example.com"))
-			.willReturn(Optional.of(activeUser));
+		given(patriotUserRepository.findByEmail("john.doe@example.com")).willReturn(Optional.of(activeUser));
 
 		UserDetails userDetails = userDetailsService.loadUserByUsername("john.doe@example.com");
 
@@ -91,8 +90,7 @@ class PatriotUserDetailsServiceImplTest {
 		assertThat(userDetails.getUsername()).isEqualTo("john.doe@example.com");
 		assertThat(userDetails.getPassword()).isEqualTo("$2a$10$hashedpassword");
 		assertThat(userDetails.getAuthorities()).hasSize(1);
-		assertThat(userDetails.getAuthorities().iterator().next().getAuthority())
-			.isEqualTo("ROLE_VETERAN");
+		assertThat(userDetails.getAuthorities().iterator().next().getAuthority()).isEqualTo("ROLE_VETERAN");
 	}
 
 	/**
@@ -102,8 +100,7 @@ class PatriotUserDetailsServiceImplTest {
 	@Test
 	@DisplayName("loadUserByUsername -> throws exception for unknown email")
 	void testLoadUnknownUserThrowsException() {
-		given(patriotUserRepository.findByEmail("unknown@example.com"))
-			.willReturn(Optional.empty());
+		given(patriotUserRepository.findByEmail("unknown@example.com")).willReturn(Optional.empty());
 
 		assertThatThrownBy(() -> userDetailsService.loadUserByUsername("unknown@example.com"))
 			.isInstanceOf(UsernameNotFoundException.class)
@@ -111,15 +108,14 @@ class PatriotUserDetailsServiceImplTest {
 	}
 
 	/**
-	 * Verifies that a soft-deleted user (where {@code deletedAt} is non-null) is
-	 * rejected with the same generic error message as an unknown user, preventing
-	 * attackers from determining which accounts have been deleted.
+	 * Verifies that a soft-deleted user (where {@code deletedAt} is non-null) is rejected
+	 * with the same generic error message as an unknown user, preventing attackers from
+	 * determining which accounts have been deleted.
 	 */
 	@Test
 	@DisplayName("loadUserByUsername -> throws exception for soft-deleted user")
 	void testLoadDeletedUserThrowsException() {
-		given(patriotUserRepository.findByEmail("jane.deleted@example.com"))
-			.willReturn(Optional.of(deletedUser));
+		given(patriotUserRepository.findByEmail("jane.deleted@example.com")).willReturn(Optional.of(deletedUser));
 
 		assertThatThrownBy(() -> userDetailsService.loadUserByUsername("jane.deleted@example.com"))
 			.isInstanceOf(UsernameNotFoundException.class)
@@ -127,8 +123,8 @@ class PatriotUserDetailsServiceImplTest {
 	}
 
 	/**
-	 * Verifies that the service correctly maps multiple roles when a user
-	 * holds more than one {@link PatriotRole}.
+	 * Verifies that the service correctly maps multiple roles when a user holds more than
+	 * one {@link PatriotRole}.
 	 */
 	@Test
 	@DisplayName("loadUserByUsername -> maps multiple roles correctly")
@@ -142,8 +138,7 @@ class PatriotUserDetailsServiceImplTest {
 		multipleRoles.add(businessOwnerRole);
 		activeUser.setRoles(multipleRoles);
 
-		given(patriotUserRepository.findByEmail("john.doe@example.com"))
-			.willReturn(Optional.of(activeUser));
+		given(patriotUserRepository.findByEmail("john.doe@example.com")).willReturn(Optional.of(activeUser));
 
 		UserDetails userDetails = userDetailsService.loadUserByUsername("john.doe@example.com");
 

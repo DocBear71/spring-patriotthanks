@@ -41,8 +41,8 @@ import java.util.Map;
  *
  * <p>
  * After successful registration, the controller captures the raw password before hashing,
- * saves the user via {@link PatriotUserService}, auto-logs the user in, and redirects
- * to the business listings page with a welcome message.
+ * saves the user via {@link PatriotUserService}, auto-logs the user in, and redirects to
+ * the business listings page with a welcome message.
  * </p>
  *
  * <p>
@@ -65,8 +65,7 @@ public class PatriotAuthController {
 
 	private final AuthenticationManager patriotAuthenticationManager;
 
-	private final SecurityContextRepository securityContextRepository =
-		new HttpSessionSecurityContextRepository();
+	private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
 
 	@Value("${turnstile.site-key:1x00000000000000000000AA}")
 	private String turnstileSiteKey;
@@ -80,19 +79,17 @@ public class PatriotAuthController {
 	 * @param patriotUserRepository the repository for Patriot Thanks user lookups
 	 * @param patriotAuthenticationManager the Patriot Thanks authentication manager
 	 */
-	public PatriotAuthController(PatriotUserService patriotUserService,
-								 PatriotUserRepository patriotUserRepository,
-								 @Qualifier("patriotAuthenticationManager")
-								 AuthenticationManager patriotAuthenticationManager) {
+	public PatriotAuthController(PatriotUserService patriotUserService, PatriotUserRepository patriotUserRepository,
+			@Qualifier("patriotAuthenticationManager") AuthenticationManager patriotAuthenticationManager) {
 		this.patriotUserService = patriotUserService;
 		this.patriotUserRepository = patriotUserRepository;
 		this.patriotAuthenticationManager = patriotAuthenticationManager;
 	}
 
 	/**
-	 * Populates the status options map for the registration form's radio buttons.
-	 * This {@code @ModelAttribute} makes the map available to all views served by
-	 * this controller.
+	 * Populates the status options map for the registration form's radio buttons. This
+	 * {@code @ModelAttribute} makes the map available to all views served by this
+	 * controller.
 	 * @return a {@link Map} of status ID strings to display labels
 	 */
 	@ModelAttribute("statusOptions")
@@ -113,11 +110,11 @@ public class PatriotAuthController {
 
 	/**
 	 * Displays the Patriot Thanks home page, which provides navigation to business
-	 * listings, registration, and login. Uses the Patriot Thanks-specific layout
-	 * template with navy/gold branding.
+	 * listings, registration, and login. Uses the Patriot Thanks-specific layout template
+	 * with navy/gold branding.
 	 * @return the view name for the Patriot Thanks home page
 	 */
-	@GetMapping({"", "/"})
+	@GetMapping({ "", "/" })
 	public String showHomePage() {
 		return "patriot/patriotHome";
 	}
@@ -127,8 +124,8 @@ public class PatriotAuthController {
 	// ========================================================================
 
 	/**
-	 * Displays the Patriot Thanks user registration form with a blank
-	 * {@link PatriotUser} object and the Turnstile site key for CAPTCHA rendering.
+	 * Displays the Patriot Thanks user registration form with a blank {@link PatriotUser}
+	 * object and the Turnstile site key for CAPTCHA rendering.
 	 * @param model the {@link Model} to populate with form data
 	 * @return the view name for the Patriot Thanks registration template
 	 */
@@ -140,15 +137,14 @@ public class PatriotAuthController {
 	}
 
 	/**
-	 * Processes the Patriot Thanks registration form submission. Validates user input
-	 * and the Cloudflare Turnstile CAPTCHA response, saves the new user, auto-logs
-	 * them in, and redirects to the business listings page.
+	 * Processes the Patriot Thanks registration form submission. Validates user input and
+	 * the Cloudflare Turnstile CAPTCHA response, saves the new user, auto-logs them in,
+	 * and redirects to the business listings page.
 	 *
 	 * <p>
 	 * If the Turnstile token is missing or invalid, the form is returned with an error
 	 * message. If the email is already registered, a field-level error is added.
 	 * </p>
-	 *
 	 * @param patriotUser the {@link PatriotUser} populated from the form
 	 * @param result the {@link BindingResult} containing validation errors
 	 * @param turnstileToken the Cloudflare Turnstile response token from the form
@@ -160,13 +156,9 @@ public class PatriotAuthController {
 	 */
 	@PostMapping("/register")
 	public String processRegistration(@Valid @ModelAttribute("patriotUser") PatriotUser patriotUser,
-									  BindingResult result,
-									  @RequestParam(name = "cf-turnstile-response",
-										  required = false) String turnstileToken,
-									  Model model,
-									  RedirectAttributes redirectAttributes,
-									  HttpServletRequest request,
-									  HttpServletResponse response) {
+			BindingResult result, @RequestParam(name = "cf-turnstile-response", required = false) String turnstileToken,
+			Model model, RedirectAttributes redirectAttributes, HttpServletRequest request,
+			HttpServletResponse response) {
 
 		// 1. Validate Turnstile CAPTCHA
 		if (turnstileToken == null || turnstileToken.isEmpty()) {
@@ -202,8 +194,8 @@ public class PatriotAuthController {
 
 		// 5. Auto-login after registration
 		try {
-			UsernamePasswordAuthenticationToken authToken =
-				new UsernamePasswordAuthenticationToken(patriotUser.getEmail(), rawPassword);
+			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+					patriotUser.getEmail(), rawPassword);
 			Authentication authentication = patriotAuthenticationManager.authenticate(authToken);
 
 			SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -213,14 +205,13 @@ public class PatriotAuthController {
 		}
 		catch (Exception e) {
 			redirectAttributes.addFlashAttribute("messageDanger",
-				"Account created, but auto-login failed. Please log in.");
+					"Account created, but auto-login failed. Please log in.");
 			return "redirect:/patriot/login";
 		}
 
 		// 6. Redirect to business listings with welcome message
-		redirectAttributes.addFlashAttribute("messageSuccess",
-			"Welcome to Patriot Thanks, " + patriotUser.getFirstName()
-				+ "! Your account has been created successfully.");
+		redirectAttributes.addFlashAttribute("messageSuccess", "Welcome to Patriot Thanks, "
+				+ patriotUser.getFirstName() + "! Your account has been created successfully.");
 		return "redirect:/businesses";
 	}
 
@@ -259,10 +250,8 @@ public class PatriotAuthController {
 	 * @return a redirect to the business listings page
 	 */
 	@GetMapping("/login-success")
-	public String processLoginSuccess(Principal principal,
-									  RedirectAttributes redirectAttributes) {
-		redirectAttributes.addFlashAttribute("messageSuccess",
-			"Welcome back to Patriot Thanks!");
+	public String processLoginSuccess(Principal principal, RedirectAttributes redirectAttributes) {
+		redirectAttributes.addFlashAttribute("messageSuccess", "Welcome back to Patriot Thanks!");
 		return "redirect:/businesses";
 	}
 
@@ -271,15 +260,14 @@ public class PatriotAuthController {
 	// ========================================================================
 
 	/**
-	 * Verifies the Cloudflare Turnstile CAPTCHA token by sending a POST request to
-	 * the Turnstile siteverify endpoint.
+	 * Verifies the Cloudflare Turnstile CAPTCHA token by sending a POST request to the
+	 * Turnstile siteverify endpoint.
 	 *
 	 * <p>
 	 * If the secret key is the Cloudflare test key
 	 * ({@code "1x0000000000000000000000000000000AA"}), verification always passes to
 	 * support local development without a real Cloudflare account.
 	 * </p>
-	 *
 	 * @param token the Turnstile response token from the client-side widget
 	 * @param remoteIp the IP address of the client for additional verification
 	 * @return {@code true} if the token is valid, {@code false} otherwise
@@ -292,9 +280,9 @@ public class PatriotAuthController {
 
 		try {
 			java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
-			String body = "secret=" + java.net.URLEncoder.encode(turnstileSecretKey, "UTF-8")
-				+ "&response=" + java.net.URLEncoder.encode(token, "UTF-8")
-				+ "&remoteip=" + java.net.URLEncoder.encode(remoteIp, "UTF-8");
+			String body = "secret=" + java.net.URLEncoder.encode(turnstileSecretKey, "UTF-8") + "&response="
+					+ java.net.URLEncoder.encode(token, "UTF-8") + "&remoteip="
+					+ java.net.URLEncoder.encode(remoteIp, "UTF-8");
 
 			java.net.http.HttpRequest httpRequest = java.net.http.HttpRequest.newBuilder()
 				.uri(java.net.URI.create("https://challenges.cloudflare.com/turnstile/v0/siteverify"))
@@ -302,12 +290,12 @@ public class PatriotAuthController {
 				.POST(java.net.http.HttpRequest.BodyPublishers.ofString(body))
 				.build();
 
-			java.net.http.HttpResponse<String> httpResponse =
-				client.send(httpRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+			java.net.http.HttpResponse<String> httpResponse = client.send(httpRequest,
+					java.net.http.HttpResponse.BodyHandlers.ofString());
 
 			// Simple JSON parsing — look for "success": true
 			return httpResponse.body().contains("\"success\":true")
-				|| httpResponse.body().contains("\"success\": true");
+					|| httpResponse.body().contains("\"success\": true");
 		}
 		catch (Exception e) {
 			return false;

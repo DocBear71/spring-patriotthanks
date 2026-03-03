@@ -23,15 +23,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Controller responsible for managing the authenticated user's profile page,
- * including viewing and updating personal information, changing passwords,
- * and performing soft account deletion.
+ * Controller responsible for managing the authenticated user's profile page, including
+ * viewing and updating personal information, changing passwords, and performing soft
+ * account deletion.
  *
  * <p>
- * This controller is mapped to the {@code /users} path and provides endpoints
- * for displaying the profile form, processing profile updates (with duplicate
- * email detection, phone number normalization, and optional password changes),
- * and soft-deleting the user's account.
+ * This controller is mapped to the {@code /users} path and provides endpoints for
+ * displaying the profile form, processing profile updates (with duplicate email
+ * detection, phone number normalization, and optional password changes), and
+ * soft-deleting the user's account.
  * </p>
  *
  * @author Edward
@@ -41,28 +41,28 @@ import java.util.Map;
 public class ProfileController {
 
 	private final UserRepository userRepository;
+
 	private final PasswordEncoder passwordEncoder;
+
 	private final UserDetailsService userDetailsService;
 
 	/**
 	 * Constructs a new {@code ProfileController} with the required dependencies.
-	 *
-	 * @param userRepository     the repository for user persistence operations
-	 * @param passwordEncoder    the encoder for hashing new passwords
-	 * @param userDetailsService the service for reloading user details after email changes
+	 * @param userRepository the repository for user persistence operations
+	 * @param passwordEncoder the encoder for hashing new passwords
+	 * @param userDetailsService the service for reloading user details after email
+	 * changes
 	 */
-	public ProfileController(UserRepository userRepository,
-							 PasswordEncoder passwordEncoder,
-							 UserDetailsService userDetailsService) {
+	public ProfileController(UserRepository userRepository, PasswordEncoder passwordEncoder,
+			UserDetailsService userDetailsService) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.userDetailsService = userDetailsService;
 	}
 
 	/**
-	 * This @ModelAttribute makes the language map available to ALL views in this controller.
-	 * It pairs with the new selectField fragment we just built.
-	 *
+	 * This @ModelAttribute makes the language map available to ALL views in this
+	 * controller. It pairs with the new selectField fragment we just built.
 	 * @return a {@link Map} of language code keys to display name values
 	 */
 	@ModelAttribute("languageOptions")
@@ -79,21 +79,19 @@ public class ProfileController {
 	 * Displays the profile editing form for the currently authenticated user.
 	 *
 	 * <p>
-	 * The user's password hash is cleared before sending the entity to the view
-	 * to prevent it from being exposed in the HTML form. If the user's phone
-	 * number is stored as a raw 10-digit string, it is formatted to
-	 * {@code (XXX) XXX-XXXX} for display.
+	 * The user's password hash is cleared before sending the entity to the view to
+	 * prevent it from being exposed in the HTML form. If the user's phone number is
+	 * stored as a raw 10-digit string, it is formatted to {@code (XXX) XXX-XXXX} for
+	 * display.
 	 * </p>
-	 *
-	 * @param model     the {@link Model} to populate with the user object
+	 * @param model the {@link Model} to populate with the user object
 	 * @param principal the {@link Principal} representing the currently logged-in user
 	 * @return the view name for the profile form template
 	 */
 	@GetMapping("/profile")
 	public String showProfileForm(Model model, Principal principal) {
 		String email = principal.getName();
-		User user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new RuntimeException("User not found"));
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 
 		// Clear the password hash so it doesn't get sent to the HTML form
 		user.setPassword("");
@@ -118,28 +116,27 @@ public class ProfileController {
 	 * This method handles several alternative flows:
 	 * </p>
 	 * <ul>
-	 *   <li>Checks for duplicate emails only if the user is changing their email address</li>
-	 *   <li>Validates password strength manually only if a new password was entered</li>
-	 *   <li>Normalizes the phone number by stripping all non-digit characters before saving</li>
-	 *   <li>Refreshes the Spring Security context if the email was changed, preventing
-	 *       a "User not found" error on the subsequent redirect</li>
+	 * <li>Checks for duplicate emails only if the user is changing their email
+	 * address</li>
+	 * <li>Validates password strength manually only if a new password was entered</li>
+	 * <li>Normalizes the phone number by stripping all non-digit characters before
+	 * saving</li>
+	 * <li>Refreshes the Spring Security context if the email was changed, preventing a
+	 * "User not found" error on the subsequent redirect</li>
 	 * </ul>
-	 *
-	 * @param updatedUser        the {@link User} object populated from the form, validated
-	 *                           with {@link Valid} (default group only, so password rules
-	 *                           are bypassed unless the user types a new password)
-	 * @param result             the {@link BindingResult} containing any validation errors
-	 * @param principal          the {@link Principal} representing the currently logged-in user
+	 * @param updatedUser the {@link User} object populated from the form, validated with
+	 * {@link Valid} (default group only, so password rules are bypassed unless the user
+	 * types a new password)
+	 * @param result the {@link BindingResult} containing any validation errors
+	 * @param principal the {@link Principal} representing the currently logged-in user
 	 * @param redirectAttributes the {@link RedirectAttributes} for passing success/error
-	 *                           flash messages across the redirect
+	 * flash messages across the redirect
 	 * @return a redirect to the profile page on success, or the profile form view if
-	 *         validation errors exist
+	 * validation errors exist
 	 */
 	@PostMapping("/profile")
-	public String processProfileUpdate(@Valid @ModelAttribute("user") User updatedUser,
-									   BindingResult result,
-									   Principal principal,
-									   RedirectAttributes redirectAttributes) {
+	public String processProfileUpdate(@Valid @ModelAttribute("user") User updatedUser, BindingResult result,
+			Principal principal, RedirectAttributes redirectAttributes) {
 
 		String currentEmail = principal.getName();
 		User currentUser = userRepository.findByEmail(currentEmail)
@@ -160,7 +157,7 @@ public class ProfileController {
 			if (!newPassword.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")) {
 				// Add this regex check to enforce the character rules
 				result.rejectValue("password", "weakPassword",
-					"Password must be at least 8 characters and must contain uppercase, lowercase, and number");
+						"Password must be at least 8 characters and must contain uppercase, lowercase, and number");
 			}
 		}
 
@@ -176,7 +173,8 @@ public class ProfileController {
 		currentUser.setEmail(updatedUser.getEmail());
 		String submittedPhone = updatedUser.getPhone();
 		if (submittedPhone != null && !submittedPhone.trim().isEmpty()) {
-			currentUser.setPhone(submittedPhone.replaceAll("\\D", "")); // Strips all non-numbers
+			currentUser.setPhone(submittedPhone.replaceAll("\\D", "")); // Strips all
+																		// non-numbers
 		}
 		else {
 			currentUser.setPhone(null);
@@ -200,10 +198,8 @@ public class ProfileController {
 			Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
 
 			// Create a new authentication token with the new email
-			Authentication newAuth = new UsernamePasswordAuthenticationToken(
-				newPrincipal,
-				currentAuth.getCredentials(),
-				newPrincipal.getAuthorities());
+			Authentication newAuth = new UsernamePasswordAuthenticationToken(newPrincipal, currentAuth.getCredentials(),
+					newPrincipal.getAuthorities());
 
 			// Replace the old token in the session memory
 			SecurityContextHolder.getContext().setAuthentication(newAuth);
@@ -221,28 +217,23 @@ public class ProfileController {
 	 * Instead of permanently removing the user record from the database, this method
 	 * stamps the {@code deletedAt} field with the current date and time. This preserves
 	 * historical data integrity (e.g., past league scores or team rosters) while
-	 * effectively deactivating the account. After updating the record, the user's
-	 * session is destroyed via {@link SecurityContextLogoutHandler} to prevent further
-	 * access.
+	 * effectively deactivating the account. After updating the record, the user's session
+	 * is destroyed via {@link SecurityContextLogoutHandler} to prevent further access.
 	 * </p>
-	 *
-	 * @param principal          the {@link Principal} representing the currently logged-in user
-	 * @param request            the {@link HttpServletRequest} used for session invalidation
-	 * @param response           the {@link HttpServletResponse} used for session invalidation
+	 * @param principal the {@link Principal} representing the currently logged-in user
+	 * @param request the {@link HttpServletRequest} used for session invalidation
+	 * @param response the {@link HttpServletResponse} used for session invalidation
 	 * @param redirectAttributes the {@link RedirectAttributes} for passing a farewell
-	 *                           flash message across the redirect
+	 * flash message across the redirect
 	 * @return a redirect to the home page with a success message
 	 */
 	@PostMapping("/delete")
-	public String deleteAccount(Principal principal,
-								HttpServletRequest request,
-								HttpServletResponse response,
-								RedirectAttributes redirectAttributes) {
+	public String deleteAccount(Principal principal, HttpServletRequest request, HttpServletResponse response,
+			RedirectAttributes redirectAttributes) {
 
 		// 1. Find the user
 		String email = principal.getName();
-		User currentUser = userRepository.findByEmail(email)
-			.orElseThrow(() -> new RuntimeException("User not found"));
+		User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 
 		// 2. Perform the Soft Delete
 		currentUser.setDeletedAt(LocalDateTime.now());
@@ -262,7 +253,7 @@ public class ProfileController {
 
 		// 4. Redirect to the homepage with a farewell message
 		redirectAttributes.addFlashAttribute("messageSuccess",
-			"Your account has been successfully deleted. We're sorry to see you go!");
+				"Your account has been successfully deleted. We're sorry to see you go!");
 		return "redirect:/";
 	}
 

@@ -88,8 +88,8 @@ class PatriotUserServiceImplTest {
 	}
 
 	/**
-	 * Verifies that registering a veteran (statusId = 1) hashes the password,
-	 * assigns the VETERAN role, and saves the user.
+	 * Verifies that registering a veteran (statusId = 1) hashes the password, assigns the
+	 * VETERAN role, and saves the user.
 	 */
 	@Test
 	@DisplayName("registerNewUser -> veteran status assigns VETERAN role")
@@ -108,8 +108,8 @@ class PatriotUserServiceImplTest {
 	}
 
 	/**
-	 * Verifies that registering an active duty user (statusId = 2) assigns
-	 * the ACTIVE_DUTY role.
+	 * Verifies that registering an active duty user (statusId = 2) assigns the
+	 * ACTIVE_DUTY role.
 	 */
 	@Test
 	@DisplayName("registerNewUser -> active duty status assigns ACTIVE_DUTY role")
@@ -126,8 +126,8 @@ class PatriotUserServiceImplTest {
 	}
 
 	/**
-	 * Verifies that registering a first responder (statusId = 3) assigns
-	 * the FIRST_RESPONDER role.
+	 * Verifies that registering a first responder (statusId = 3) assigns the
+	 * FIRST_RESPONDER role.
 	 */
 	@Test
 	@DisplayName("registerNewUser -> first responder status assigns FIRST_RESPONDER role")
@@ -144,8 +144,8 @@ class PatriotUserServiceImplTest {
 	}
 
 	/**
-	 * Verifies that registering a business owner (statusId = 5) assigns
-	 * the BUSINESS_OWNER role.
+	 * Verifies that registering a business owner (statusId = 5) assigns the
+	 * BUSINESS_OWNER role.
 	 */
 	@Test
 	@DisplayName("registerNewUser -> business owner status assigns BUSINESS_OWNER role")
@@ -162,8 +162,8 @@ class PatriotUserServiceImplTest {
 	}
 
 	/**
-	 * Verifies that the raw password is replaced with a hashed version
-	 * after registration.
+	 * Verifies that the raw password is replaced with a hashed version after
+	 * registration.
 	 */
 	@Test
 	@DisplayName("registerNewUser -> password is hashed before saving")
@@ -187,8 +187,7 @@ class PatriotUserServiceImplTest {
 		given(passwordEncoder.encode(anyString())).willReturn("$2a$10$encodedPassword");
 		given(patriotRoleRepository.findByName("VETERAN")).willReturn(Optional.empty());
 
-		assertThatThrownBy(() -> patriotUserService.registerNewUser(newUser))
-			.isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> patriotUserService.registerNewUser(newUser)).isInstanceOf(RuntimeException.class)
 			.hasMessageContaining("Role not found: VETERAN");
 	}
 

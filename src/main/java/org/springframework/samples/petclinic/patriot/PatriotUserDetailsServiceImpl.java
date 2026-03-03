@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
  * converts them into a Spring Security {@link UserDetails} object for authentication.
  *
  * <p>
- * This service is separate from the AthLeagues {@code UserDetailsServiceImpl} and is
- * used exclusively by the Patriot Thanks security filter chain. It also enforces soft
- * delete logic by rejecting users whose {@code deletedAt} timestamp is non-null.
+ * This service is separate from the AthLeagues {@code UserDetailsServiceImpl} and is used
+ * exclusively by the Patriot Thanks security filter chain. It also enforces soft delete
+ * logic by rejecting users whose {@code deletedAt} timestamp is non-null.
  * </p>
  *
  * @author Edward McKeown
@@ -41,7 +41,7 @@ public class PatriotUserDetailsServiceImpl implements UserDetailsService {
 	 * @param email the user's email address (used as the username)
 	 * @return a {@link UserDetails} object containing the user's credentials and roles
 	 * @throws UsernameNotFoundException if no user is found or the account has been
-	 *                                   soft-deleted
+	 * soft-deleted
 	 */
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -58,9 +58,7 @@ public class PatriotUserDetailsServiceImpl implements UserDetailsService {
 		return org.springframework.security.core.userdetails.User.builder()
 			.username(user.getEmail())
 			.password(user.getPassword())
-			.roles(user.getRoles().stream()
-				.map(PatriotRole::getName)
-				.toArray(String[]::new))
+			.roles(user.getRoles().stream().map(PatriotRole::getName).toArray(String[]::new))
 			.build();
 	}
 
