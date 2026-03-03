@@ -12,7 +12,8 @@ import java.util.Optional;
 
 /**
  * Repository interface for Business entities. Provides methods to retrieve and save
- * business data with pagination support.
+ * business data with pagination support, including lookup by ID, slug, and eager-fetched
+ * detail queries.
  *
  * @author Edward McKeown
  */
@@ -57,8 +58,22 @@ public interface BusinessRepository extends Repository<Business, Integer> {
 	 * if not
 	 */
 	@Query("SELECT DISTINCT b FROM Business b " + "LEFT JOIN FETCH b.locations " + "LEFT JOIN FETCH b.incentives "
-			+ "WHERE b.id = :id")
+		+ "WHERE b.id = :id")
 	@Transactional(readOnly = true)
 	Optional<Business> findByIdWithDetails(@Param("id") Integer id);
+
+	/**
+	 * Retrieve a Business by its URL-friendly slug with all associated locations and
+	 * incentives eagerly fetched. Uses {@code LEFT JOIN FETCH} to load the lazy
+	 * collections in a single query, avoiding {@code LazyInitializationException} when
+	 * rendering the business details view.
+	 * @param slug the URL-friendly slug of the Business (e.g., "olive-garden")
+	 * @return an {@link Optional} containing the fully-loaded Business if found, or empty
+	 * if not
+	 */
+	@Query("SELECT DISTINCT b FROM Business b " + "LEFT JOIN FETCH b.locations " + "LEFT JOIN FETCH b.incentives "
+		+ "WHERE b.slug = :slug")
+	@Transactional(readOnly = true)
+	Optional<Business> findBySlugWithDetails(@Param("slug") String slug);
 
 }

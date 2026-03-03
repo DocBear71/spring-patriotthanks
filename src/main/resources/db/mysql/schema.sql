@@ -1,3 +1,5 @@
+-- mysql/schema.sql
+
 CREATE TABLE IF NOT EXISTS vets (
                                   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
                                   first_name VARCHAR(30),
@@ -83,13 +85,17 @@ CREATE TABLE IF NOT EXISTS users (
                                      primary key,
                                    first_name     varchar(256)                         not null,
                                    last_name      varchar(256)                         not null,
+                                    nickname      varchar(50)                           null,
+                                  nickname_is_flagged tinyint default 0                 null,
                                    email          varchar(255)                         not null,
+                                  public_email    tinyint default 0                     null,
                                    password_hash  varchar(255)                         not null,
                                    title_id       int                                  null,
                                    status_id      int                                  not null,
                                    phone          varchar(20)                          null,
                                    avatar_url     varchar(255)                         null,
                                    email_verified tinyint(1) default 0                 null,
+                                   preferred_language varchar(50) null,
                                    created_at     datetime   default CURRENT_TIMESTAMP null,
                                    updated_at     datetime   default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
                                    deleted_at     datetime                             null,
@@ -196,6 +202,7 @@ CREATE TABLE IF NOT EXISTS addresses (
 CREATE TABLE IF NOT EXISTS businesses (
                                         id INT AUTO_INCREMENT PRIMARY KEY,
                                         name VARCHAR(255) NOT NULL,
+                                        slug VARCHAR(255),
                                         description TEXT,
                                         website VARCHAR(255),
                                         business_type_id INT NOT NULL,
@@ -263,4 +270,40 @@ CREATE TABLE IF NOT EXISTS business_incentive_types (
                                                       PRIMARY KEY (incentive_id, incentive_type_id),
                                                       CONSTRAINT fk_bit_incentive FOREIGN KEY (incentive_id) REFERENCES incentives(id) ON DELETE CASCADE,
                                                       CONSTRAINT fk_bit_type FOREIGN KEY (incentive_type_id) REFERENCES incentive_types(id) ON DELETE CASCADE
+) engine=InnoDB;
+
+
+-- =====================================================================
+-- Patriot Thanks: User Authentication Tables (MySQL syntax)
+-- Add these to the END of your existing db/mysql/schema.sql
+-- =====================================================================
+
+CREATE TABLE IF NOT EXISTS patriot_roles (
+                                           id          INT AUTO_INCREMENT PRIMARY KEY,
+                                           name        VARCHAR(50) NOT NULL UNIQUE,
+                                           description VARCHAR(255),
+                                           created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS patriot_users (
+                                           id             INT AUTO_INCREMENT PRIMARY KEY,
+                                           first_name     VARCHAR(256) NOT NULL,
+                                           last_name      VARCHAR(256) NOT NULL,
+                                           email          VARCHAR(255) NOT NULL UNIQUE,
+                                           password_hash  VARCHAR(255) NOT NULL,
+                                           phone          VARCHAR(20),
+                                           status_id      INT NOT NULL,
+                                           email_verified TINYINT(1) DEFAULT 0,
+                                           created_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                           updated_at     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                           deleted_at     DATETIME,
+                                           INDEX idx_patriot_users_email (email)
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS patriot_user_roles (
+                                                patriot_user_id INT NOT NULL,
+                                                patriot_role_id INT NOT NULL,
+                                                PRIMARY KEY (patriot_user_id, patriot_role_id),
+                                                CONSTRAINT fk_pur_user FOREIGN KEY (patriot_user_id) REFERENCES patriot_users(id) ON DELETE CASCADE,
+                                                CONSTRAINT fk_pur_role FOREIGN KEY (patriot_role_id) REFERENCES patriot_roles(id) ON DELETE CASCADE
 ) engine=InnoDB;

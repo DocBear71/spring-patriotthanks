@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{patriot/patriotLayout :: patriotLayout (~{::body},'patriotLogin')}">
+<body>
+
+<h2 class="text-center">Patriot Thanks Login</h2>
+
+<div class="container mt-4" style="max-width: 500px;">
+
+  <div th:if="${param.error}" class="alert alert-danger">
+    Invalid email or password.
+  </div>
+  <div th:if="${param.logout}" class="alert alert-success">
+    You have been logged out successfully.
+  </div>
+
+  <form th:action="@{/patriot/login}" th:object="${patriotUser}" method="post" class="form-horizontal">
+
+    <div th:replace="~{fragments/inputField :: input ('Email', 'email', 'text')}"></div>
+    <div th:replace="~{fragments/inputField :: input ('Password', 'password', 'password')}"></div>
+
+    <!-- Cloudflare Turnstile CAPTCHA Widget -->
+    <div class="mb-3">
+      <div class="cf-turnstile" th:data-sitekey="${turnstileSiteKey}" data-theme="light"></div>
+    </div>
+
+    <div class="d-grid gap-2 mt-4">
+      <button type="submit" class="btn btn-primary">Log In</button>
+    </div>
+
+    <div class="text-center mt-3">
+      <p>Don't have an account? <a th:href="@{/patriot/register}">Register here</a></p>
+    </div>
+
+  </form>
+</div>
+
+<!-- Cloudflare Turnstile Script -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+</body>
+</html>

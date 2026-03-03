@@ -1,17 +1,213 @@
 <!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome - Choose Your Application</title>
+  <link th:href="@{/webjars/font-awesome/css/font-awesome.min.css}" rel="stylesheet">
+  <link th:href="@{/webjars/bootstrap/dist/css/bootstrap.min.css}" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-<html xmlns:th="https://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'home')}">
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #0d1b2a 0%, #1b2838 40%, #2c3e6b 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #e0e0e0;
+      padding: 2rem 1rem;
+    }
 
+    .portal-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .portal-header h1 {
+      font-size: 2.2rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+
+    .portal-header p {
+      font-size: 1rem;
+      color: #8899aa;
+      letter-spacing: 1px;
+    }
+
+    .portal-cards {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 1100px;
+    }
+
+    .portal-card {
+      width: 320px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      text-decoration: none;
+      color: #e0e0e0;
+      transition: all 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portal-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      border-radius: 16px 16px 0 0;
+      transition: height 0.3s ease;
+    }
+
+    .portal-card:hover {
+      transform: translateY(-8px);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    /* PetClinic - Green */
+    .portal-card.petclinic::before { background: #6db33f; }
+    .portal-card.petclinic:hover { border-color: rgba(109, 179, 63, 0.4); }
+    .portal-card.petclinic .card-icon { color: #6db33f; }
+
+    /* AthLeagues - Blue */
+    .portal-card.athleagues::before { background: #4a90d9; }
+    .portal-card.athleagues:hover { border-color: rgba(74, 144, 217, 0.4); }
+    .portal-card.athleagues .card-icon { color: #4a90d9; }
+
+    /* Patriot Thanks - Gold */
+    .portal-card.patriot::before { background: #d4a843; }
+    .portal-card.patriot:hover { border-color: rgba(212, 168, 67, 0.4); }
+    .portal-card.patriot .card-icon { color: #d4a843; }
+
+    .card-icon {
+      font-size: 3rem;
+      margin-bottom: 1.2rem;
+      display: block;
+    }
+
+    .portal-card h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      letter-spacing: 0.5px;
+    }
+
+    .portal-card p {
+      font-size: 0.9rem;
+      color: #8899aa;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .portal-card:hover p { color: #aabbcc; }
+
+    .card-cta {
+      display: inline-block;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+
+    .portal-card.petclinic:hover .card-cta {
+      background: #6db33f;
+      border-color: #6db33f;
+      color: #fff;
+    }
+
+    .portal-card.athleagues:hover .card-cta {
+      background: #4a90d9;
+      border-color: #4a90d9;
+      color: #fff;
+    }
+
+    .portal-card.patriot:hover .card-cta {
+      background: #d4a843;
+      border-color: #d4a843;
+      color: #1a2744;
+    }
+
+    .portal-footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: #556677;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+    }
+
+    /* Flash messages on portal */
+    .portal-flash {
+      max-width: 600px;
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
 <body>
 
-  <h2 th:text="#{welcome}">Welcome To Patriot Thanks</h2>
-  <h3>Patriot Thanks!</h3>
-  <div class="row">
-    <div class="col-md-12">
-      <img class="img-responsive" src="../static/resources/images/pets.png" th:src="@{/resources/images/pets.png}" />
-    </div>
-  </div>
+<!-- Flash Messages -->
+<div th:if="${messageSuccess}" class="portal-flash alert alert-success alert-dismissible fade show" role="alert">
+  <i class="fa fa-check-circle"></i>
+  <span th:text="${messageSuccess}">Success</span>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 
+<div class="portal-header">
+  <h1>Spring PetClinic Platform</h1>
+  <p>Choose an application to get started</p>
+</div>
+
+<div class="portal-cards">
+
+  <!-- PetClinic Card -->
+  <a th:href="@{/owners/find}" class="portal-card petclinic">
+    <span class="card-icon fa fa-paw"></span>
+    <h2>PetClinic</h2>
+    <p>The classic Spring PetClinic demo. Manage pet owners, their pets, and veterinary visits.</p>
+    <span class="card-cta">Enter PetClinic</span>
+  </a>
+
+  <!-- AthLeagues Card -->
+  <a th:href="@{/schools}" class="portal-card athleagues">
+    <span class="card-icon fa fa-graduation-cap"></span>
+    <h2>AthLeagues</h2>
+    <p>Intramural sports management for schools. Browse schools, leagues, and recreation centers.</p>
+    <span class="card-cta">Enter AthLeagues</span>
+  </a>
+
+  <!-- Patriot Thanks Card -->
+  <a th:href="@{/patriot}" class="portal-card patriot">
+    <span class="card-icon fa fa-flag"></span>
+    <h2>Patriot Thanks</h2>
+    <p>Find businesses that offer discounts to veterans, active duty, and first responders.</p>
+    <span class="card-cta">Enter Patriot Thanks</span>
+  </a>
+
+</div>
+
+<div class="portal-footer">
+  <p>Kirkwood Community College &mdash; Java III &mdash; Spring 2026</p>
+</div>
+
+<script th:src="@{/webjars/bootstrap/dist/js/bootstrap.bundle.min.js}"></script>
 </body>
-
 </html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{patriot/patriotLayout :: patriotLayout (~{::body},'patriotProfile')}">
+<body>
+
+<div class="container mt-4" style="max-width: 700px;">
+
+  <h2 class="mb-4">Edit Profile</h2>
+
+  <div th:if="${messageSuccess}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${messageSuccess}">Profile updated successfully.</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <form th:action="@{/patriot/profile}" th:object="${patriotUser}" method="post">
+
+        <!-- Personal Information -->
+        <h5 class="card-title text-muted mb-3">Personal Information</h5>
+        <div class="row">
+          <div class="col-md-6">
+            <div th:replace="~{fragments/inputField :: input ('First Name', 'firstName', 'text')}"></div>
+          </div>
+          <div class="col-md-6">
+            <div th:replace="~{fragments/inputField :: input ('Last Name', 'lastName', 'text')}"></div>
+          </div>
+        </div>
+
+        <!-- Service Status (Read-Only) -->
+        <div class="mb-3">
+          <label class="form-label">Service Status</label>
+          <div class="form-control bg-light" style="cursor: not-allowed;">
+            <span th:if="${patriotUser.statusId == 1}">&#9733; Veteran</span>
+            <span th:if="${patriotUser.statusId == 2}">&#9733; Active Duty</span>
+            <span th:if="${patriotUser.statusId == 3}">&#9733; First Responder</span>
+            <span th:if="${patriotUser.statusId == 4}">&#9733; Military Spouse</span>
+            <span th:if="${patriotUser.statusId == 5}">&#9733; Business Owner</span>
+            <span th:if="${patriotUser.statusId == 6}">&#9733; Supporter</span>
+          </div>
+          <small class="text-muted">Service status cannot be changed. Please contact support if this needs updating.</small>
+          <!-- Preserve the statusId so it's not lost on form submission -->
+          <input type="hidden" th:field="*{statusId}" />
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Contact Information -->
+        <h5 class="card-title text-muted mb-3">Contact Information</h5>
+
+        <div th:replace="~{fragments/inputField :: input ('Email Address', 'email', 'text')}"></div>
+
+        <div class="mt-3"></div>
+
+        <div th:replace="~{fragments/inputField :: input ('Phone Number', 'phone', 'text')}"></div>
+
+        <hr class="my-4">
+
+        <!-- Security -->
+        <h5 class="card-title text-muted mb-3">Security</h5>
+        <div class="alert alert-info py-2 text-sm">
+          <small>Leave the password field blank unless you want to change it.</small>
+        </div>
+        <div th:replace="~{fragments/inputField :: input ('New Password', 'password', 'password')}"></div>
+
+        <div class="d-grid gap-2 mt-4">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Danger Zone -->
+  <div class="card border-danger mb-5">
+    <div class="card-body text-danger">
+      <h5 class="card-title">Danger Zone</h5>
+      <p class="card-text">Once you delete your account, there is no going back. Please be certain.</p>
+
+      <form th:action="@{/patriot/delete}" method="post"
+            onsubmit="return confirm('Are you absolutely sure you want to delete your account? This action cannot be undone.');">
+        <button type="submit" class="btn btn-outline-danger">Delete Account</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

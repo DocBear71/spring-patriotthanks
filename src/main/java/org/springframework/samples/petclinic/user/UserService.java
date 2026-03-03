@@ -8,6 +8,6 @@ public interface UserService {
 	 * @param user The User object containing new user details.
 	 * @return The saved User object
 	 */
-	User registerNewUser(User user);
+	User registerNewStudent(User user);
 
 }

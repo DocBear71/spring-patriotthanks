@@ -57,7 +57,7 @@ class UserServiceImplTest {
 		when(userRepository.save(any(User.class))).thenReturn(testUser);
 
 		// --- 2. ACT by calling the method to test ---
-		User registeredUser = userService.registerNewUser(testUser);
+		User registeredUser = userService.registerNewStudent(testUser);
 
 		// --- 3. ASSERT by verifying the results ---
 		// Check that the user object returned is not null

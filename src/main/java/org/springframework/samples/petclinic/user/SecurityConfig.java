@@ -2,9 +2,12 @@ package org.springframework.samples.petclinic.user;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,8 +15,27 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Spring Security configuration for the PetClinic application. Defines password encoding,
+ * Spring Security configuration for the AthLeagues application. Defines password encoding,
  * authentication management, and HTTP security rules including URL-based access control.
+ *
+ * <p>
+ * This filter chain is marked with {@link Order @Order(2)} so that the Patriot Thanks
+ * security configuration ({@code @Order(1)}) is evaluated first for {@code /patriot/**}
+ * routes. The {@link AuthenticationManager} bean is marked {@link Primary @Primary} so
+ * that it is the default manager injected when no qualifier is specified (e.g., in
+ * {@link org.springframework.samples.petclinic.user.AuthController}).
+ * </p>
+ *
+ * <p>
+ * The {@link AuthenticationManager} is built explicitly using a
+ * {@link DaoAuthenticationProvider} wired to the AthLeagues
+ * {@link UserDetailsServiceImpl} rather than relying on
+ * {@link org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration}.
+ * This prevents an infinite proxy recursion ({@code StackOverflowError}) that occurs
+ * when {@code AuthenticationConfiguration.getAuthenticationManager()} encounters
+ * multiple {@link org.springframework.security.core.userdetails.UserDetailsService}
+ * beans and wraps the resulting manager in AOP proxies that delegate back to each other.
+ * </p>
  *
  * @author Edward
  */
@@ -30,20 +52,44 @@ public class SecurityConfig {
 	}
 
 	/**
-	 * Exposes the {@link AuthenticationManager} as a Spring bean so it can be injected
-	 * into controllers for programmatic authentication (e.g., auto-login after
-	 * registration).
-	 * @param config the {@link AuthenticationConfiguration} provided by Spring
+	 * Creates a dedicated {@link AuthenticationManager} for the AthLeagues system.
+	 * This manager uses the {@link UserDetailsServiceImpl} bean to look up users in
+	 * the {@code users} table.
+	 *
+	 * <p>
+	 * Built as an explicit {@link ProviderManager} with a {@link DaoAuthenticationProvider}
+	 * to avoid the infinite proxy recursion that occurs when
+	 * {@code AuthenticationConfiguration.getAuthenticationManager()} is used in the
+	 * presence of multiple {@link org.springframework.security.core.userdetails.UserDetailsService}
+	 * beans.
+	 * </p>
+	 *
+	 * <p>
+	 * Marked {@link Primary @Primary} so that this bean is selected by default when
+	 * multiple {@link AuthenticationManager} beans exist (e.g., the Patriot Thanks
+	 * security configuration also defines its own).
+	 * </p>
+	 *
+	 * @param userDetailsService the AthLeagues {@link UserDetailsServiceImpl}
+	 * @param passwordEncoder the shared password encoder
 	 * @return the configured {@link AuthenticationManager}
-	 * @throws Exception if the authentication manager cannot be built
 	 */
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-		return config.getAuthenticationManager();
+	@Primary
+	public AuthenticationManager authenticationManager(UserDetailsServiceImpl userDetailsService,
+													   PasswordEncoder passwordEncoder) {
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+		provider.setPasswordEncoder(passwordEncoder);
+		return new ProviderManager(provider);
 	}
 
 	/**
 	 * Configures the HTTP security filter chain with URL-based access rules.
+	 *
+	 * <p>
+	 * Marked {@link Order @Order(2)} so that the Patriot Thanks filter chain
+	 * ({@code @Order(1)}) is evaluated first for {@code /patriot/**} routes.
+	 * </p>
 	 *
 	 * <p>
 	 * Current rules:
@@ -60,6 +106,7 @@ public class SecurityConfig {
 	 * @throws Exception if an error occurs during configuration
 	 */
 	@Bean
+	@Order(2)
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable())
 			.authorizeHttpRequests(authorize -> authorize
@@ -69,19 +116,33 @@ public class SecurityConfig {
 				.permitAll()
 
 				// Allow POST for user registration and login
-				.requestMatchers("/register", "/login", "/schools/new", "/owners/new", "/businesses/new")
-				.permitAll()
+				.requestMatchers("/register-student",
+					"/login",
+					"/schools/new",
+					"/owners/new",
+					"/businesses/new")
+				.permitAll().anyRequest().authenticated()
+			)
 
-				// TEMPORARY: Allow anonymous users to POST to these forms
-				// .requestMatchers(HttpMethod.POST, "/schools/new",
-				// "/owners/new").permitAll()
-
-				// PROTECTED CATCH-ALL (This protects unlisted POST/PUT/DELETE, etc.)
-				.anyRequest()
-				.authenticated())
 			// Ensure all auto-challenge mechanisms are disabled
-			.httpBasic(AbstractHttpConfigurer::disable)
-			.formLogin(AbstractHttpConfigurer::disable);
+			.httpBasic(AbstractHttpConfigurer::disable) // Disable the login popup
+			// .formLogin(AbstractHttpConfigurer::disable)
+			.formLogin(form -> form
+				.loginPage("/login") // Tells Spring where your custom HTML is
+				.usernameParameter("email") // Tells your security configuration to look for email instead of username.
+				.defaultSuccessUrl("/login-success", true) // Where to go after successful login
+				.failureHandler((request, response, exception) -> {
+					request.getSession().setAttribute("LAST_EMAIL", request.getParameter("email"));
+					response.sendRedirect("/login?error");
+				})
+				.permitAll()
+			)
+			.logout(logout -> logout
+				.logoutUrl("/logout")
+				.logoutSuccessUrl("/login?logout") // Triggers the green alert box
+				.permitAll()
+			);
+
 
 		return http.build();
 	}

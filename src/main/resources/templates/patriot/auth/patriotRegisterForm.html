@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{patriot/patriotLayout :: patriotLayout (~{::body},'patriotRegister')}">
+<body>
+
+<h2 class="text-center">Register for Patriot Thanks</h2>
+<p class="text-center text-muted">Join our community supporting veterans, service members, and first responders.</p>
+
+<div class="container mt-4" style="max-width: 600px;">
+
+  <form th:action="@{/patriot/register}" th:object="${patriotUser}" method="post" class="form-horizontal">
+
+    <div class="row">
+      <div class="col-md-6">
+        <div th:replace="~{fragments/inputField :: input ('First Name', 'firstName', 'text')}"></div>
+      </div>
+      <div class="col-md-6">
+        <div th:replace="~{fragments/inputField :: input ('Last Name', 'lastName', 'text')}"></div>
+      </div>
+    </div>
+
+    <div th:replace="~{fragments/inputField :: input ('Email Address', 'email', 'text')}"></div>
+
+    <div th:replace="~{fragments/inputField :: input ('Password', 'password', 'password')}"></div>
+
+    <div th:replace="~{fragments/inputField :: input ('Phone (optional)', 'phone', 'text')}"></div>
+
+    <div th:replace="~{fragments/radioField :: radio ('I am a...', 'statusId', ${statusOptions})}"></div>
+
+    <!-- Cloudflare Turnstile CAPTCHA Widget -->
+    <div class="mb-3">
+      <div class="cf-turnstile" th:data-sitekey="${turnstileSiteKey}" data-theme="light"></div>
+      <div th:if="${turnstileError}" class="text-danger mt-1">
+        <small th:text="${turnstileError}">CAPTCHA error</small>
+      </div>
+    </div>
+
+    <div class="d-grid gap-2 mt-4">
+      <button type="submit" class="btn btn-primary">Create Account</button>
+    </div>
+
+    <div class="text-center mt-3">
+      <p>Already have an account? <a th:href="@{/patriot/login}">Login here</a></p>
+    </div>
+
+  </form>
+</div>
+
+<!-- Cloudflare Turnstile Script -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+</body>
+</html>

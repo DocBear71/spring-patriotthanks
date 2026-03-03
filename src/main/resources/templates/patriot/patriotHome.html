@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{patriot/patriotLayout :: patriotLayout (~{::body},'patriotHome')}">
+<body>
+
+<div class="container mt-4">
+
+  <!-- Hero Section -->
+  <div class="text-center mb-5">
+    <h1 style="color: #1a2744; font-size: 2.2rem; font-weight: 700;">
+      <span style="color: #d4a843;">&#9733;</span> Patriot Thanks
+    </h1>
+    <p class="lead text-muted" style="max-width: 600px; margin: 0 auto;">
+      Connecting veterans, active duty service members, and first responders
+      with businesses that honor their service.
+    </p>
+  </div>
+
+  <!-- Action Cards -->
+  <div class="row justify-content-center g-4 mb-5">
+
+    <!-- Find Businesses Card -->
+    <div class="col-md-4">
+      <div class="card h-100 text-center shadow-sm" style="border-top: 4px solid #d4a843;">
+        <div class="card-body d-flex flex-column">
+          <span class="fa fa-building mb-3" style="font-size: 2.5rem; color: #d4a843;"></span>
+          <h5 class="card-title">Find Businesses</h5>
+          <p class="card-text text-muted flex-grow-1">
+            Browse businesses offering discounts and incentives to those who serve.
+          </p>
+          <a th:href="@{/businesses}" class="btn btn-outline-primary mt-2">Browse Businesses</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Register Card (shown only when NOT logged in) -->
+    <div class="col-md-4" sec:authorize="!isAuthenticated()">
+      <div class="card h-100 text-center shadow-sm" style="border-top: 4px solid #2c3e6b;">
+        <div class="card-body d-flex flex-column">
+          <span class="fa fa-user-plus mb-3" style="font-size: 2.5rem; color: #2c3e6b;"></span>
+          <h5 class="card-title">Create an Account</h5>
+          <p class="card-text text-muted flex-grow-1">
+            Register as a veteran, service member, first responder, or business owner.
+          </p>
+          <a th:href="@{/patriot/register}" class="btn btn-primary mt-2">Register Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Card (shown only when NOT logged in) -->
+    <div class="col-md-4" sec:authorize="!isAuthenticated()">
+      <div class="card h-100 text-center shadow-sm" style="border-top: 4px solid #6c757d;">
+        <div class="card-body d-flex flex-column">
+          <span class="fa fa-sign-in mb-3" style="font-size: 2.5rem; color: #6c757d;"></span>
+          <h5 class="card-title">Log In</h5>
+          <p class="card-text text-muted flex-grow-1">
+            Already have an account? Sign in to access your profile and saved businesses.
+          </p>
+          <a th:href="@{/patriot/login}" class="btn btn-outline-secondary mt-2">Log In</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Card (shown only when logged in) -->
+    <div class="col-md-4" sec:authorize="isAuthenticated()">
+      <div class="card h-100 text-center shadow-sm" style="border-top: 4px solid #2c3e6b;">
+        <div class="card-body d-flex flex-column">
+          <span class="fa fa-user mb-3" style="font-size: 2.5rem; color: #2c3e6b;"></span>
+          <h5 class="card-title">My Profile</h5>
+          <p class="card-text text-muted flex-grow-1">
+            View and edit your account information and preferences.
+          </p>
+          <a th:href="@{/patriot/profile}" class="btn btn-primary mt-2">Edit Profile</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Info Section -->
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card bg-light border-0">
+        <div class="card-body text-center">
+          <h5 class="card-title" style="color: #1a2744;">Who Qualifies?</h5>
+          <div class="row mt-3">
+            <div class="col-sm-6 col-md-3 mb-2">
+              <span class="fa fa-shield" style="color: #d4a843; font-size: 1.3rem;"></span>
+              <br><small>Veterans</small>
+            </div>
+            <div class="col-sm-6 col-md-3 mb-2">
+              <span class="fa fa-star" style="color: #d4a843; font-size: 1.3rem;"></span>
+              <br><small>Active Duty</small>
+            </div>
+            <div class="col-sm-6 col-md-3 mb-2">
+              <span class="fa fa-ambulance" style="color: #d4a843; font-size: 1.3rem;"></span>
+              <br><small>First Responders</small>
+            </div>
+            <div class="col-sm-6 col-md-3 mb-2">
+              <span class="fa fa-heart" style="color: #d4a843; font-size: 1.3rem;"></span>
+              <br><small>Military Spouses</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

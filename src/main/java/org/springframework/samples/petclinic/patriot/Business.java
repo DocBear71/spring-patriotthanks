@@ -11,6 +11,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
@@ -25,6 +27,13 @@ import org.springframework.samples.petclinic.model.NamedEntity;
  * Simple JavaBean domain object representing a Business in the Patriot Thanks system.
  * Businesses offer discounts and incentives to veterans, active military, first
  * responders, and their families.
+ *
+ * <p>
+ * Each business has a URL-friendly {@code slug} derived from its name, used for
+ * human-readable routing (e.g., {@code /businesses/olive-garden}). The slug is
+ * automatically generated from the name via {@link #generateSlug()} before persist
+ * and update operations.
+ * </p>
  *
  * @author Edward McKeown
  */
@@ -43,6 +52,9 @@ public class Business extends NamedEntity {
 
 	@Column(name = "website")
 	private String website;
+
+	@Column(name = "slug")
+	private String slug;
 
 	@ManyToOne
 	@JoinColumn(name = "business_type_id")
@@ -91,6 +103,47 @@ public class Business extends NamedEntity {
 	public void addIncentive(Incentive incentive) {
 		incentive.setBusiness(this);
 		getIncentives().add(incentive);
+	}
+
+	/**
+	 * Automatically generates a URL-friendly slug from the business name before the
+	 * entity is persisted or updated. The slug is created by converting the name to
+	 * lowercase, replacing {@code &} and {@code +} with "and", removing non-alphanumeric
+	 * characters (except hyphens and spaces), converting spaces to hyphens, and collapsing
+	 * consecutive hyphens.
+	 *
+	 * <p>
+	 * Examples:
+	 * </p>
+	 * <ul>
+	 * <li>"Olive Garden" → "olive-garden"</li>
+	 * <li>"Hy-Vee Fast &amp; Fresh" → "hy-vee-fast-and-fresh"</li>
+	 * <li>"Culver's" → "culvers"</li>
+	 * <li>"Perkins American Food Co." → "perkins-american-food-co"</li>
+	 * </ul>
+	 */
+	@PrePersist
+	@PreUpdate
+	public void generateSlug() {
+		if (getName() != null) {
+			this.slug = toSlug(getName());
+		}
+	}
+
+	/**
+	 * Converts a business name to a URL-friendly slug string.
+	 * @param name the business name to convert
+	 * @return the URL-friendly slug
+	 */
+	public static String toSlug(String name) {
+		return name.toLowerCase()
+			.replace("&", "and")
+			.replace("+", "and")
+			.replaceAll("[^a-z0-9\\s-]", "")
+			.trim()
+			.replaceAll("\\s+", "-")
+			.replaceAll("-+", "-")
+			.replaceAll("^-|-$", "");
 	}
 
 	/**

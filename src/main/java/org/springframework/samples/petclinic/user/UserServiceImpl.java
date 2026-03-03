@@ -22,7 +22,8 @@ public class UserServiceImpl implements UserService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	public User registerNewUser(User user) {
+	// for Marc's demo project Users
+	public User registerNewStudent(User user) {
 		// Hash the user's password
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		// Default the user's default role
