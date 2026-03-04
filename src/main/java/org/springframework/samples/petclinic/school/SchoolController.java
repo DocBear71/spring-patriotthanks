@@ -56,7 +56,7 @@ public class SchoolController {
 	 * @param model the {@link Model} to populate with pagination data and school list
 	 * @return the view name for the school list template
 	 */
-	@GetMapping("schools")
+	@GetMapping("/schools")
 	public String showSchoolList(@RequestParam(defaultValue = "1") int page, Model model) {
 		// Pagination setup (5 items per page)
 		Pageable pageable = PageRequest.of(page - 1, 5);

@@ -1,5 +1,3 @@
--- h2/data.sql
-
 INSERT INTO vets VALUES (default, 'James', 'Carter');
 INSERT INTO vets VALUES (default, 'Helen', 'Leary');
 INSERT INTO vets VALUES (default, 'Linda', 'Douglas');
@@ -53,16 +51,3 @@ INSERT INTO visits VALUES (default, 7, '2013-01-01', 'rabies shot');
 INSERT INTO visits VALUES (default, 8, '2013-01-02', 'rabies shot');
 INSERT INTO visits VALUES (default, 8, '2013-01-03', 'neutered');
 INSERT INTO visits VALUES (default, 7, '2013-01-04', 'spayed');
-
--- =====================================================================
--- Patriot Thanks: Seed Data for Roles (H2 syntax)
--- Add these to the END of your existing db/h2/data.sql
--- =====================================================================
-
-INSERT INTO patriot_roles (name, description) VALUES ('VETERAN', 'Veteran of the uniformed services');
-INSERT INTO patriot_roles (name, description) VALUES ('ACTIVE_DUTY', 'Active duty service member');
-INSERT INTO patriot_roles (name, description) VALUES ('FIRST_RESPONDER', 'Fire, police, or EMS personnel');
-INSERT INTO patriot_roles (name, description) VALUES ('MILITARY_SPOUSE', 'Spouse of a veteran or service member');
-INSERT INTO patriot_roles (name, description) VALUES ('BUSINESS_OWNER', 'Business owner offering incentives');
-INSERT INTO patriot_roles (name, description) VALUES ('SUPPORTER', 'Supporter of veterans and service members');
-INSERT INTO patriot_roles (name, description) VALUES ('PLATFORM_ADMIN', 'Patriot Thanks platform administrator');

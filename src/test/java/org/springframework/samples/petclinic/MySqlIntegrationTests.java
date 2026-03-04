@@ -134,11 +134,11 @@ class MySqlIntegrationTests {
 	@Test
 	@DisplayName("Should find user by email")
 	void testFindUserByEmail() {
-		Optional<User> optionalUser = users.findByEmail("edward@doctormckeown.com");
+		Optional<User> optionalUser = users.findByEmail("brett.baumgart@kirkwood.edu");
 		assertThat(optionalUser).isPresent();
 		User user = optionalUser.get();
-		assertThat(user.getFirstName()).isEqualTo("Edward");
-		assertThat(user.getLastName()).isEqualTo("McKeown");
+		assertThat(user.getFirstName()).isEqualTo("Brett");
+		assertThat(user.getLastName()).isEqualTo("School Admin");
 	}
 
 	/**
@@ -159,7 +159,7 @@ class MySqlIntegrationTests {
 	void testFindUserById() {
 		Optional<User> optionalUser = users.findById(1);
 		assertThat(optionalUser).isPresent();
-		assertThat(optionalUser.get().getEmail()).isEqualTo("edward@doctormckeown.com");
+		assertThat(optionalUser.get().getEmail()).isEqualTo("brett.baumgart@kirkwood.edu");
 	}
 
 	// =========================================================================
@@ -180,7 +180,7 @@ class MySqlIntegrationTests {
 
 	/**
 	 * Verifies that a single business can be found by ID with its associated business
-	 * type loaded.
+	 * type loaded. Business ID 1 in the seed data is Olive Garden (Restaurant type).
 	 */
 	@Test
 	@DisplayName("Should find business by ID with business type")
@@ -188,14 +188,15 @@ class MySqlIntegrationTests {
 		Optional<Business> optionalBusiness = businesses.findById(1);
 		assertThat(optionalBusiness).isPresent();
 		Business business = optionalBusiness.get();
-		assertThat(business.getName()).isEqualTo("Veterans Auto Service");
+		assertThat(business.getName()).isEqualTo("Olive Garden");
 		assertThat(business.getBusinessType()).isNotNull();
-		assertThat(business.getBusinessType().getName()).isEqualTo("Automotive");
+		assertThat(business.getBusinessType().getName()).isEqualTo("Restaurant");
 	}
 
 	/**
 	 * Verifies that a business can be retrieved with all associated locations and
-	 * incentives eagerly loaded via the {@code findByIdWithDetails} query.
+	 * incentives eagerly loaded via the {@code findByIdWithDetails} query. Business ID 1
+	 * (Olive Garden) has both locations and incentives in the seed data.
 	 */
 	@Test
 	@DisplayName("Should find business by ID with locations and incentives")
@@ -203,14 +204,14 @@ class MySqlIntegrationTests {
 		Optional<Business> optionalBusiness = businesses.findByIdWithDetails(1);
 		assertThat(optionalBusiness).isPresent();
 		Business business = optionalBusiness.get();
-		assertThat(business.getName()).isEqualTo("Veterans Auto Service");
+		assertThat(business.getName()).isEqualTo("Olive Garden");
 		assertThat(business.getLocations()).isNotEmpty();
 		assertThat(business.getIncentives()).isNotEmpty();
 	}
 
 	/**
 	 * Verifies that all business types are returned from the database and that the first
-	 * type (by display order) is Restaurant.
+	 * type (by display order) is Automotive.
 	 */
 	@Test
 	@DisplayName("Should find all business types")
@@ -218,12 +219,13 @@ class MySqlIntegrationTests {
 		Collection<BusinessType> types = businessTypes.findAllByOrderByDisplayOrderAsc();
 		assertThat(types).isNotEmpty();
 		assertThat(types.size()).isGreaterThanOrEqualTo(8);
-		assertThat(types.iterator().next().getName()).isEqualTo("Restaurant");
+		assertThat(types.iterator().next().getName()).isEqualTo("Automotive");
 	}
 
 	/**
 	 * Verifies that active incentives with eagerly loaded incentive types can be
-	 * retrieved for a specific business.
+	 * retrieved for a specific business. Business ID 1 (Olive Garden) has a "Free Meal
+	 * for Veterans" incentive in the seed data.
 	 */
 	@Test
 	@DisplayName("Should find active incentives for a business with incentive types")
@@ -231,7 +233,7 @@ class MySqlIntegrationTests {
 		var activeIncentives = incentives.findByBusinessIdAndIsActive(1, true);
 		assertThat(activeIncentives).isNotEmpty();
 		Incentive incentive = activeIncentives.get(0);
-		assertThat(incentive.getTitle()).isEqualTo("10% Military Discount");
+		assertThat(incentive.getTitle()).isEqualTo("Free Meal for Veterans");
 		assertThat(incentive.getIncentiveTypes()).isNotEmpty();
 	}
 
@@ -245,7 +247,7 @@ class MySqlIntegrationTests {
 		RestTemplate template = builder.rootUri("http://localhost:" + port).build();
 		ResponseEntity<String> result = template.exchange(RequestEntity.get("/businesses/1").build(), String.class);
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(result.getBody()).contains("Veterans Auto Service");
+		assertThat(result.getBody()).contains("Olive Garden");
 	}
 
 }

@@ -98,6 +98,7 @@ class BusinessControllerTest {
 		business1.setWebsite("https://joespizza.com");
 		business1.setIsActive(true);
 		business1.setIsVerified(true);
+		business1.setSlug("joes-pizza");
 
 		business2 = new Business();
 		business2.setId(2);
@@ -106,6 +107,7 @@ class BusinessControllerTest {
 		business2.setWebsite("https://mainstreethardware.com");
 		business2.setIsActive(true);
 		business2.setIsVerified(false);
+		business2.setSlug("main-street-hardware");
 
 		business3 = new Business();
 		business3.setId(3);
@@ -113,6 +115,7 @@ class BusinessControllerTest {
 		business3.setBusinessType(restaurantType);
 		business3.setIsActive(true);
 		business3.setIsVerified(true);
+		business3.setSlug("cedar-rapids-diner");
 
 		// Create test incentive types
 		veteranType = new IncentiveType();
@@ -410,23 +413,33 @@ class BusinessControllerTest {
 	}
 
 	@Test
-	@DisplayName("GET /businesses/{id} -> returns business details view")
-	void testShowBusinessDetails() throws Exception {
-		given(businessRepository.findByIdWithDetails(1)).willReturn(java.util.Optional.of(business1));
+	@DisplayName("GET /businesses/{id} -> redirects to slug-based URL")
+	void testShowBusinessDetailsRedirectsToSlug() throws Exception {
+		given(businessRepository.findById(1)).willReturn(java.util.Optional.of(business1));
 
 		mockMvc.perform(get("/businesses/1"))
-			.andExpect(status().isOk())
-			.andExpect(view().name("businesses/businessDetails"))
-			.andExpect(model().attributeExists("business"))
-			.andExpect(model().attribute("business", hasProperty("name", is("Joe's Pizza"))));
+			.andExpect(status().is3xxRedirection())
+			.andExpect(redirectedUrl("/businesses/joes-pizza"));
 	}
 
 	@Test
 	@DisplayName("GET /businesses/{id} -> returns 404 when business not found")
 	void testShowBusinessDetailsNotFound() throws Exception {
-		given(businessRepository.findByIdWithDetails(999)).willReturn(java.util.Optional.empty());
+		given(businessRepository.findById(999)).willReturn(java.util.Optional.empty());
 
 		mockMvc.perform(get("/businesses/999")).andExpect(status().isNotFound());
+	}
+
+	@Test
+	@DisplayName("GET /businesses/{slug} -> returns business details view")
+	void testShowBusinessBySlug() throws Exception {
+		given(businessRepository.findBySlugWithDetails("joes-pizza")).willReturn(java.util.Optional.of(business1));
+
+		mockMvc.perform(get("/businesses/joes-pizza"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("businesses/businessDetails"))
+			.andExpect(model().attributeExists("business"))
+			.andExpect(model().attribute("business", hasProperty("name", is("Joe's Pizza"))));
 	}
 
 }
