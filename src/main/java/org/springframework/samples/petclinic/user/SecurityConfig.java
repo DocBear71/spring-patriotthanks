@@ -116,7 +116,8 @@ public class SecurityConfig {
 				.permitAll()
 
 				// Allow POST for user registration and login
-				.requestMatchers("/register-student", "/login", "/schools/new", "/owners/new", "/businesses/new", "/subscription/new")
+				.requestMatchers("/register-student", "/login", "/schools/new", "/owners/new", "/businesses/new",
+						"/subscription/new")
 				.permitAll()
 				.anyRequest()
 				.authenticated())

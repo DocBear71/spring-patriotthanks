@@ -1,3 +1,6 @@
+-- db/h2/data.sql
+-- DO NOT ADD OR CHANGE THIS FILE, EVER
+
 INSERT INTO vets VALUES (default, 'James', 'Carter');
 INSERT INTO vets VALUES (default, 'Helen', 'Leary');
 INSERT INTO vets VALUES (default, 'Linda', 'Douglas');

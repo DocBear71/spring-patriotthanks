@@ -26,14 +26,12 @@ public class SubscriptionController {
 		return "pricing/pricing";
 	}
 
-
 	@GetMapping("/subscription/new")
 	public String initCreationForm(Map<String, Object> model) {
 		Subscription subscription = new Subscription();
 		model.put("subscription", subscription);
 		return "schools/createOrUpdateSubscriptionForm";
 	}
-
 
 	@PostMapping("/subscription/new")
 	public String processCreationForm(@Valid Subscription subscription, BindingResult result) {

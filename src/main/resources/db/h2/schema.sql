@@ -1,3 +1,6 @@
+-- db/h2/schema.sql
+-- DO NOT ADD OR CHANGE THIS FILE, EVER
+
 DROP TABLE vet_specialties IF EXISTS;
 DROP TABLE vets IF EXISTS;
 DROP TABLE specialties IF EXISTS;
