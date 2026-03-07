@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'pricing')}">
+
+<body>
+
+<div class="container mt-4">
+
+  <div class="mb-4 pb-2 border-bottom d-flex justify-content-between align-items-end flex-wrap gap-3">
+    <div>
+      <h1>Pricing</h1>
+      <p class="fs-5 text-body-secondary mb-0">Choose a subscription plan for your school's intramural program.</p>
+    </div>
+
+    <!-- Monthly / Annual toggle -->
+    <div class="d-flex align-items-center gap-2">
+      <span class="fw-semibold" id="label-monthly">Monthly</span>
+      <div class="form-check form-switch mb-0">
+        <input class="form-check-input" type="checkbox" role="switch" id="billingToggle" style="width:3em; height:1.5em; cursor:pointer;">
+        <label class="form-check-label visually-hidden" for="billingToggle">Toggle billing period</label>
+      </div>
+      <span class="fw-semibold" id="label-annual">
+        Annual
+        <span class="badge bg-success ms-1" style="font-size:0.7em;">Save ~17%</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-3 mb-3 text-center align-items-stretch">
+
+    <div class="col mb-4" th:each="subscription : ${subscriptions}">
+
+      <!-- Featured cards get a highlighted border and lifted shadow -->
+      <div th:class="${subscription.featured}
+                      ? 'card h-100 rounded-3 shadow border-0 border-top border-warning featured-card'
+                      : 'card h-100 rounded-3 shadow-sm'"
+           th:style="${subscription.featured} ? 'border-top: 4px solid #ffc107 !important;' : ''">
+
+        <div th:class="${subscription.featured} ? 'card-header py-3 bg-warning text-dark' : 'card-header py-3'">
+
+          <!-- Featured badge -->
+          <span th:if="${subscription.featured}"
+                class="badge bg-dark text-warning mb-1"
+                style="font-size:0.7em; letter-spacing:0.05em;">
+            ★ MOST POPULAR
+          </span>
+
+          <h4 class="my-0 fw-normal" th:text="${subscription.name}">Plan Name</h4>
+        </div>
+
+        <div class="card-body d-flex flex-column">
+
+          <!-- Price display — JS swaps between the two spans -->
+          <h1 class="card-title pricing-card-title">
+            $<span class="price-monthly" th:text="${subscription.monthlyPrice}">0</span>
+            <span class="price-annual d-none" th:text="${subscription.annualPrice}">0</span>
+            <small class="text-body-secondary fw-light billing-period">/mo</small>
+          </h1>
+
+          <p class="flex-grow-1" th:text="${subscription.description}">Description</p>
+
+          <button type="button"
+                  th:class="${subscription.featured} ? 'w-100 btn btn-lg btn-warning' : 'w-100 btn btn-lg btn-outline-primary'">
+            Get started
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const toggle = document.getElementById('billingToggle');
+  const monthlyPrices = document.querySelectorAll('.price-monthly');
+  const annualPrices  = document.querySelectorAll('.price-annual');
+  const periods       = document.querySelectorAll('.billing-period');
+  const labelMonthly  = document.getElementById('label-monthly');
+  const labelAnnual   = document.getElementById('label-annual');
+
+  toggle.addEventListener('change', function () {
+    const isAnnual = this.checked;
+
+    monthlyPrices.forEach(el => el.classList.toggle('d-none', isAnnual));
+    annualPrices.forEach(el  => el.classList.toggle('d-none', !isAnnual));
+    periods.forEach(el       => el.textContent = isAnnual ? '/yr' : '/mo');
+
+    labelMonthly.style.opacity = isAnnual ? '0.5' : '1';
+    labelAnnual.style.opacity  = isAnnual ? '1'   : '0.5';
+  });
+</script>
+
+</body>
+</html>

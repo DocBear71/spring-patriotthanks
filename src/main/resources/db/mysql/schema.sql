@@ -301,3 +301,16 @@ CREATE TABLE IF NOT EXISTS patriot_user_roles (
                                                 CONSTRAINT fk_pur_user FOREIGN KEY (patriot_user_id) REFERENCES patriot_users (id) ON DELETE CASCADE,
                                                 CONSTRAINT fk_pur_role FOREIGN KEY (patriot_role_id) REFERENCES patriot_roles (id) ON DELETE CASCADE
 ) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS subscriptions (
+                                           id INT AUTO_INCREMENT PRIMARY KEY,
+                                           name VARCHAR(255) NOT NULL,
+                                           description TEXT NOT NULL,
+                                           monthly_price INT NOT NULL,
+                                           annual_price INT NOT NULL,
+                                           featured      TINYINT(1)   NOT NULL DEFAULT 0,
+                                           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                           updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                           deleted_at DATETIME,
+                                           UNIQUE KEY uk_subscription_name (name)
+) engine=InnoDB;
