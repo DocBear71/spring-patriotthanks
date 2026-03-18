@@ -23,6 +23,17 @@ import java.util.Set;
  * {@link PatriotRole} entries.
  * </p>
  *
+ * <p>
+ * Two fields were added in Assignment 7:
+ * </p>
+ * <ul>
+ * <li>{@code avatarUrl} — stores a Gravatar URL derived from an MD5 hash of the user's
+ * email address, or a custom-uploaded photo URL. Updated automatically by
+ * {@link PatriotProfileController} whenever the email address changes.</li>
+ * <li>{@code zipCode} — stores the user's home zip code, used as the default geographic
+ * search area on the Find Businesses page.</li>
+ * </ul>
+ *
  * @author Edward McKeown
  * @see PatriotRole
  * @see PatriotUserRepository
@@ -50,7 +61,7 @@ public class PatriotUser extends BaseEntity {
 	@NotEmpty(message = "Password is required")
 	@Size(min = 8, message = "Password must be at least 8 characters")
 	@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$",
-			message = "Password must contain uppercase, lowercase, and a number")
+		message = "Password must contain uppercase, lowercase, and a number")
 	private String password;
 
 	@Column(name = "phone", length = 20)
@@ -59,6 +70,24 @@ public class PatriotUser extends BaseEntity {
 
 	@Column(name = "status_id", nullable = false)
 	private Integer statusId;
+
+	/**
+	 * Stores a Gravatar URL derived from an MD5 hash of the user's email address, or a
+	 * URL pointing to a custom uploaded profile photo. This field is updated automatically
+	 * by {@link PatriotProfileController} whenever the user saves their profile. If null,
+	 * the UI falls back to displaying the user's initials.
+	 */
+	@Column(name = "avatar_url", length = 255)
+	private String avatarUrl;
+
+	/**
+	 * The user's home zip code, used as the default geographic search area on the Find
+	 * Businesses page. The user may override this at search time using their browser's
+	 * real-time geolocation, which is never stored in the database.
+	 */
+	@Column(name = "zip_code", length = 10)
+	@Pattern(regexp = "^\\d{5}(-\\d{4})?$|^$", message = "Please enter a valid 5-digit zip code")
+	private String zipCode;
 
 	@Column(name = "email_verified")
 	private Boolean emailVerified = false;
@@ -76,7 +105,7 @@ public class PatriotUser extends BaseEntity {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "patriot_user_roles", joinColumns = @JoinColumn(name = "patriot_user_id"),
-			inverseJoinColumns = @JoinColumn(name = "patriot_role_id"))
+		inverseJoinColumns = @JoinColumn(name = "patriot_role_id"))
 	@EqualsAndHashCode.Exclude
 	private Set<PatriotRole> roles = new LinkedHashSet<>();
 

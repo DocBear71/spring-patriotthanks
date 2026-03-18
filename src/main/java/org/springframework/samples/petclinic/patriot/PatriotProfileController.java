@@ -16,19 +16,38 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 
 /**
  * Controller responsible for managing the authenticated Patriot Thanks user's profile
- * page, including viewing and updating personal information, changing passwords, and
- * performing soft account deletion.
+ * page, including viewing and updating personal information, changing passwords, zip
+ * code, avatar (Gravatar), and performing soft account deletion.
  *
  * <p>
  * This controller is mapped to the {@code /patriot} path and provides endpoints for
  * displaying the profile form, processing profile updates (with duplicate email
- * detection, phone number normalization, and optional password changes), and
- * soft-deleting the user's account.
+ * detection, phone number normalization, optional password changes, Gravatar URL
+ * regeneration, and zip code storage), and soft-deleting the user's account.
+ * </p>
+ *
+ * <p>
+ * <strong>Gravatar integration:</strong> When the user saves their profile, this
+ * controller computes an MD5 hash of the (trimmed, lower-cased) email address and
+ * constructs a Gravatar URL of the form
+ * {@code https://www.gravatar.com/avatar/<hash>?d=identicon&s=200}. This URL is stored
+ * in the {@code avatar_url} column and displayed in the profile header. If the email
+ * changes, the Gravatar URL is automatically regenerated.
+ * </p>
+ *
+ * <p>
+ * <strong>Zip code:</strong> The user's home zip code is stored in the
+ * {@code zip_code} column and used as the default geographic search area on the Find
+ * Businesses page. Browser-based real-time geolocation is handled entirely on the
+ * client side and is never persisted to the database.
  * </p>
  *
  * <p>
@@ -60,10 +79,42 @@ public class PatriotProfileController {
 	 * reloading user details after email changes
 	 */
 	public PatriotProfileController(PatriotUserRepository patriotUserRepository, PasswordEncoder passwordEncoder,
-			@Qualifier("patriotUserDetailsService") UserDetailsService patriotUserDetailsService) {
+									@Qualifier("patriotUserDetailsService") UserDetailsService patriotUserDetailsService) {
 		this.patriotUserRepository = patriotUserRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.patriotUserDetailsService = patriotUserDetailsService;
+	}
+
+	// ========================================================================
+	// GRAVATAR UTILITY
+	// ========================================================================
+
+	/**
+	 * Computes a Gravatar avatar URL for the given email address.
+	 *
+	 * <p>
+	 * The URL is constructed by MD5-hashing the trimmed, lower-cased email and appending
+	 * it to the Gravatar base URL. The {@code d=identicon} parameter causes Gravatar to
+	 * generate a unique geometric placeholder image for users who have not registered a
+	 * Gravatar account, ensuring the avatar is never blank.
+	 * </p>
+	 * @param email the user's email address
+	 * @return a fully-formed Gravatar URL string, or {@code null} if hashing fails
+	 */
+	private String buildGravatarUrl(String email) {
+		try {
+			String normalized = email.trim().toLowerCase();
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] hashBytes = md.digest(normalized.getBytes(StandardCharsets.UTF_8));
+			StringBuilder hex = new StringBuilder();
+			for (byte b : hashBytes) {
+				hex.append(String.format("%02x", b));
+			}
+			return "https://www.gravatar.com/avatar/" + hex + "?d=identicon&s=200";
+		}
+		catch (NoSuchAlgorithmException e) {
+			return null;
+		}
 	}
 
 	// ========================================================================
@@ -78,7 +129,8 @@ public class PatriotProfileController {
 	 * The user's password hash is cleared before sending the entity to the view to
 	 * prevent it from being exposed in the HTML form. If the user's phone number is
 	 * stored as a raw 10-digit string, it is formatted to {@code (XXX) XXX-XXXX} for
-	 * display.
+	 * display. If the user does not yet have an {@code avatarUrl}, a Gravatar URL is
+	 * generated from the current email and persisted before rendering.
 	 * </p>
 	 * @param model the {@link Model} to populate with the user object
 	 * @param principal the {@link Principal} representing the currently logged-in user
@@ -89,6 +141,12 @@ public class PatriotProfileController {
 		String email = principal.getName();
 		PatriotUser user = patriotUserRepository.findByEmail(email)
 			.orElseThrow(() -> new RuntimeException("User not found"));
+
+		// Seed Gravatar URL if it has never been set
+		if (user.getAvatarUrl() == null || user.getAvatarUrl().isBlank()) {
+			user.setAvatarUrl(buildGravatarUrl(user.getEmail()));
+			patriotUserRepository.save(user);
+		}
 
 		// Clear the password hash so it doesn't get sent to the HTML form
 		user.setPassword("");
@@ -127,7 +185,9 @@ public class PatriotProfileController {
 	 * <li>Validates that email is not blank and is a valid format</li>
 	 * <li>Checks for duplicate emails only if the user is changing their email</li>
 	 * <li>Validates password strength manually only if a new password was entered</li>
+	 * <li>Validates zip code format if one is provided (5-digit or ZIP+4)</li>
 	 * <li>Normalizes the phone number by stripping all non-digit characters</li>
+	 * <li>Regenerates the Gravatar URL if the email address changed</li>
 	 * <li>Refreshes the Spring Security context if the email was changed</li>
 	 * </ul>
 	 * @param updatedUser the {@link PatriotUser} populated from the form
@@ -138,14 +198,13 @@ public class PatriotProfileController {
 	 */
 	@PostMapping("/profile")
 	public String processProfileUpdate(@ModelAttribute("patriotUser") PatriotUser updatedUser, BindingResult result,
-			Principal principal, RedirectAttributes redirectAttributes) {
+									   Principal principal, RedirectAttributes redirectAttributes) {
 
 		String currentEmail = principal.getName();
 		PatriotUser currentUser = patriotUserRepository.findByEmail(currentEmail)
 			.orElseThrow(() -> new RuntimeException("User not found"));
 
-		// 1. Manually validate required fields (bypassing @Valid to avoid password
-		// issues)
+		// 1. Manually validate required fields (bypassing @Valid to avoid password issues)
 		if (updatedUser.getFirstName() == null || updatedUser.getFirstName().trim().isEmpty()) {
 			result.rejectValue("firstName", "NotEmpty", "First name is required");
 		}
@@ -173,49 +232,83 @@ public class PatriotProfileController {
 		if (isUpdatingPassword) {
 			if (!newPassword.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")) {
 				result.rejectValue("password", "weakPassword",
-						"Password must be at least 8 characters with uppercase, lowercase, and a number");
+					"Password must be at least 8 characters with uppercase, lowercase, and a number");
 			}
 		}
 
-		// 4. Return to form if there are validation errors
+		// 4. Validate zip code format (only if one was provided)
+		String submittedZip = updatedUser.getZipCode();
+		if (submittedZip != null && !submittedZip.trim().isEmpty()) {
+			if (!submittedZip.trim().matches("^\\d{5}(-\\d{4})?$")) {
+				result.rejectValue("zipCode", "invalidZip", "Please enter a valid 5-digit zip code");
+			}
+		}
+
+		// 5. Return to form if there are validation errors
 		if (result.hasErrors()) {
 			return "patriot/patriotProfile";
 		}
 
-		// 5. Safely apply the updates to the entity fetched from the DB
+		// 6. Safely apply the updates to the entity fetched from the DB
 		currentUser.setFirstName(updatedUser.getFirstName().trim());
 		currentUser.setLastName(updatedUser.getLastName().trim());
+
+		boolean emailChanged = !currentEmail.equalsIgnoreCase(updatedUser.getEmail().trim());
 		currentUser.setEmail(updatedUser.getEmail().trim());
 
-		String submittedPhone = updatedUser.getPhone();
-		if (submittedPhone != null && !submittedPhone.trim().isEmpty()) {
-			currentUser.setPhone(submittedPhone.replaceAll("\\D", ""));
+		// 7. Regenerate Gravatar URL if the email address changed
+		if (emailChanged) {
+			currentUser.setAvatarUrl(buildGravatarUrl(currentUser.getEmail()));
+		}
+
+		// 8. Normalize and save phone number
+		if (submittedPhone(updatedUser) != null && !submittedPhone(updatedUser).trim().isEmpty()) {
+			currentUser.setPhone(submittedPhone(updatedUser).replaceAll("\\D", ""));
 		}
 		else {
 			currentUser.setPhone(null);
 		}
 
+		// 9. Save zip code (null it out if blank)
+		if (submittedZip != null && !submittedZip.trim().isEmpty()) {
+			currentUser.setZipCode(submittedZip.trim());
+		}
+		else {
+			currentUser.setZipCode(null);
+		}
+
+		// 10. Encode and update password if a new one was submitted
 		if (isUpdatingPassword) {
 			currentUser.setPassword(passwordEncoder.encode(newPassword));
 		}
 
-		// 6. Save the updates to the database
+		// 11. Persist all changes
 		patriotUserRepository.save(currentUser);
 
-		// 7. Update the Spring Security Context if the email changed
-		if (!currentEmail.equalsIgnoreCase(currentUser.getEmail())) {
+		// 12. Refresh the Spring Security context if the email changed
+		if (emailChanged) {
 			UserDetails newPrincipal = patriotUserDetailsService.loadUserByUsername(currentUser.getEmail());
 			Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
-
-			Authentication newAuth = new UsernamePasswordAuthenticationToken(newPrincipal, currentAuth.getCredentials(),
-					newPrincipal.getAuthorities());
-
+			// Guard against null authentication (e.g. in test environments where the
+			// Security context is not fully populated via the filter chain)
+			Object credentials = (currentAuth != null) ? currentAuth.getCredentials() : null;
+			Authentication newAuth = new UsernamePasswordAuthenticationToken(newPrincipal,
+				credentials, newPrincipal.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(newAuth);
 		}
 
-		// 8. Redirect with success message
+		// 13. Redirect with success flash message
 		redirectAttributes.addFlashAttribute("messageSuccess", "Your profile has been updated successfully.");
 		return "redirect:/patriot/profile";
+	}
+
+	/**
+	 * Helper to retrieve the submitted phone value from the form-bound user object.
+	 * @param updatedUser the form-bound {@link PatriotUser}
+	 * @return the raw phone string, or {@code null}
+	 */
+	private String submittedPhone(PatriotUser updatedUser) {
+		return updatedUser.getPhone();
 	}
 
 	// ========================================================================
@@ -234,7 +327,7 @@ public class PatriotProfileController {
 	 */
 	@PostMapping("/delete")
 	public String deleteAccount(Principal principal, HttpServletRequest request, HttpServletResponse response,
-			RedirectAttributes redirectAttributes) {
+								RedirectAttributes redirectAttributes) {
 
 		String email = principal.getName();
 		PatriotUser currentUser = patriotUserRepository.findByEmail(email)
@@ -252,7 +345,7 @@ public class PatriotProfileController {
 
 		// Redirect with farewell message
 		redirectAttributes.addFlashAttribute("messageSuccess",
-				"Your Patriot Thanks account has been deleted. Thank you for your service!");
+			"Your Patriot Thanks account has been deleted. Thank you for your service!");
 		return "redirect:/patriot";
 	}
 

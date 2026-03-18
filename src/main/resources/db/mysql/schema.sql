@@ -62,21 +62,20 @@ CREATE TABLE IF NOT EXISTS visits (
 -- =====================================================================
 
 CREATE TABLE IF NOT EXISTS users (
-                                   id                  INT AUTO_INCREMENT PRIMARY KEY,
-                                   first_name          VARCHAR(50),
-                                   last_name           VARCHAR(50),
-                                   nickname            VARCHAR(50),
-                                   nickname_is_flagged BOOLEAN DEFAULT FALSE,
-                                   email               VARCHAR(255) NOT NULL,
-                                   public_email        BOOLEAN DEFAULT FALSE,
-                                   phone               VARCHAR(255),
-                                   public_phone        BOOLEAN DEFAULT FALSE,
-                                   preferred_language  VARCHAR(50),
-                                   password_hash       VARCHAR(255),
-                                   status_id           INT NOT NULL DEFAULT 6,
-                                   created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                   updated_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                   deleted_at          TIMESTAMP,
+                                   id INT AUTO_INCREMENT PRIMARY KEY,
+                                   first_name VARCHAR(50),
+                                   last_name VARCHAR(50),
+                                   nickname VARCHAR(50),
+                                   nickname_is_flagged TINYINT DEFAULT 0,
+                                   email VARCHAR(255) NOT NULL,
+                                   public_email TINYINT DEFAULT 0,
+                                   phone VARCHAR(255),
+                                   public_phone TINYINT DEFAULT 0,
+                                   preferred_language varchar(50) null,
+                                   password_hash VARCHAR(255),
+                                   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                   deleted_at DATETIME,
                                    UNIQUE INDEX idx_users_email (email),
                                    INDEX idx_users_name (last_name, first_name)
 );
@@ -121,20 +120,21 @@ CREATE TABLE IF NOT EXISTS schools (
 );
 
 CREATE TABLE IF NOT EXISTS locations (
-                                       id                 INT AUTO_INCREMENT PRIMARY KEY,
-                                       school_id          INT NOT NULL,
-                                       parent_location_id INT,
-                                       name               VARCHAR(255) NOT NULL,
-                                       description        TEXT,
-                                       address            VARCHAR(255),
-                                       latitude           DECIMAL(8,4),
-                                       longitude          DECIMAL(8,4),
-                                       status_id          VARCHAR(20) DEFAULT 'ACTIVE',
-                                       created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                       updated_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                       deleted_at         TIMESTAMP,
-                                       CONSTRAINT fk_locations_school FOREIGN KEY (school_id) REFERENCES schools (id) ON DELETE CASCADE,
-                                       CONSTRAINT fk_locations_parent FOREIGN KEY (parent_location_id) REFERENCES locations (id) ON DELETE SET NULL
+                                       id INT AUTO_INCREMENT PRIMARY KEY,
+                                       school_id INT NOT NULL,
+                                       parent_location_id INT NULL,
+                                       name VARCHAR(255) NOT NULL,
+                                       description TEXT,
+                                       address VARCHAR(255),
+                                       latitude DECIMAL(8,4),
+                                       longitude DECIMAL(8,4),
+                                       status_id ENUM('DRAFT', 'ACTIVE', 'CLOSED', 'COMING_SOON') DEFAULT 'ACTIVE',
+                                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                       deleted_at DATETIME DEFAULT NULL,
+                                       CONSTRAINT fk_locations_school FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE CASCADE,
+                                       CONSTRAINT fk_locations_parent FOREIGN KEY (parent_location_id) REFERENCES locations(id) ON DELETE SET NULL,
+                                       UNIQUE KEY uk_school_location (school_id, name)
 );
 
 
@@ -288,6 +288,8 @@ CREATE TABLE IF NOT EXISTS patriot_users (
                                            password_hash  VARCHAR(255) NOT NULL,
                                            phone          VARCHAR(20),
                                            status_id      INT NOT NULL,
+                                           avatar_url     VARCHAR(255),
+                                           zip_code       VARCHAR(10),
                                            email_verified BOOLEAN DEFAULT FALSE,
                                            created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                            updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

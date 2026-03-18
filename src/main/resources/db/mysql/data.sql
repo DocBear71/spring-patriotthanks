@@ -71,23 +71,23 @@ INSERT IGNORE INTO visits VALUES (4, 7, '2008-09-04', 'spayed');
 -- =====================================================================
 
 INSERT IGNORE INTO roles (name, description) VALUES
-                                        ('SCHOOL_ADMIN', 'Rec Center Admin: Can manage facilities, leagues, scores, and users.'),
-                                        ('STUDENT', 'Student: Can join leagues, create teams, and view schedules.');
+                                               ('SCHOOL_ADMIN', 'Rec Center Admin: Can manage facilities, leagues, scores, and users.'),
+                                               ('STUDENT', 'Student: Can join leagues, create teams, and view schedules.');
 
 INSERT IGNORE INTO permissions (name, description) VALUES
-                                              ('MANAGE_OWN_PROFILE', 'Allows user to update their personal info and password.'),
-                                              ('USE_MESSAGING', 'Allows user to send/receive messages with other participants.'),
-                                              ('VIEW_LEAGUES', 'Allows user to browse and search available leagues and activities.'),
-                                              ('REGISTER_FOR_LEAGUE', 'Allows user to register as an individual for a league.'),
-                                              ('CREATE_TEAM', 'Allows user to create a new team as a captain.'),
-                                              ('MANAGE_TEAM_INVITATIONS', 'Allows user to accept or decline invitations to a team.'),
-                                              ('VIEW_OWN_SCHEDULE', 'Allows user to view their personal and team game schedule.'),
-                                              ('VIEW_STANDINGS', 'Allows user to view league standings and team statistics.'),
-                                              ('MANAGE_FACILITIES', 'Allows user to C/R/U/D locations, fields, and courts.'),
-                                              ('MANAGE_SCHEDULES', 'Allows user to C/R/U/D leagues, activities, and games.'),
-                                              ('MANAGE_REGISTRATIONS', 'Allows user to view and approve team registrations.'),
-                                              ('MANAGE_SCORES', 'Allows user to enter and confirm game scores.'),
-                                              ('SEND_ANNOUNCEMENTS', 'Allows user to send messages to individuals, teams, and leagues.');
+                                                     ('MANAGE_OWN_PROFILE', 'Allows user to update their personal info and password.'),
+                                                     ('USE_MESSAGING', 'Allows user to send/receive messages with other participants.'),
+                                                     ('VIEW_LEAGUES', 'Allows user to browse and search available leagues and activities.'),
+                                                     ('REGISTER_FOR_LEAGUE', 'Allows user to register as an individual for a league.'),
+                                                     ('CREATE_TEAM', 'Allows user to create a new team as a captain.'),
+                                                     ('MANAGE_TEAM_INVITATIONS', 'Allows user to accept or decline invitations to a team.'),
+                                                     ('VIEW_OWN_SCHEDULE', 'Allows user to view their personal and team game schedule.'),
+                                                     ('VIEW_STANDINGS', 'Allows user to view league standings and team statistics.'),
+                                                     ('MANAGE_FACILITIES', 'Allows user to C/R/U/D locations, fields, and courts.'),
+                                                     ('MANAGE_SCHEDULES', 'Allows user to C/R/U/D leagues, activities, and games.'),
+                                                     ('MANAGE_REGISTRATIONS', 'Allows user to view and approve team registrations.'),
+                                                     ('MANAGE_SCORES', 'Allows user to enter and confirm game scores.'),
+                                                     ('SEND_ANNOUNCEMENTS', 'Allows user to send messages to individuals, teams, and leagues.');
 
 -- Student permissions (role_id=2)
 INSERT IGNORE INTO permission_role (permission_id, role_id) VALUES (1, 2);
@@ -125,21 +125,21 @@ INSERT IGNORE INTO user_roles (user_id, role_id) VALUES (1, 1);
 INSERT IGNORE INTO user_roles (user_id, role_id) VALUES (2, 2);
 
 INSERT IGNORE INTO schools (name, domain) VALUES
-                                                ('Kirkwood Community College', 'kirkwood.edu'),
-                                                ('University of Iowa', 'uiowa.edu'),
-                                                ('Iowa State University', 'iastate.edu'),
-                                                ('University of Northern Iowa', 'uni.edu'),
-                                                ('Coe College', 'coe.edu'),
-                                                ('Mount Mercy University', 'mtmercy.edu'),
-                                                ('Drake University', 'drake.edu'),
-                                                ('Grinnell College', 'grinnell.edu'),
-                                                ('Luther College', 'luther.edu'),
-                                                ('Simpson College', 'simpson.edu'),
-                                                ('Wartburg College', 'wartburg.edu'),
-                                                ('Cornell College', 'cornellcollege.edu'),
-                                                ('Loras College', 'loras.edu'),
-                                                ('Clarke University', 'clarke.edu'),
-                                                ('St. Ambrose University', 'sau.edu');
+                                            ('Kirkwood Community College', 'kirkwood.edu'),
+                                            ('University of Iowa', 'uiowa.edu'),
+                                            ('Iowa State University', 'iastate.edu'),
+                                            ('University of Northern Iowa', 'uni.edu'),
+                                            ('Coe College', 'coe.edu'),
+                                            ('Mount Mercy University', 'mtmercy.edu'),
+                                            ('Drake University', 'drake.edu'),
+                                            ('Grinnell College', 'grinnell.edu'),
+                                            ('Luther College', 'luther.edu'),
+                                            ('Simpson College', 'simpson.edu'),
+                                            ('Wartburg College', 'wartburg.edu'),
+                                            ('Cornell College', 'cornellcollege.edu'),
+                                            ('Loras College', 'loras.edu'),
+                                            ('Clarke University', 'clarke.edu'),
+                                            ('St. Ambrose University', 'sau.edu');
 
 INSERT IGNORE INTO locations (school_id, name, description, address) VALUES
   (1, 'Main Campus', 'The primary campus in Cedar Rapids', '6301 Kirkwood Blvd SW, Cedar Rapids, IA');
@@ -147,14 +147,14 @@ INSERT IGNORE INTO locations (school_id, name, description, address) VALUES
   (2, 'Carver-Hawkeye Arena', 'Main sports arena', '1 Elliott Dr, Iowa City, IA');
 
 INSERT IGNORE INTO locations (school_id, parent_location_id, name, description) VALUES
-                                                                                      (1, 1, 'Michael J Gould Rec Center', 'Student recreation facility'),
-                                                                                      (1, 1, 'Johnson Hall', 'Athletics building and gymnasium');
+                                                                                  (1, 1, 'Michael J Gould Rec Center', 'Student recreation facility'),
+                                                                                  (1, 1, 'Johnson Hall', 'Athletics building and gymnasium');
 INSERT IGNORE INTO locations (school_id, parent_location_id, name, description) VALUES
-                                                                                      (2, 2, 'Main Court', 'The primary basketball court'),
-                                                                                      (2, 2, 'Weight Room', 'Athlete training facility');
+                                                                                  (2, 2, 'Main Court', 'The primary basketball court'),
+                                                                                  (2, 2, 'Weight Room', 'Athlete training facility');
 INSERT IGNORE INTO locations (school_id, parent_location_id, name, description) VALUES
-                                                                                      (1, 3, 'Basketball Court 1', 'North court'),
-                                                                                      (1, 3, 'Basketball Court 2', 'South court');
+                                                                                  (1, 3, 'Basketball Court 1', 'North court'),
+                                                                                  (1, 3, 'Basketball Court 2', 'South court');
 
 -- =====================================================================
 -- PATRIOT THANKS: Lookup Data
@@ -176,61 +176,61 @@ INSERT IGNORE INTO titles (id, name, description, display_order) VALUES (6, 'Mx.
 INSERT IGNORE INTO titles (id, name, description, display_order) VALUES (7, 'Dr.', 'Dr. (Doctor) is an academic title used for individuals who have earned a doctoral degree.', 1);
 
 INSERT IGNORE INTO us_states (id, code, name) VALUES
-                                         (1, 'AL', 'Alabama'), (2, 'AK', 'Alaska'), (3, 'AZ', 'Arizona'), (4, 'AR', 'Arkansas'),
-                                         (5, 'CA', 'California'), (6, 'CO', 'Colorado'), (7, 'CT', 'Connecticut'), (8, 'DE', 'Delaware'),
-                                         (9, 'FL', 'Florida'), (10, 'GA', 'Georgia'), (11, 'HI', 'Hawaii'), (12, 'ID', 'Idaho'),
-                                         (13, 'IL', 'Illinois'), (14, 'IN', 'Indiana'), (15, 'IA', 'Iowa'), (16, 'KS', 'Kansas'),
-                                         (17, 'KY', 'Kentucky'), (18, 'LA', 'Louisiana'), (19, 'ME', 'Maine'), (20, 'MD', 'Maryland'),
-                                         (21, 'MA', 'Massachusetts'), (22, 'MI', 'Michigan'), (23, 'MN', 'Minnesota'), (24, 'MS', 'Mississippi'),
-                                         (25, 'MO', 'Missouri'), (26, 'MT', 'Montana'), (27, 'NE', 'Nebraska'), (28, 'NV', 'Nevada'),
-                                         (29, 'NH', 'New Hampshire'), (30, 'NJ', 'New Jersey'), (31, 'NM', 'New Mexico'), (32, 'NY', 'New York'),
-                                         (33, 'NC', 'North Carolina'), (34, 'ND', 'North Dakota'), (35, 'OH', 'Ohio'), (36, 'OK', 'Oklahoma'),
-                                         (37, 'OR', 'Oregon'), (38, 'PA', 'Pennsylvania'), (39, 'RI', 'Rhode Island'), (40, 'SC', 'South Carolina'),
-                                         (41, 'SD', 'South Dakota'), (42, 'TN', 'Tennessee'), (43, 'TX', 'Texas'), (44, 'UT', 'Utah'),
-                                         (45, 'VT', 'Vermont'), (46, 'VA', 'Virginia'), (47, 'WA', 'Washington'), (48, 'WV', 'West Virginia'),
-                                         (49, 'WI', 'Wisconsin'), (50, 'WY', 'Wyoming'), (51, 'DC', 'District of Columbia');
+                                                (1, 'AL', 'Alabama'), (2, 'AK', 'Alaska'), (3, 'AZ', 'Arizona'), (4, 'AR', 'Arkansas'),
+                                                (5, 'CA', 'California'), (6, 'CO', 'Colorado'), (7, 'CT', 'Connecticut'), (8, 'DE', 'Delaware'),
+                                                (9, 'FL', 'Florida'), (10, 'GA', 'Georgia'), (11, 'HI', 'Hawaii'), (12, 'ID', 'Idaho'),
+                                                (13, 'IL', 'Illinois'), (14, 'IN', 'Indiana'), (15, 'IA', 'Iowa'), (16, 'KS', 'Kansas'),
+                                                (17, 'KY', 'Kentucky'), (18, 'LA', 'Louisiana'), (19, 'ME', 'Maine'), (20, 'MD', 'Maryland'),
+                                                (21, 'MA', 'Massachusetts'), (22, 'MI', 'Michigan'), (23, 'MN', 'Minnesota'), (24, 'MS', 'Mississippi'),
+                                                (25, 'MO', 'Missouri'), (26, 'MT', 'Montana'), (27, 'NE', 'Nebraska'), (28, 'NV', 'Nevada'),
+                                                (29, 'NH', 'New Hampshire'), (30, 'NJ', 'New Jersey'), (31, 'NM', 'New Mexico'), (32, 'NY', 'New York'),
+                                                (33, 'NC', 'North Carolina'), (34, 'ND', 'North Dakota'), (35, 'OH', 'Ohio'), (36, 'OK', 'Oklahoma'),
+                                                (37, 'OR', 'Oregon'), (38, 'PA', 'Pennsylvania'), (39, 'RI', 'Rhode Island'), (40, 'SC', 'South Carolina'),
+                                                (41, 'SD', 'South Dakota'), (42, 'TN', 'Tennessee'), (43, 'TX', 'Texas'), (44, 'UT', 'Utah'),
+                                                (45, 'VT', 'Vermont'), (46, 'VA', 'Virginia'), (47, 'WA', 'Washington'), (48, 'WV', 'West Virginia'),
+                                                (49, 'WI', 'Wisconsin'), (50, 'WY', 'Wyoming'), (51, 'DC', 'District of Columbia');
 
 -- =====================================================================
 -- PATRIOT THANKS: Business Types (25 categories)
 -- =====================================================================
 
 INSERT IGNORE INTO business_types (id, name, description, display_order, is_active) VALUES
-                                                                               (1, 'Automotive', 'Vehicles, parts, repairs, and transportation services.', 1, TRUE),
-                                                                               (2, 'Beauty', 'Cosmetics, skincare, salon services, and personal care products.', 2, TRUE),
-                                                                               (3, 'Bookstore', 'Books, magazines, educational materials, and reading accessories.', 3, TRUE),
-                                                                               (4, 'Clothing', 'Apparel, footwear, accessories, and fashion items.', 4, TRUE),
-                                                                               (5, 'Convenience Store', 'Quick-access groceries, snacks, beverages, and everyday essentials.', 5, TRUE),
-                                                                               (6, 'Department Store', 'Multi-category retail offering clothing, home goods, and general merchandise.', 6, TRUE),
-                                                                               (7, 'Electronics', 'Consumer electronics, appliances, and electronic accessories.', 7, TRUE),
-                                                                               (8, 'Entertainment', 'Media, events, performances, and recreational activities.', 8, TRUE),
-                                                                               (9, 'Furniture', 'Home and office furniture, fixtures, and decor items.', 9, TRUE),
-                                                                               (10, 'Fuel Station', 'Gasoline, diesel, vehicle fluids, and convenience items.', 10, TRUE),
-                                                                               (11, 'Gift Shop', 'Gifts, cards, novelties, and specialty presentation items.', 11, TRUE),
-                                                                               (12, 'Grocery', 'Food, beverages, household supplies, and perishable goods.', 12, TRUE),
-                                                                               (13, 'Hardware', 'Tools, building materials, and home improvement supplies.', 13, TRUE),
-                                                                               (14, 'Health', 'Health services, medical supplies, and wellness products.', 14, TRUE),
-                                                                               (15, 'Hotel/Motel', 'Lodging, accommodations, and hospitality services.', 15, TRUE),
-                                                                               (16, 'Jewelry', 'Fine jewelry, watches, precious metals, and gemstones.', 16, TRUE),
-                                                                               (17, 'Other', 'Miscellaneous businesses not fitting standard categories.', 17, TRUE),
-                                                                               (18, 'Pharmacy', 'Prescription medications, over-the-counter drugs, and health consultations.', 18, TRUE),
-                                                                               (19, 'Restaurant', 'Food preparation, dining services, and culinary experiences.', 19, TRUE),
-                                                                               (20, 'Retail', 'General consumer goods sold directly to customers.', 20, TRUE),
-                                                                               (21, 'Service', 'Professional services, repairs, and skilled labor.', 21, TRUE),
-                                                                               (22, 'Specialty', 'Niche products and specialized goods for specific markets.', 22, TRUE),
-                                                                               (23, 'Sporting Goods', 'Athletic equipment, sportswear, and recreational gear.', 23, TRUE),
-                                                                               (24, 'Technology', 'Computer hardware, software, IT services, and digital solutions.', 24, TRUE),
-                                                                               (25, 'Toys', 'Children''s toys, games, educational play items, and hobbies.', 25, TRUE);
+                                                                                      (1, 'Automotive', 'Vehicles, parts, repairs, and transportation services.', 1, TRUE),
+                                                                                      (2, 'Beauty', 'Cosmetics, skincare, salon services, and personal care products.', 2, TRUE),
+                                                                                      (3, 'Bookstore', 'Books, magazines, educational materials, and reading accessories.', 3, TRUE),
+                                                                                      (4, 'Clothing', 'Apparel, footwear, accessories, and fashion items.', 4, TRUE),
+                                                                                      (5, 'Convenience Store', 'Quick-access groceries, snacks, beverages, and everyday essentials.', 5, TRUE),
+                                                                                      (6, 'Department Store', 'Multi-category retail offering clothing, home goods, and general merchandise.', 6, TRUE),
+                                                                                      (7, 'Electronics', 'Consumer electronics, appliances, and electronic accessories.', 7, TRUE),
+                                                                                      (8, 'Entertainment', 'Media, events, performances, and recreational activities.', 8, TRUE),
+                                                                                      (9, 'Furniture', 'Home and office furniture, fixtures, and decor items.', 9, TRUE),
+                                                                                      (10, 'Fuel Station', 'Gasoline, diesel, vehicle fluids, and convenience items.', 10, TRUE),
+                                                                                      (11, 'Gift Shop', 'Gifts, cards, novelties, and specialty presentation items.', 11, TRUE),
+                                                                                      (12, 'Grocery', 'Food, beverages, household supplies, and perishable goods.', 12, TRUE),
+                                                                                      (13, 'Hardware', 'Tools, building materials, and home improvement supplies.', 13, TRUE),
+                                                                                      (14, 'Health', 'Health services, medical supplies, and wellness products.', 14, TRUE),
+                                                                                      (15, 'Hotel/Motel', 'Lodging, accommodations, and hospitality services.', 15, TRUE),
+                                                                                      (16, 'Jewelry', 'Fine jewelry, watches, precious metals, and gemstones.', 16, TRUE),
+                                                                                      (17, 'Other', 'Miscellaneous businesses not fitting standard categories.', 17, TRUE),
+                                                                                      (18, 'Pharmacy', 'Prescription medications, over-the-counter drugs, and health consultations.', 18, TRUE),
+                                                                                      (19, 'Restaurant', 'Food preparation, dining services, and culinary experiences.', 19, TRUE),
+                                                                                      (20, 'Retail', 'General consumer goods sold directly to customers.', 20, TRUE),
+                                                                                      (21, 'Service', 'Professional services, repairs, and skilled labor.', 21, TRUE),
+                                                                                      (22, 'Specialty', 'Niche products and specialized goods for specific markets.', 22, TRUE),
+                                                                                      (23, 'Sporting Goods', 'Athletic equipment, sportswear, and recreational gear.', 23, TRUE),
+                                                                                      (24, 'Technology', 'Computer hardware, software, IT services, and digital solutions.', 24, TRUE),
+                                                                                      (25, 'Toys', 'Children''s toys, games, educational play items, and hobbies.', 25, TRUE);
 
 -- =====================================================================
 -- PATRIOT THANKS: Incentive Types
 -- =====================================================================
 
 INSERT IGNORE INTO incentive_types (id, name, description, display_order, is_active) VALUES
-                                                                                (1, 'Veteran', 'Veterans special pricing and benefits.', 1, TRUE),
-                                                                                (2, 'Active Duty', 'Active duty military personnel discount.', 2, TRUE),
-                                                                                (3, 'First Responder', 'Discounts for emergency services professionals.', 3, TRUE),
-                                                                                (4, 'Spouse', 'Benefits extended to military/responder spouses.', 4, TRUE),
-                                                                                (5, 'Other', 'Alternative special discounts or promotional offers.', 5, TRUE);
+                                                                                       (1, 'Veteran', 'Veterans special pricing and benefits.', 1, TRUE),
+                                                                                       (2, 'Active Duty', 'Active duty military personnel discount.', 2, TRUE),
+                                                                                       (3, 'First Responder', 'Discounts for emergency services professionals.', 3, TRUE),
+                                                                                       (4, 'Spouse', 'Benefits extended to military/responder spouses.', 4, TRUE),
+                                                                                       (5, 'Other', 'Alternative special discounts or promotional offers.', 5, TRUE);
 
 -- =====================================================================
 -- PATRIOT THANKS: Businesses (43 - mirrors MySQL production data)
@@ -430,22 +430,24 @@ INSERT IGNORE INTO patriot_roles (name, description) VALUES ('PLATFORM_ADMIN', '
 --                   4=Spouse, 5=Business Owner, 6=Supporter
 -- =====================================================================
 
-INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, email_verified) VALUES
-  (1, 'Edward', 'McKeown', 'edward@doctormckeown.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 1, TRUE);
-INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, email_verified) VALUES
-  (2, 'Admin', 'User', 'admin@patriotthanks.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 6, TRUE);
-INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, email_verified) VALUES
-  (3, 'John', 'Veteran', 'john.veteran@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 1, TRUE);
-INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, email_verified) VALUES
-  (4, 'Jane', 'ActiveDuty', 'jane.active@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 2, TRUE);
-INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, email_verified) VALUES
-  (5, 'Mike', 'Firefighter', 'mike.fire@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 3, TRUE);
-INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, email_verified) VALUES
-  (6, 'Sarah', 'Business', 'sarah.biz@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 5, TRUE);
-INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, email_verified) VALUES
-  (7, 'Tom', 'Supporter', 'tom.support@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 6, TRUE);
-INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, email_verified) VALUES
-  (8, 'Guest', 'User', 'guest@patriotthanks.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 6, FALSE);
+-- avatar_url: NULL here — the controller generates a Gravatar URL on first profile load.
+-- zip_code:   NULL here — users set their own home zip code via the Edit Profile page.
+INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, avatar_url, zip_code, email_verified) VALUES
+  (1, 'Edward', 'McKeown', 'edward@doctormckeown.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 1, NULL, NULL, TRUE);
+INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, avatar_url, zip_code, email_verified) VALUES
+  (2, 'Admin', 'User', 'admin@patriotthanks.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 6, NULL, NULL, TRUE);
+INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, avatar_url, zip_code, email_verified) VALUES
+  (3, 'John', 'Veteran', 'john.veteran@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 1, NULL, NULL, TRUE);
+INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, avatar_url, zip_code, email_verified) VALUES
+  (4, 'Jane', 'ActiveDuty', 'jane.active@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 2, NULL, NULL, TRUE);
+INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, avatar_url, zip_code, email_verified) VALUES
+  (5, 'Mike', 'Firefighter', 'mike.fire@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 3, NULL, NULL, TRUE);
+INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, avatar_url, zip_code, email_verified) VALUES
+  (6, 'Sarah', 'Business', 'sarah.biz@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 5, NULL, NULL, TRUE);
+INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, avatar_url, zip_code, email_verified) VALUES
+  (7, 'Tom', 'Supporter', 'tom.support@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 6, NULL, NULL, TRUE);
+INSERT IGNORE INTO patriot_users (id, first_name, last_name, email, password_hash, phone, status_id, avatar_url, zip_code, email_verified) VALUES
+  (8, 'Guest', 'User', 'guest@patriotthanks.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', NULL, 6, NULL, NULL, FALSE);
 
 -- patriot_user_roles: role IDs match patriot_roles insert order
 -- 1=VETERAN, 2=ACTIVE_DUTY, 3=FIRST_RESPONDER, 4=MILITARY_SPOUSE,

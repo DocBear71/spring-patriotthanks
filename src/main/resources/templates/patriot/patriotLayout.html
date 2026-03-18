@@ -10,7 +10,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="shortcut icon" type="image/x-icon" th:href="@{/resources/images/favicon.png}">
+  <link rel="shortcut icon" type="image/png" th:href="@{/resources/images/patriot-thanks-favicon.png}">
   <title>Patriot Thanks - Supporting Those Who Serve</title>
   <link th:href="@{/webjars/font-awesome/css/font-awesome.min.css}" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/resources/css/petclinic.css}" />
@@ -24,13 +24,7 @@
     .navbar-brand span {
       background-image: none !important;
     }
-    .navbar-brand::after {
-      content: '★ Patriot Thanks';
-      color: #d4a843;
-      font-weight: bold;
-      font-size: 1.2rem;
-      letter-spacing: 1px;
-    }
+
     .navbar-nav button.nav-link {
       border: none;
       border-radius: 0;
@@ -87,7 +81,10 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark" role="navigation">
   <div class="container-fluid">
-    <a class="navbar-brand" th:href="@{/}"><span></span></a>
+    <a class="navbar-brand" th:href="@{/}">
+      <img th:src="@{/resources/images/patriot-thanks-logo.png}"
+           alt="Patriot Thanks" style="height:50px; width:auto;" />
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#patriot-navbar">
       <span class="navbar-toggler-icon"></span>
     </button>

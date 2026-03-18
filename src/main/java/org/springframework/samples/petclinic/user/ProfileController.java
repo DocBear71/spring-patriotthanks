@@ -90,6 +90,9 @@ public class ProfileController {
 	 */
 	@GetMapping("/profile")
 	public String showProfileForm(Model model, Principal principal) {
+		if (principal == null) {
+			return "redirect:/login";
+		}
 		String email = principal.getName();
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -104,6 +107,11 @@ public class ProfileController {
 			String formattedPhone = phone.replaceFirst("(\\d{3})(\\d{3})(\\d{4})", "($1) $2-$3");
 			user.setPhone(formattedPhone);
 		}
+		// ADD THIS BLOCK: Extract the slug from the email (e.g., student@kirkwood.edu ->
+		// kirkwood)
+		String domain = email.substring(email.indexOf("@") + 1); // kirkwood.edu
+		String slug = domain.contains(".") ? domain.substring(0, domain.lastIndexOf(".")) : domain; // kirkwood
+		model.addAttribute("schoolSlug", slug);
 
 		model.addAttribute("user", user);
 		return "users/profile";
@@ -207,6 +215,14 @@ public class ProfileController {
 
 		// 7. Redirect
 		redirectAttributes.addFlashAttribute("messageSuccess", "Your profile has been updated successfully.");
+
+		// Grab the 2-letter code from the database object and make it lowercase
+		String langCode = currentUser.getPreferredLanguage();
+		if (langCode != null) {
+			// This triggers the LocaleChangeInterceptor we just built!
+			return "redirect:/users/profile?lang=" + langCode.toLowerCase();
+		}
+
 		return "redirect:/users/profile";
 	}
 

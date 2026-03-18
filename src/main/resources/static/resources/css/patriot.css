@@ -1,0 +1,312 @@
+/*
+ * Patriot Thanks Custom Styles
+ *
+ * Custom CSS for Patriot Thanks application pages
+ * This file overrides Bootstrap and PetClinic default styles
+ *
+ * Author: Edward
+ * Project: Patriot Thanks - Veterans & First Responders Discount Platform
+ */
+
+/* ── Override Spring navbar brand logo for Patriot Thanks pages ── */
+.navbar a.navbar-brand {
+    background: none !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 6px 0 6px 15px !important;
+    padding: 4px 0 !important;
+}
+
+.navbar a.navbar-brand span {
+    display: none !important;
+}
+
+.navbar a.navbar-brand img {
+    height: 50px;
+    width: auto;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   Business List Table Styles
+   ========================================================================== */
+
+/**
+ * Override Bootstrap's border-collapse to enable row spacing
+ * Maximum specificity to ensure override of petclinic.css
+ */
+table.table.table-striped#businessesTable {
+    border-collapse: separate !important;
+    border-spacing: 0 10px !important;  /* 10px vertical spacing between rows */
+    margin-top: -10px !important;       /* Offset first row spacing */
+}
+
+/**
+ * Ensure tbody displays correctly with separated borders
+ */
+table.table.table-striped#businessesTable tbody {
+    display: table-row-group !important;
+}
+
+/**
+ * Business row styling - creates card-like appearance
+ */
+table#businessesTable tbody tr.business-row {
+    background-color: white !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+/**
+ * Business row hover effect - lifts card on hover
+ */
+table#businessesTable tbody tr.business-row:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-1px) !important;
+}
+
+table#businessesTable tbody tr.business-row:hover td {
+    background-color: #f8f9fa !important;
+}
+
+/**
+ * Business row cell styling
+ */
+table#businessesTable tbody tr.business-row td {
+    padding: 12px 8px !important;
+    vertical-align: middle !important;
+    background-color: white !important;
+    border: 1px solid #e9ecef !important;
+}
+
+/**
+ * Remove double borders between adjacent cells
+ */
+table#businessesTable tbody tr.business-row td + td {
+    border-left: none !important;
+}
+
+/**
+ * Rounded corners for first cell in row
+ */
+table#businessesTable tbody tr.business-row td:first-child {
+    border-top-left-radius: 6px !important;
+    border-bottom-left-radius: 6px !important;
+}
+
+/**
+ * Rounded corners for last cell in row
+ */
+table#businessesTable tbody tr.business-row td:last-child {
+    border-top-right-radius: 6px !important;
+    border-bottom-right-radius: 6px !important;
+}
+
+/* ==========================================================================
+   Expand/Collapse Icon Styles
+   ========================================================================== */
+
+/**
+ * Expand icon - arrow that rotates on click
+ */
+.expand-icon {
+    margin-right: 8px !important;
+    transition: transform 0.2s ease !important;
+    display: inline-block !important;
+    font-weight: bold !important;
+    color: #0056b3 !important;
+    width: 20px !important;
+    text-align: center !important;
+}
+
+/**
+ * Rotated state for expanded rows
+ */
+.expand-icon.rotated {
+    transform: rotate(90deg) !important;
+}
+
+/* ==========================================================================
+   Incentive Row Styles
+   ========================================================================== */
+
+/**
+ * Incentive row - hidden by default
+ */
+table#businessesTable tbody tr.incentive-row {
+    display: none !important;
+    background-color: #f8f9fa !important;
+}
+
+/**
+ * Incentive row - shown state
+ */
+table#businessesTable tbody tr.incentive-row.show {
+    display: table-row !important;
+}
+
+/**
+ * Incentive row cell styling
+ */
+table#businessesTable tbody tr.incentive-row td {
+    padding: 0 !important;
+    border: none !important;
+    background-color: #f8f9fa !important;
+}
+
+/* ==========================================================================
+   Incentive Details Container
+   ========================================================================== */
+
+/**
+ * Incentive details - animated container
+ */
+.incentive-details {
+    padding: 20px !important;
+    opacity: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: opacity 0.3s ease, max-height 0.3s ease, padding 0.3s ease !important;
+}
+
+/**
+ * Incentive details - expanded state
+ */
+table#businessesTable tbody tr.incentive-row.show .incentive-details {
+    opacity: 1 !important;
+    max-height: 2000px !important;
+    padding: 20px !important;
+}
+
+/* ==========================================================================
+   Incentive Card Styles
+   ========================================================================== */
+
+/**
+ * Individual incentive card styling
+ */
+.incentive-card {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 4px !important;
+    padding: 15px !important;
+    margin-bottom: 10px !important;
+    background-color: white !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/**
+ * Incentive card heading
+ */
+.incentive-card h5 {
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+    color: #0056b3 !important;
+}
+
+/**
+ * Badge styling in incentive cards
+ */
+.incentive-card .badge {
+    margin-right: 5px !important;
+    margin-bottom: 5px !important;
+}
+
+/* ==========================================================================
+   Loading and Empty States
+   ========================================================================== */
+
+/**
+ * No incentives message
+ */
+.no-incentives {
+    padding: 20px !important;
+    text-align: center !important;
+    color: #6c757d !important;
+    font-style: italic !important;
+}
+
+/**
+ * Loading spinner container
+ */
+.loading-spinner {
+    text-align: center !important;
+    padding: 20px !important;
+    color: #6c757d !important;
+}
+
+/* ==========================================================================
+   Link Styles
+   ========================================================================== */
+
+/**
+ * Business website links - prevent row expansion on click
+ */
+.business-website-link {
+    color: #0056b3 !important;
+    text-decoration: underline !important;
+}
+
+.business-website-link:hover {
+    color: #003d82 !important;
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+/**
+ * Badge spacing
+ */
+.badge {
+    margin-right: 5px !important;
+    margin-bottom: 5px !important;
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+
+/**
+ * Mobile/tablet adjustments
+ */
+@media (max-width: 768px) {
+    table#businessesTable tbody tr.business-row td {
+        padding: 8px 6px !important;
+    }
+
+    .incentive-details {
+        padding: 15px !important;
+    }
+
+    table#businessesTable tbody tr.incentive-row.show .incentive-details {
+        padding: 15px !important;
+    }
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+/**
+ * Print-friendly styles
+ */
+@media print {
+    table#businessesTable tbody tr.business-row {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
+
+    .expand-icon {
+        display: none !important;
+    }
+
+    table#businessesTable tbody tr.incentive-row {
+        display: table-row !important;
+    }
+
+    .incentive-details {
+        opacity: 1 !important;
+        max-height: none !important;
+    }
+}

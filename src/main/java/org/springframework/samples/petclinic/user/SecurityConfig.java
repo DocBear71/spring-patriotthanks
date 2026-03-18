@@ -119,8 +119,15 @@ public class SecurityConfig {
 				.requestMatchers("/register-student", "/login", "/schools/new", "/owners/new", "/businesses/new",
 						"/subscription/new")
 				.permitAll()
+				// ADD THIS LINE: Require login for the profile and any other user
+				// settings
+				.requestMatchers("/users/profile", "/users/delete")
+				.authenticated()
 				.anyRequest()
 				.authenticated())
+			.formLogin(login -> login.loginPage("/login") // This is where guests get
+															// redirected!
+				.permitAll())
 
 			// Ensure all auto-challenge mechanisms are disabled
 			.httpBasic(AbstractHttpConfigurer::disable) // Disable the login popup
