@@ -61,7 +61,7 @@ public class PatriotUser extends BaseEntity {
 	@NotEmpty(message = "Password is required")
 	@Size(min = 8, message = "Password must be at least 8 characters")
 	@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$",
-		message = "Password must contain uppercase, lowercase, and a number")
+			message = "Password must contain uppercase, lowercase, and a number")
 	private String password;
 
 	@Column(name = "phone", length = 20)
@@ -73,9 +73,9 @@ public class PatriotUser extends BaseEntity {
 
 	/**
 	 * Stores a Gravatar URL derived from an MD5 hash of the user's email address, or a
-	 * URL pointing to a custom uploaded profile photo. This field is updated automatically
-	 * by {@link PatriotProfileController} whenever the user saves their profile. If null,
-	 * the UI falls back to displaying the user's initials.
+	 * URL pointing to a custom uploaded profile photo. This field is updated
+	 * automatically by {@link PatriotProfileController} whenever the user saves their
+	 * profile. If null, the UI falls back to displaying the user's initials.
 	 */
 	@Column(name = "avatar_url", length = 255)
 	private String avatarUrl;
@@ -105,7 +105,7 @@ public class PatriotUser extends BaseEntity {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "patriot_user_roles", joinColumns = @JoinColumn(name = "patriot_user_id"),
-		inverseJoinColumns = @JoinColumn(name = "patriot_role_id"))
+			inverseJoinColumns = @JoinColumn(name = "patriot_role_id"))
 	@EqualsAndHashCode.Exclude
 	private Set<PatriotRole> roles = new LinkedHashSet<>();
 

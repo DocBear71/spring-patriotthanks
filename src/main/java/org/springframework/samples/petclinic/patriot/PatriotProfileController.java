@@ -38,16 +38,16 @@ import java.time.LocalDateTime;
  * <strong>Gravatar integration:</strong> When the user saves their profile, this
  * controller computes an MD5 hash of the (trimmed, lower-cased) email address and
  * constructs a Gravatar URL of the form
- * {@code https://www.gravatar.com/avatar/<hash>?d=identicon&s=200}. This URL is stored
- * in the {@code avatar_url} column and displayed in the profile header. If the email
+ * {@code https://www.gravatar.com/avatar/<hash>?d=identicon&s=200}. This URL is stored in
+ * the {@code avatar_url} column and displayed in the profile header. If the email
  * changes, the Gravatar URL is automatically regenerated.
  * </p>
  *
  * <p>
- * <strong>Zip code:</strong> The user's home zip code is stored in the
- * {@code zip_code} column and used as the default geographic search area on the Find
- * Businesses page. Browser-based real-time geolocation is handled entirely on the
- * client side and is never persisted to the database.
+ * <strong>Zip code:</strong> The user's home zip code is stored in the {@code zip_code}
+ * column and used as the default geographic search area on the Find Businesses page.
+ * Browser-based real-time geolocation is handled entirely on the client side and is never
+ * persisted to the database.
  * </p>
  *
  * <p>
@@ -79,7 +79,7 @@ public class PatriotProfileController {
 	 * reloading user details after email changes
 	 */
 	public PatriotProfileController(PatriotUserRepository patriotUserRepository, PasswordEncoder passwordEncoder,
-									@Qualifier("patriotUserDetailsService") UserDetailsService patriotUserDetailsService) {
+			@Qualifier("patriotUserDetailsService") UserDetailsService patriotUserDetailsService) {
 		this.patriotUserRepository = patriotUserRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.patriotUserDetailsService = patriotUserDetailsService;
@@ -198,13 +198,14 @@ public class PatriotProfileController {
 	 */
 	@PostMapping("/profile")
 	public String processProfileUpdate(@ModelAttribute("patriotUser") PatriotUser updatedUser, BindingResult result,
-									   Principal principal, RedirectAttributes redirectAttributes) {
+			Principal principal, RedirectAttributes redirectAttributes) {
 
 		String currentEmail = principal.getName();
 		PatriotUser currentUser = patriotUserRepository.findByEmail(currentEmail)
 			.orElseThrow(() -> new RuntimeException("User not found"));
 
-		// 1. Manually validate required fields (bypassing @Valid to avoid password issues)
+		// 1. Manually validate required fields (bypassing @Valid to avoid password
+		// issues)
 		if (updatedUser.getFirstName() == null || updatedUser.getFirstName().trim().isEmpty()) {
 			result.rejectValue("firstName", "NotEmpty", "First name is required");
 		}
@@ -232,7 +233,7 @@ public class PatriotProfileController {
 		if (isUpdatingPassword) {
 			if (!newPassword.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")) {
 				result.rejectValue("password", "weakPassword",
-					"Password must be at least 8 characters with uppercase, lowercase, and a number");
+						"Password must be at least 8 characters with uppercase, lowercase, and a number");
 			}
 		}
 
@@ -292,8 +293,8 @@ public class PatriotProfileController {
 			// Guard against null authentication (e.g. in test environments where the
 			// Security context is not fully populated via the filter chain)
 			Object credentials = (currentAuth != null) ? currentAuth.getCredentials() : null;
-			Authentication newAuth = new UsernamePasswordAuthenticationToken(newPrincipal,
-				credentials, newPrincipal.getAuthorities());
+			Authentication newAuth = new UsernamePasswordAuthenticationToken(newPrincipal, credentials,
+					newPrincipal.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(newAuth);
 		}
 
@@ -327,7 +328,7 @@ public class PatriotProfileController {
 	 */
 	@PostMapping("/delete")
 	public String deleteAccount(Principal principal, HttpServletRequest request, HttpServletResponse response,
-								RedirectAttributes redirectAttributes) {
+			RedirectAttributes redirectAttributes) {
 
 		String email = principal.getName();
 		PatriotUser currentUser = patriotUserRepository.findByEmail(email)
@@ -345,7 +346,7 @@ public class PatriotProfileController {
 
 		// Redirect with farewell message
 		redirectAttributes.addFlashAttribute("messageSuccess",
-			"Your Patriot Thanks account has been deleted. Thank you for your service!");
+				"Your Patriot Thanks account has been deleted. Thank you for your service!");
 		return "redirect:/patriot";
 	}
 

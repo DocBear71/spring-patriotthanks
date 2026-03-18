@@ -31,9 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * handling, and soft account deletion.
  *
  * <p>
- * All tests supply the authenticated principal directly on each MockMvc request using
- * the lambda form {@code .principal(() -> TEST_EMAIL)}, matching the pattern established
- * in {@link PatriotAuthControllerTest}. This approach works correctly with
+ * All tests supply the authenticated principal directly on each MockMvc request using the
+ * lambda form {@code .principal(() -> TEST_EMAIL)}, matching the pattern established in
+ * {@link PatriotAuthControllerTest}. This approach works correctly with
  * {@link WebMvcTest} without needing to import the full security filter chain.
  * </p>
  *
@@ -126,8 +126,7 @@ class PatriotProfileControllerTest {
 		mockMvc.perform(get("/patriot/profile").principal(() -> TEST_EMAIL))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("patriotUser",
-				org.hamcrest.Matchers.hasProperty("phone",
-					org.hamcrest.Matchers.equalTo("(319) 555-0123"))));
+					org.hamcrest.Matchers.hasProperty("phone", org.hamcrest.Matchers.equalTo("(319) 555-0123"))));
 	}
 
 	/**
@@ -221,9 +220,9 @@ class PatriotProfileControllerTest {
 	// ========================================================================
 
 	/**
-	 * Verifies that when the user changes their email address, the controller
-	 * regenerates the Gravatar URL, refreshes the Spring Security context, and
-	 * redirects successfully.
+	 * Verifies that when the user changes their email address, the controller regenerates
+	 * the Gravatar URL, refreshes the Spring Security context, and redirects
+	 * successfully.
 	 */
 	@Test
 	@DisplayName("POST /patriot/profile -> email change triggers Gravatar regeneration")
