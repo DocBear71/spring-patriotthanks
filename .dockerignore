@@ -1,1 +1,5 @@
 Docs/**/*.svg
+Docs/**/*.md
+Docs/**/*.xlsx
+Docs/**/*.docx
+Docs/**/*.png
