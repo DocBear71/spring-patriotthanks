@@ -118,11 +118,11 @@
 <!--          <span class="fa fa-th-list" aria-hidden="true"></span>-->
 <!--          <span th:text="#{vets}">Veterinarians</span>-->
 <!--        </li>-->
-
-        <li th:replace="~{::menuItem ('/businesses','businesses','businesses','building',#{navigation.businesses})}">
-          <span class="fa fa-building" aria-hidden="true"></span>
-          <span th:text="#{navigation.businesses}">Businesses</span>
-        </li>
+<!--        Businesses are not accessible via pet clinic or athleagues-->
+<!--        <li th:replace="~{::menuItem ('/businesses','businesses','businesses','building',#{navigation.businesses})}">-->
+<!--          <span class="fa fa-building" aria-hidden="true"></span>-->
+<!--          <span th:text="#{navigation.businesses}">Businesses</span>-->
+<!--        </li>-->
 
         <!--          <li-->
         <!--            th:replace="~{::menuItem ('/oups','error','trigger a RuntimeException to see how it is handled','exclamation-triangle',#{error})}">-->

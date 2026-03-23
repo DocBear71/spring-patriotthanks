@@ -9,6 +9,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.samples.petclinic.school.SchoolRepository;
+import org.springframework.samples.petclinic.school.School;
+import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -45,19 +48,21 @@ public class ProfileController {
 	private final PasswordEncoder passwordEncoder;
 
 	private final UserDetailsService userDetailsService;
+	private final SchoolRepository schoolRepository;
 
 	/**
 	 * Constructs a new {@code ProfileController} with the required dependencies.
 	 * @param userRepository the repository for user persistence operations
 	 * @param passwordEncoder the encoder for hashing new passwords
-	 * @param userDetailsService the service for reloading user details after email
-	 * changes
+	 * @param userDetailsService the service for reloading user details after email changes
+	 * @param schoolRepository the repository for looking up schools by domain
 	 */
 	public ProfileController(UserRepository userRepository, PasswordEncoder passwordEncoder,
-			UserDetailsService userDetailsService) {
+							 UserDetailsService userDetailsService, SchoolRepository schoolRepository) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.userDetailsService = userDetailsService;
+		this.schoolRepository = schoolRepository;
 	}
 
 	/**
@@ -107,11 +112,23 @@ public class ProfileController {
 			String formattedPhone = phone.replaceFirst("(\\d{3})(\\d{3})(\\d{4})", "($1) $2-$3");
 			user.setPhone(formattedPhone);
 		}
-		// ADD THIS BLOCK: Extract the slug from the email (e.g., student@kirkwood.edu ->
-		// kirkwood)
-		String domain = email.substring(email.indexOf("@") + 1); // kirkwood.edu
-		String slug = domain.contains(".") ? domain.substring(0, domain.lastIndexOf(".")) : domain; // kirkwood
-		model.addAttribute("schoolSlug", slug);
+		// Extract the school slug by recursively stripping subdomains until a
+		// matching school is found (e.g., student@student.kirkwood.edu -> "kirkwood")
+		String domain = email.substring(email.indexOf("@") + 1);
+		String slug = null;
+		String tempDomain = domain;
+		while (tempDomain.contains(".")) {
+			Optional<School> matchedSchool = schoolRepository.findByDomain(tempDomain);
+			if (matchedSchool.isPresent()) {
+				// Strip the TLD to get the slug (e.g., "kirkwood.edu" -> "kirkwood")
+				String schoolDomain = matchedSchool.get().getDomain();
+				slug = schoolDomain.substring(0, schoolDomain.lastIndexOf("."));
+				break;
+			}
+			// Strip the leftmost subdomain and try again
+			tempDomain = tempDomain.substring(tempDomain.indexOf(".") + 1);
+		}
+		model.addAttribute("schoolSlug", slug); // null if no school matched
 
 		model.addAttribute("user", user);
 		return "users/profile";
