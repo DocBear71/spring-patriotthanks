@@ -59,6 +59,6 @@ jobs:
         run: |
           az config set extension.use_dynamic_install=yes_without_prompt
           az containerapp update \
-            --name petclinic-app \
-            --resource-group petclinic-rg \
+            --name spring-patriotthanks-app \
+            --resource-group spring-patriotthanks-rg \
             --image ${{ secrets.DOCKERHUB_USERNAME }}/spring-patriotthanks:v${{ github.run_number }}
