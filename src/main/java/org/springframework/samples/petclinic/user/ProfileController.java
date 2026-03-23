@@ -48,17 +48,19 @@ public class ProfileController {
 	private final PasswordEncoder passwordEncoder;
 
 	private final UserDetailsService userDetailsService;
+
 	private final SchoolRepository schoolRepository;
 
 	/**
 	 * Constructs a new {@code ProfileController} with the required dependencies.
 	 * @param userRepository the repository for user persistence operations
 	 * @param passwordEncoder the encoder for hashing new passwords
-	 * @param userDetailsService the service for reloading user details after email changes
+	 * @param userDetailsService the service for reloading user details after email
+	 * changes
 	 * @param schoolRepository the repository for looking up schools by domain
 	 */
 	public ProfileController(UserRepository userRepository, PasswordEncoder passwordEncoder,
-							 UserDetailsService userDetailsService, SchoolRepository schoolRepository) {
+			UserDetailsService userDetailsService, SchoolRepository schoolRepository) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.userDetailsService = userDetailsService;
