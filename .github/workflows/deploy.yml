@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'microsoft' # or 'temurin' if you prefer
+          distribution: 'temurin'
 
       # 3. Build the JAR file with Gradle
       # We skip tests here to speed it up, but you can remove '-x test' to be safer
