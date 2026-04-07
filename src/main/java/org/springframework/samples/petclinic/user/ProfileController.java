@@ -19,6 +19,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -65,6 +68,12 @@ public class ProfileController {
 		this.passwordEncoder = passwordEncoder;
 		this.userDetailsService = userDetailsService;
 		this.schoolRepository = schoolRepository;
+	}
+
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		// The 'true' tells it to convert empty strings to null
+		binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
 	}
 
 	/**

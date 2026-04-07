@@ -1,9 +1,14 @@
 package org.springframework.samples.petclinic.patriot;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Spring Security {@link UserDetailsService} implementation for the Patriot Thanks
@@ -16,8 +21,21 @@ import org.springframework.stereotype.Service;
  * logic by rejecting users whose {@code deletedAt} timestamp is non-null.
  * </p>
  *
+ * <p>
+ * Authorities are built in two layers:
+ * </p>
+ * <ol>
+ * <li>Each {@link PatriotRole} is added with the {@code ROLE_} prefix (e.g.
+ * {@code ROLE_VETERAN}), which allows {@code hasRole()} checks in Spring Security.</li>
+ * <li>Each {@link PatriotPermission} attached to a role is added without a prefix (e.g.
+ * {@code SUBMIT_BUSINESS}), which allows {@code hasAuthority()} checks in Thymeleaf and
+ * security configurations.</li>
+ * </ol>
+ *
  * @author Edward McKeown
  * @see PatriotSecurityConfig
+ * @see PatriotRole
+ * @see PatriotPermission
  */
 @Service("patriotUserDetailsService")
 public class PatriotUserDetailsServiceImpl implements UserDetailsService {
@@ -38,8 +56,15 @@ public class PatriotUserDetailsServiceImpl implements UserDetailsService {
 	 * {@link UserDetails} object. Soft-deleted accounts (where {@code deletedAt} is
 	 * non-null) are rejected with the same error message as invalid credentials to
 	 * prevent account enumeration.
+	 *
+	 * <p>
+	 * The returned {@link UserDetails} contains both role-based authorities
+	 * ({@code ROLE_VETERAN}) and permission-based authorities ({@code SUBMIT_BUSINESS})
+	 * so that both {@code hasRole()} and {@code hasAuthority()} checks work correctly.
+	 * </p>
 	 * @param email the user's email address (used as the username)
-	 * @return a {@link UserDetails} object containing the user's credentials and roles
+	 * @return a {@link UserDetails} object containing the user's credentials and
+	 * authorities
 	 * @throws UsernameNotFoundException if no user is found or the account has been
 	 * soft-deleted
 	 */
@@ -54,11 +79,24 @@ public class PatriotUserDetailsServiceImpl implements UserDetailsService {
 			throw new UsernameNotFoundException("Invalid email or password.");
 		}
 
-		// 3. Convert to Spring Security UserDetails
+		// 3. Build authorities from roles + permissions
+		List<GrantedAuthority> authorities = new ArrayList<>();
+
+		for (PatriotRole role : user.getRoles()) {
+			// Add the role with ROLE_ prefix for hasRole() checks
+			authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+
+			// Add each permission without a prefix for hasAuthority() checks
+			for (PatriotPermission permission : role.getPermissions()) {
+				authorities.add(new SimpleGrantedAuthority(permission.getName()));
+			}
+		}
+
+		// 4. Build and return UserDetails
 		return org.springframework.security.core.userdetails.User.builder()
 			.username(user.getEmail())
 			.password(user.getPassword())
-			.roles(user.getRoles().stream().map(PatriotRole::getName).toArray(String[]::new))
+			.authorities(authorities)
 			.build();
 	}
 

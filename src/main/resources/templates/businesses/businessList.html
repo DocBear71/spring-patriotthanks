@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
       th:replace="~{patriot/patriotLayout :: patriotLayout (~{::body},'businesses')}">
 
 <head>
@@ -11,7 +12,9 @@
 
 <h2 th:text="#{businesses.title}">Businesses</h2>
 
-<a class="btn btn-primary mb-3" th:href="@{/businesses/new}" th:text="#{addBusiness}">Add Business</a>
+<a class="btn btn-primary mb-3" th:href="@{/businesses/new}"
+   sec:authorize="hasAuthority('SUBMIT_BUSINESS') or hasAuthority('MANAGE_BUSINESSES')"
+   th:text="#{addBusiness}">Add Business</a>
 
 <table id="businessesTable" class="table table-striped">
   <thead>

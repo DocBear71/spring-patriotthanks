@@ -77,7 +77,10 @@ class PatriotUserDetailsServiceImplTest {
 
 	/**
 	 * Verifies that a valid, active user is loaded successfully with the correct email
-	 * (username) and roles.
+	 * (username), password, and authorities. The VETERAN role should produce a
+	 * {@code ROLE_VETERAN} authority plus one authority for each permission assigned to
+	 * that role. In this test the role has no permissions, so exactly one authority is
+	 * expected.
 	 */
 	@Test
 	@DisplayName("loadUserByUsername -> returns UserDetails for active user")
@@ -89,6 +92,7 @@ class PatriotUserDetailsServiceImplTest {
 		assertThat(userDetails).isNotNull();
 		assertThat(userDetails.getUsername()).isEqualTo("john.doe@example.com");
 		assertThat(userDetails.getPassword()).isEqualTo("$2a$10$hashedpassword");
+		// Role has no permissions in this test, so only ROLE_VETERAN is expected
 		assertThat(userDetails.getAuthorities()).hasSize(1);
 		assertThat(userDetails.getAuthorities().iterator().next().getAuthority()).isEqualTo("ROLE_VETERAN");
 	}
@@ -124,7 +128,9 @@ class PatriotUserDetailsServiceImplTest {
 
 	/**
 	 * Verifies that the service correctly maps multiple roles when a user holds more than
-	 * one {@link PatriotRole}.
+	 * one {@link PatriotRole}. Each role with no permissions contributes exactly one
+	 * authority ({@code ROLE_<name>}), so two roles with no permissions produce two
+	 * authorities total.
 	 */
 	@Test
 	@DisplayName("loadUserByUsername -> maps multiple roles correctly")
@@ -142,7 +148,32 @@ class PatriotUserDetailsServiceImplTest {
 
 		UserDetails userDetails = userDetailsService.loadUserByUsername("john.doe@example.com");
 
+		// 2 roles × (1 ROLE_ authority + 0 permissions each) = 2 authorities
 		assertThat(userDetails.getAuthorities()).hasSize(2);
+	}
+
+	/**
+	 * Verifies that permissions attached to a role are loaded as individual Spring
+	 * Security authorities (without the {@code ROLE_} prefix). A user with the VETERAN
+	 * role that has one permission should receive two authorities total:
+	 * {@code ROLE_VETERAN} and {@code VIEW_INCENTIVES}.
+	 */
+	@Test
+	@DisplayName("loadUserByUsername -> permissions on role are loaded as authorities")
+	void testLoadUserWithPermissions() {
+		PatriotPermission viewIncentives = new PatriotPermission();
+		viewIncentives.setId(1);
+		viewIncentives.setName("VIEW_INCENTIVES");
+
+		veteranRole.getPermissions().add(viewIncentives);
+
+		given(patriotUserRepository.findByEmail("john.doe@example.com")).willReturn(Optional.of(activeUser));
+
+		UserDetails userDetails = userDetailsService.loadUserByUsername("john.doe@example.com");
+
+		// ROLE_VETERAN + VIEW_INCENTIVES = 2 authorities
+		assertThat(userDetails.getAuthorities()).hasSize(2);
+		assertThat(userDetails.getAuthorities()).extracting("authority").contains("ROLE_VETERAN", "VIEW_INCENTIVES");
 	}
 
 }

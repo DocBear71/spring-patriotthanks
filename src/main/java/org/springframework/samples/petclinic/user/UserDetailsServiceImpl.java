@@ -2,10 +2,15 @@ package org.springframework.samples.petclinic.user;
 
 import jakarta.annotation.Priority;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Custom implementation of Spring Security's {@link UserDetailsService} that loads
@@ -66,12 +71,24 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			throw new UsernameNotFoundException("Invalid email or password.");
 		}
 
-		// 3. Convert your custom User model into the UserDetails object that Spring
-		// Security understands
+		// NEW AUTHORITIES LOGIC
+		List<GrantedAuthority> authorities = new ArrayList<>();
+
+		for (Role role : user.getRoles()) {
+			// 1. Add the role (Spring Security requires the "ROLE_" prefix for roles)
+			authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+
+			// 2. Add all permissions attached to this role
+			for (Permission permission : role.getPermissions()) {
+				authorities.add(new SimpleGrantedAuthority(permission.getName()));
+			}
+		}
+
+		// UPDATED BUILDER
 		return org.springframework.security.core.userdetails.User.builder()
 			.username(user.getEmail())
 			.password(user.getPassword())
-			.roles(user.getRoles().stream().map(role -> role.getName()).toArray(String[]::new))
+			.authorities(authorities) // Replaced .roles() with .authorities()
 			.build();
 	}
 

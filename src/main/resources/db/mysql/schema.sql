@@ -316,3 +316,32 @@ CREATE TABLE IF NOT EXISTS subscriptions (
                                            deleted_at DATETIME,
                                            UNIQUE KEY uk_subscription_name (name)
 ) engine=InnoDB;
+
+
+CREATE TABLE IF NOT EXISTS recipes
+(
+  id bigint unsigned auto_increment primary key,
+  recipe_ingredients varchar(255) null,
+  instructions       varchar(255) not null,
+  type               varchar(50)  null,
+  category           varchar(50)  null,
+  dietary_preference varchar(50)  null,
+  internal_notes     varchar(255) not null,
+  constraint id unique (id),
+  constraint internal_notes unique (internal_notes)
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS patriot_permissions (
+                                                 id INT AUTO_INCREMENT PRIMARY KEY,
+                                                 name VARCHAR(100) NOT NULL UNIQUE,
+                                                 description VARCHAR(255),
+                                                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS patriot_role_permissions (
+                                                      patriot_role_id INT NOT NULL,
+                                                      patriot_permission_id INT NOT NULL,
+                                                      PRIMARY KEY (patriot_role_id, patriot_permission_id),
+                                                      CONSTRAINT fk_prp_role FOREIGN KEY (patriot_role_id) REFERENCES patriot_roles (id) ON DELETE CASCADE,
+                                                      CONSTRAINT fk_prp_permission FOREIGN KEY (patriot_permission_id) REFERENCES patriot_permissions (id) ON DELETE CASCADE
+) engine=InnoDB;

@@ -100,6 +100,9 @@ public class PatriotSecurityConfig {
 				.permitAll()
 				.requestMatchers("/businesses/new")
 				.permitAll()
+				// Edit routes require MANAGE_BUSINESSES permission
+				.requestMatchers(org.springframework.http.HttpMethod.POST, "/businesses/*/edit")
+				.hasAuthority("MANAGE_BUSINESSES")
 				.anyRequest()
 				.authenticated())
 			.httpBasic(AbstractHttpConfigurer::disable)

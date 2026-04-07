@@ -2,17 +2,16 @@ package org.springframework.samples.petclinic.user;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.samples.petclinic.model.BaseEntity;
+
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
 @Data
 @NoArgsConstructor
-public class Role {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+public class Role extends BaseEntity {
 
 	@Column(nullable = false, unique = true, length = 50)
 	private String name; // e.g., "ADMIN", "STUDENT"
@@ -23,9 +22,12 @@ public class Role {
 	// Mapped by the 'roles' field in the User entity.
 	@ManyToMany(mappedBy = "roles")
 	@EqualsAndHashCode.Exclude
-	@ToString.Exclude
 	private Set<User> users;
 
-	// We will add the relationship to Permissions later.
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "permission_role", // Your exact DB junction table name
+			joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+	@EqualsAndHashCode.Exclude
+	private Set<Permission> permissions = new HashSet<>();
 
 }

@@ -466,5 +466,35 @@ INSERT IGNORE INTO subscriptions (name, description, monthly_price, annual_price
                                                                                     ('Free', 'Get started with 10 free leagues for your college or university.', 0, 0),
                                                                                     ('Pro', 'Create up to 25 leagues for your college or university.', 25, 250);
 
+INSERT IGNORE INTO recipes (recipe_ingredients, instructions, type, category, dietary_preference, internal_notes)
+VALUES
+  ('Chickpeas, Tahini, Lemon', 'Blend until smooth.', 'Appetizer', 'Mediterranean', 'Vegan', 'Classic hummus'),
+  ('Pasta, Tomato, Basil', 'Boil pasta, add sauce.', 'Main Course', 'Italian', 'Vegetarian', 'Simple Pomodoro'),
+  ('Beef, Tortilla, Salsa', 'Cook beef, assemble taco.', 'Main Course', 'Mexican', 'Meat-based', 'Street style'),
+  ('Lentils, Carrots, Curry Powder', 'Simmer until soft.', 'Soup', 'Indian', 'Vegan', 'Healthy Dal'),
+  ('Zucchini, Garlic, Olive Oil', 'Sauté zucchini noodles.', 'Main Course', 'Italian', 'Vegan', 'Low carb option');
+
+INSERT IGNORE INTO patriot_permissions (name, description) VALUES
+                                                             ('VIEW_INCENTIVES',   'View businesses and their discounts/incentives'),
+                                                             ('SUBMIT_BUSINESS',   'Submit a new business to the platform'),
+                                                             ('MANAGE_BUSINESSES', 'Edit or remove any business on the platform'),
+                                                             ('MANAGE_USERS',      'View and manage Patriot Thanks user accounts');
+
+-- Assign VIEW_INCENTIVES to all member roles
+INSERT IGNORE INTO patriot_role_permissions (patriot_role_id, patriot_permission_id)
+SELECT r.id, p.id FROM patriot_roles r, patriot_permissions p
+WHERE r.name IN ('VETERAN','ACTIVE_DUTY','FIRST_RESPONDER','MILITARY_SPOUSE','BUSINESS_OWNER','SUPPORTER')
+  AND p.name = 'VIEW_INCENTIVES';
+
+-- Assign SUBMIT_BUSINESS to BUSINESS_OWNER
+INSERT IGNORE INTO patriot_role_permissions (patriot_role_id, patriot_permission_id)
+SELECT r.id, p.id FROM patriot_roles r, patriot_permissions p
+WHERE r.name = 'BUSINESS_OWNER' AND p.name = 'SUBMIT_BUSINESS';
+
+-- Assign all permissions to PLATFORM_ADMIN
+INSERT IGNORE INTO patriot_role_permissions (patriot_role_id, patriot_permission_id)
+SELECT r.id, p.id FROM patriot_roles r, patriot_permissions p
+WHERE r.name = 'PLATFORM_ADMIN';
+
 
 SET FOREIGN_KEY_CHECKS = 1;

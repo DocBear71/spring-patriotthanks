@@ -6,13 +6,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.user.UserRepository;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -33,6 +33,7 @@ import java.util.Map;
  * @author Edward
  */
 @Controller
+@RequestMapping("/schools")
 public class SchoolController {
 
 	private final SchoolRepository schoolRepository;
@@ -56,7 +57,7 @@ public class SchoolController {
 	 * @param model the {@link Model} to populate with pagination data and school list
 	 * @return the view name for the school list template
 	 */
-	@GetMapping("/schools")
+	@GetMapping
 	public String showSchoolList(@RequestParam(defaultValue = "1") int page, Model model) {
 		// Pagination setup (5 items per page)
 		Pageable pageable = PageRequest.of(page - 1, 5);
@@ -75,7 +76,7 @@ public class SchoolController {
 	 * @param model the model map to populate with a blank {@link School}
 	 * @return the view name for the create/update school form template
 	 */
-	@GetMapping("/schools/new")
+	@GetMapping("/new")
 	public String initCreationForm(Map<String, Object> model) {
 		// Phase 1 of Sequence Diagram
 		// 1. Create the blank object (State: New)
@@ -91,22 +92,19 @@ public class SchoolController {
 	 * school to the database.
 	 * @param school the {@link School} object populated from the form
 	 * @param result the {@link BindingResult} containing any validation errors
-	 * @return a redirect to the school list on success, or the form view if validation
-	 * fails
+	 * @return a redirect to the school's slug URL on success, or the form view if
+	 * validation fails
 	 */
-	@PostMapping("/schools/new")
+	@PostMapping("/new")
 	public String processCreationForm(@Valid School school, BindingResult result) {
-		// Phase 2 of Sequence Diagram
-		// 1. Check Validation
 		if (result.hasErrors()) {
-			// Validation Failed: Return to the form to show errors
 			return "schools/createOrUpdateSchoolForm";
 		}
-		// 2. Save Data (Validation Passed)
-		// Note: The status defaults to ACTIVE because of your School.java definition
 		schoolRepository.save(school);
-		// 3. Redirect to the list
-		return "redirect:/schools";
+
+		// Update redirect to use the slug
+		String slug = school.getDomain().replace(".edu", "");
+		return "redirect:/schools/" + slug;
 	}
 
 	/**
@@ -118,7 +116,7 @@ public class SchoolController {
 	 * matches the given ID
 	 */
 	// Matches ONLY numbers (e.g., /schools/1)
-	@GetMapping("/schools/{schoolId:\\d+}")
+	@GetMapping("/{schoolId:\\d+}")
 	public ModelAndView showSchoolById(@PathVariable("schoolId") int schoolId) {
 		ModelAndView mav = new ModelAndView("schools/schoolDetails");
 		School school = schoolRepository.findById(schoolId)
@@ -146,7 +144,7 @@ public class SchoolController {
 	 * matches the reconstructed domain
 	 */
 	// Matches text (e.g., /schools/kirkwood)
-	@GetMapping("/schools/{slug:[a-zA-Z-]+}")
+	@GetMapping("/{slug:[a-zA-Z0-9-]*[a-zA-Z-][a-zA-Z0-9-]*}")
 	public ModelAndView showSchoolBySlug(@PathVariable("slug") String slug, Principal principal) {
 		// Reconstruct the domain (User asked to assume ".edu")
 		String fullDomain = slug + ".edu";
@@ -172,6 +170,96 @@ public class SchoolController {
 		}
 
 		return mav;
+	}
+
+	/**
+	 * Verifies that the currently authenticated user has permission to edit the given
+	 * school. A super admin with {@code MANAGE_ALL_SCHOOLS} authority may edit any
+	 * school. A school admin with {@code MANAGE_FACILITIES} authority may only edit
+	 * schools whose domain matches their email address.
+	 * @param school the {@link School} whose edit permissions are being checked
+	 * @throws AccessDeniedException if the authenticated user lacks the required
+	 * authority
+	 */
+	private void verifyEditPermissions(School school) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String userEmail = auth.getName();
+
+		boolean isSuperAdmin = auth.getAuthorities()
+			.stream()
+			.anyMatch(a -> a.getAuthority().equals("MANAGE_ALL_SCHOOLS"));
+		boolean isSchoolAdmin = auth.getAuthorities()
+			.stream()
+			.anyMatch(a -> a.getAuthority().equals("MANAGE_FACILITIES"));
+
+		boolean belongsToSchool = userEmail.endsWith("@" + school.getDomain())
+				|| userEmail.endsWith("." + school.getDomain());
+
+		if (!isSuperAdmin && !(isSchoolAdmin && belongsToSchool)) {
+			throw new AccessDeniedException("You do not have permission to edit this school.");
+		}
+	}
+
+	/**
+	 * Displays the edit form for an existing school, pre-populated with current data.
+	 * @param id the numeric ID of the school to edit
+	 * @param model the {@link Model} to populate with the existing {@link School}
+	 * @return the view name for the create/update school form template
+	 * @throws ResponseStatusException with {@link HttpStatus#NOT_FOUND} if no school
+	 * matches the given ID
+	 * @throws AccessDeniedException if the authenticated user lacks edit permission
+	 */
+	@GetMapping("/{id}/edit")
+	public String initUpdateForm(@PathVariable("id") int id, Model model) {
+		School school = schoolRepository.findById(id)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "School not found"));
+
+		verifyEditPermissions(school);
+
+		model.addAttribute("school", school);
+		return "schools/createOrUpdateSchoolForm";
+	}
+
+	/**
+	 * Processes the edit form submission for an existing school. Validates input and
+	 * persists the updated school. Super admins may change the school's status; standard
+	 * school admins may not.
+	 * @param school the {@link School} object populated from the submitted form
+	 * @param result the {@link BindingResult} containing any validation errors
+	 * @param id the numeric ID of the school being updated
+	 * @return a redirect to the school's slug URL on success, or the form view if
+	 * validation fails
+	 * @throws ResponseStatusException with {@link HttpStatus#NOT_FOUND} if no school
+	 * matches the given ID
+	 * @throws AccessDeniedException if the authenticated user lacks edit permission
+	 */
+	@PostMapping("/{id}/edit")
+	public String processUpdateForm(@Valid School school, BindingResult result, @PathVariable("id") int id) {
+		School existingSchool = schoolRepository.findById(id)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "School not found"));
+
+		verifyEditPermissions(existingSchool);
+
+		if (result.hasErrors()) {
+			return "schools/createOrUpdateSchoolForm";
+		}
+
+		// Prevent standard admins from modifying the status via form tampering
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		boolean isSuperAdmin = auth.getAuthorities()
+			.stream()
+			.anyMatch(a -> a.getAuthority().equals("MANAGE_ALL_SCHOOLS"));
+
+		if (!isSuperAdmin) {
+			school.setStatus(existingSchool.getStatus());
+		}
+
+		school.setId(id);
+		schoolRepository.save(school);
+
+		// Strip ".edu" for the redirect to match your slug regex
+		String slug = school.getDomain().replace(".edu", "");
+		return "redirect:/schools/" + slug;
 	}
 
 }

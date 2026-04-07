@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.samples.petclinic.user.UserRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -37,7 +39,7 @@ class SchoolControllerTest {
 	private SchoolRepository schools;
 
 	@MockitoBean
-	private UserRepository users;
+	private UserRepository userRepository;
 
 	private School school;
 
@@ -73,7 +75,9 @@ class SchoolControllerTest {
 	@Test
 	@DisplayName("User clicks \"Add School\" -> GET /schools/new")
 	void testInitCreationForm() throws Exception {
-		mockMvc.perform(get("/schools/new"))
+		mockMvc.perform(get("/schools/new")
+			// 1. INJECT THE VIP BADGE DIRECTLY INTO THE REQUEST
+			.with(user("admin@kirkwood.edu").authorities(new SimpleGrantedAuthority("MANAGE_ALL_SCHOOLS"))))
 			.andExpect(status().isOk())
 			.andExpect(view().name("schools/createOrUpdateSchoolForm"))
 			.andExpect(model().attributeExists("school"));
@@ -82,24 +86,24 @@ class SchoolControllerTest {
 	@Test
 	@DisplayName("Validation Passed -> verify that the controller tells the repository to save() the school and then redirects us.")
 	void testProcessCreationFormSuccess() throws Exception {
-		mockMvc.perform(post("/schools/new").param("name", "University of Iowa").param("domain", "uiowa.edu"))
+		mockMvc.perform(post("/schools/new").param("name", "University of Iowa")
+			.param("domain", "uiowa.edu")
+			// 2. INJECT IT INTO THE POST REQUEST
+			.with(user("admin@kirkwood.edu").authorities(new SimpleGrantedAuthority("MANAGE_ALL_SCHOOLS"))))
 			.andExpect(status().is3xxRedirection())
-			.andExpect(redirectedUrl("/schools"));
+			.andExpect(redirectedUrl("/schools/uiowa"));
 
-		// Verify that the repository.save() method was actually called
 		verify(schools).save(any(School.class));
 	}
 
 	@Test
 	@DisplayName("Validation Failed -> send an empty domain and ensure the controller returns us to the form instead of saving.")
 	void testProcessCreationFormHasErrors() throws Exception {
-		mockMvc.perform(post("/schools/new").param("name", "Bad School").param("domain", "")) // Empty
-																								// domain
-																								// should
-																								// trigger
-																								// @NotEmpty
-			.andExpect(status().isOk()) // 200 OK because we are re-rendering the form,
-										// not redirecting
+		mockMvc.perform(post("/schools/new").param("name", "Bad School")
+			.param("domain", "")
+			// 3. INJECT IT INTO THE FAILED POST REQUEST
+			.with(user("admin@kirkwood.edu").authorities(new SimpleGrantedAuthority("MANAGE_ALL_SCHOOLS"))))
+			.andExpect(status().isOk())
 			.andExpect(model().attributeHasErrors("school"))
 			.andExpect(model().attributeHasFieldErrors("school", "domain"))
 			.andExpect(view().name("schools/createOrUpdateSchoolForm"));

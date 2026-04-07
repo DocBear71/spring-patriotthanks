@@ -1,11 +1,13 @@
 <html xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
       th:replace="~{patriot/patriotLayout :: patriotLayout (~{::body},'businesses')}">
 
 <body>
 
-<h2 th:text="#{addBusiness}">Add Business</h2>
+<h2 th:text="${business.id == null} ? #{addBusiness} : #{editBusiness}">Add Business</h2>
 
-<form th:object="${business}" class="form-horizontal" id="add-business-form" method="post">
+<form th:object="${business}" class="form-horizontal" id="add-business-form" method="post"
+      th:action="${business.id == null} ? @{/businesses/new} : @{|/businesses/${business.id}/edit|}">
 
   <input th:replace="~{fragments/inputField :: input ( #{label.business.name}, 'name', 'text')}" />
 
@@ -52,9 +54,37 @@
     </div>
   </div>
 
+  <!--
+    Active/Inactive toggle: only shown when editing an existing business
+    and only visible to users with MANAGE_BUSINESSES permission.
+    New businesses always start active by default (Business.java default = true).
+  -->
+  <div class="mb-3"
+       th:if="${business.id != null}"
+       sec:authorize="hasAuthority('MANAGE_BUSINESSES')">
+    <label class="form-label" th:text="#{label.business.status}">Business Status</label>
+    <div class="form-check form-switch">
+      <input class="form-check-input"
+             type="checkbox"
+             id="isActive"
+             th:field="*{isActive}"
+             role="switch" />
+      <label class="form-check-label" for="isActive">
+        <span th:if="${business.isActive}" class="text-success fw-semibold"
+              th:text="#{business.status.active}">Active</span>
+        <span th:unless="${business.isActive}" class="text-danger fw-semibold"
+              th:text="#{business.status.inactive}">Inactive</span>
+      </label>
+    </div>
+    <div class="form-text text-muted" th:text="#{business.status.help}">
+      Inactive businesses are hidden from the public listings.
+    </div>
+  </div>
+
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button class="btn btn-primary" type="submit" th:text="#{addBusiness}">Add Business</button>
+      <button class="btn btn-primary" type="submit"
+              th:text="${business.id == null} ? #{addBusiness} : #{editBusiness}">Add Business</button>
     </div>
   </div>
 

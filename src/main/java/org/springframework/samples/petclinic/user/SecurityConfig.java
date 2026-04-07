@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +42,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * @author Edward
  */
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
 	/**
@@ -116,9 +118,28 @@ public class SecurityConfig {
 				.permitAll()
 
 				// Allow POST for user registration and login
-				.requestMatchers("/register-student", "/login", "/schools/new", "/owners/new", "/businesses/new",
-						"/subscription/new")
+				.requestMatchers("/register-student", "/login", "/css/**", "/images/**", "/owners/new",
+						"/businesses/new", "/subscription/new")
 				.permitAll()
+
+				.requestMatchers("/", "/register-student", "/resources/**", "/recipes/**", "/recipes/new", "/owners/**",
+						"/pets/**", "/vets/**", "/vets.html")
+				.permitAll()
+
+				// 2. Lock restricted routes
+				.requestMatchers("/schools/new")
+				.hasAuthority("MANAGE_ALL_SCHOOLS")
+
+				// Allow all access to the Recipes REST API (CodeSignal - no session auth
+				// needed)
+				.requestMatchers("/recipes/**")
+				.permitAll()
+
+				// 3. Allow public routes
+				.requestMatchers(HttpMethod.GET, "/schools", "/schools/{schoolId:\\d+}",
+						"/schools/{slug:[a-zA-Z0-9-]*[a-zA-Z-][a-zA-Z0-9-]*}")
+				.permitAll()
+
 				// ADD THIS LINE: Require login for the profile and any other user
 				// settings
 				.requestMatchers("/users/profile", "/users/delete")
