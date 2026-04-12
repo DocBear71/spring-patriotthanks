@@ -34,9 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test class for the {@link // BusinessController}. Tests the business listing
- * functionality with pagination, incentives AJAX endpoint, and full incentive CRUD
- * operations.
+ * Test class for the {@link BusinessController}. Tests the business listing functionality
+ * with pagination, incentives AJAX endpoint, and full incentive CRUD operations.
  *
  * @author Edward McKeown
  */
@@ -253,7 +252,7 @@ class BusinessControllerTest {
 		mockMvc.perform(get("/businesses"))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("listBusinesses",
-					hasItem(hasProperty("businessType", hasProperty("name", is("Restaurant"))))));
+				hasItem(hasProperty("businessType", hasProperty("name", is("Restaurant"))))));
 	}
 
 	@Test
@@ -399,8 +398,8 @@ class BusinessControllerTest {
 	@DisplayName("Validation Failed -> send a blank name and ensure the form is returned with errors")
 	void testProcessCreationFormHasErrorsBlankName() throws Exception {
 		mockMvc.perform(post("/businesses/new").param("name", "") // Empty name should
-			// trigger @NotBlank
-			.param("businessType.id", "1"))
+				// trigger @NotBlank
+				.param("businessType.id", "1"))
 			.andExpect(status().isOk()) // 200 OK because we are re-rendering the form
 			.andExpect(model().attributeHasErrors("business"))
 			.andExpect(model().attributeHasFieldErrors("business", "name"))
@@ -433,7 +432,9 @@ class BusinessControllerTest {
 	void testShowBusinessDetailsNotFound() throws Exception {
 		given(businessRepository.findById(999)).willReturn(java.util.Optional.empty());
 
-		mockMvc.perform(get("/businesses/999")).andExpect(status().isNotFound());
+		mockMvc.perform(get("/businesses/999"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("patriot/patriotError"));
 	}
 
 	@Test
@@ -469,7 +470,9 @@ class BusinessControllerTest {
 	void testDeleteBusinessNotFound() throws Exception {
 		given(businessRepository.findById(999)).willReturn(java.util.Optional.empty());
 
-		mockMvc.perform(post("/businesses/999/delete")).andExpect(status().isNotFound());
+		mockMvc.perform(post("/businesses/999/delete"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("patriot/patriotError"));
 	}
 
 	// -------------------------------------------------------------------------
@@ -479,7 +482,8 @@ class BusinessControllerTest {
 	@Test
 	@DisplayName("GET /businesses/{slug}/incentives/new -> shows incentive creation form")
 	void testInitIncentiveCreationForm() throws Exception {
-		given(businessRepository.findBySlugWithDetails("joes-pizza")).willReturn(java.util.Optional.of(business1));
+		given(businessRepository.findBySlugWithDetails("joes-pizza"))
+			.willReturn(java.util.Optional.of(business1));
 		given(incentiveTypeRepository.findByIsActiveTrueOrderByDisplayOrderAsc())
 			.willReturn(List.of(veteranType, activeDutyType));
 
@@ -493,20 +497,25 @@ class BusinessControllerTest {
 	@Test
 	@DisplayName("GET /businesses/{slug}/incentives/new -> 404 when business not found")
 	void testInitIncentiveCreationFormBusinessNotFound() throws Exception {
-		given(businessRepository.findBySlugWithDetails("no-such-biz")).willReturn(java.util.Optional.empty());
+		given(businessRepository.findBySlugWithDetails("no-such-biz"))
+			.willReturn(java.util.Optional.empty());
 
-		mockMvc.perform(get("/businesses/no-such-biz/incentives/new")).andExpect(status().isNotFound());
+		mockMvc.perform(get("/businesses/no-such-biz/incentives/new"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("patriot/patriotError"));
 	}
 
 	@Test
 	@DisplayName("POST /businesses/{slug}/incentives/new -> validation passes, saves incentive and redirects")
 	void testProcessIncentiveCreationFormSuccess() throws Exception {
-		given(businessRepository.findBySlugWithDetails("joes-pizza")).willReturn(java.util.Optional.of(business1));
-		given(incentiveTypeRepository.findByIsActiveTrueOrderByDisplayOrderAsc()).willReturn(List.of(veteranType));
+		given(businessRepository.findBySlugWithDetails("joes-pizza"))
+			.willReturn(java.util.Optional.of(business1));
+		given(incentiveTypeRepository.findByIsActiveTrueOrderByDisplayOrderAsc())
+			.willReturn(List.of(veteranType));
 		given(incentiveTypeRepository.findById(1)).willReturn(veteranType);
 
-		mockMvc
-			.perform(post("/businesses/joes-pizza/incentives/new").param("title", "15% Veteran Discount")
+		mockMvc.perform(post("/businesses/joes-pizza/incentives/new")
+				.param("title", "15% Veteran Discount")
 				.param("description", "Show your military ID for 15% off")
 				.param("discountPercentage", "15.00")
 				.param("isActive", "true")
@@ -520,14 +529,14 @@ class BusinessControllerTest {
 	@Test
 	@DisplayName("POST /businesses/{slug}/incentives/new -> validation fails, returns form with errors")
 	void testProcessIncentiveCreationFormValidationFails() throws Exception {
-		given(businessRepository.findBySlugWithDetails("joes-pizza")).willReturn(java.util.Optional.of(business1));
-		given(incentiveTypeRepository.findByIsActiveTrueOrderByDisplayOrderAsc()).willReturn(List.of(veteranType));
+		given(businessRepository.findBySlugWithDetails("joes-pizza"))
+			.willReturn(java.util.Optional.of(business1));
+		given(incentiveTypeRepository.findByIsActiveTrueOrderByDisplayOrderAsc())
+			.willReturn(List.of(veteranType));
 
-		mockMvc.perform(post("/businesses/joes-pizza/incentives/new").param("title", "") // blank
-																							// —
-																							// triggers
-																							// @NotBlank
-			.param("description", "")) // blank — triggers @NotBlank
+		mockMvc.perform(post("/businesses/joes-pizza/incentives/new")
+				.param("title", "")        // blank — triggers @NotBlank
+				.param("description", "")) // blank — triggers @NotBlank
 			.andExpect(status().isOk())
 			.andExpect(view().name("businesses/createOrUpdateIncentiveForm"))
 			.andExpect(model().attributeHasFieldErrors("incentive", "title", "description"));
@@ -536,7 +545,8 @@ class BusinessControllerTest {
 	@Test
 	@DisplayName("GET /businesses/{slug}/incentives/{id}/edit -> shows edit form pre-populated")
 	void testInitIncentiveUpdateForm() throws Exception {
-		given(businessRepository.findBySlugWithDetails("joes-pizza")).willReturn(java.util.Optional.of(business1));
+		given(businessRepository.findBySlugWithDetails("joes-pizza"))
+			.willReturn(java.util.Optional.of(business1));
 		given(incentiveRepository.findByIdWithTypes(1)).willReturn(incentive1);
 		given(incentiveTypeRepository.findByIsActiveTrueOrderByDisplayOrderAsc())
 			.willReturn(List.of(veteranType, activeDutyType));
@@ -551,13 +561,15 @@ class BusinessControllerTest {
 	@Test
 	@DisplayName("POST /businesses/{slug}/incentives/{id}/edit -> saves updated incentive and redirects")
 	void testProcessIncentiveUpdateFormSuccess() throws Exception {
-		given(businessRepository.findBySlugWithDetails("joes-pizza")).willReturn(java.util.Optional.of(business1));
+		given(businessRepository.findBySlugWithDetails("joes-pizza"))
+			.willReturn(java.util.Optional.of(business1));
 		given(incentiveRepository.findByIdWithTypes(1)).willReturn(incentive1);
-		given(incentiveTypeRepository.findByIsActiveTrueOrderByDisplayOrderAsc()).willReturn(List.of(veteranType));
+		given(incentiveTypeRepository.findByIsActiveTrueOrderByDisplayOrderAsc())
+			.willReturn(List.of(veteranType));
 		given(incentiveTypeRepository.findById(1)).willReturn(veteranType);
 
-		mockMvc
-			.perform(post("/businesses/joes-pizza/incentives/1/edit").param("title", "20% Veteran Discount")
+		mockMvc.perform(post("/businesses/joes-pizza/incentives/1/edit")
+				.param("title", "20% Veteran Discount")
 				.param("description", "Updated discount")
 				.param("discountPercentage", "20.00")
 				.param("isActive", "true")
@@ -585,14 +597,15 @@ class BusinessControllerTest {
 	void testDeleteIncentiveNotFound() throws Exception {
 		given(incentiveRepository.findById(999)).willReturn(null);
 
-		mockMvc.perform(post("/businesses/joes-pizza/incentives/999/delete")).andExpect(status().isNotFound());
+		mockMvc.perform(post("/businesses/joes-pizza/incentives/999/delete"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("patriot/patriotError"));
 	}
 
 	@Test
 	@DisplayName("POST /businesses/{slug}/incentives/{id}/toggle -> flips isActive and redirects")
 	void testToggleIncentive() throws Exception {
-		given(incentiveRepository.findById(1)).willReturn(incentive1); // incentive1.isActive
-																		// = true
+		given(incentiveRepository.findById(1)).willReturn(incentive1); // incentive1.isActive = true
 
 		mockMvc.perform(post("/businesses/joes-pizza/incentives/1/toggle"))
 			.andExpect(status().is3xxRedirection())
@@ -610,7 +623,8 @@ class BusinessControllerTest {
 	void testSearchByKeyword() throws Exception {
 		List<Business> results = List.of(business1);
 		Page<Business> page = new PageImpl<>(results, PageRequest.of(0, 10), 1);
-		given(businessRepository.findByNameContaining(eq("pizza"), any(Pageable.class))).willReturn(page);
+		given(businessRepository.findByNameContaining(eq("pizza"), any(Pageable.class)))
+			.willReturn(page);
 
 		mockMvc.perform(get("/businesses").param("keyword", "pizza"))
 			.andExpect(status().isOk())
@@ -625,7 +639,8 @@ class BusinessControllerTest {
 	void testSearchByType() throws Exception {
 		List<Business> results = List.of(business1, business2);
 		Page<Business> page = new PageImpl<>(results, PageRequest.of(0, 10), 2);
-		given(businessRepository.findByBusinessTypeId(eq(1), any(Pageable.class))).willReturn(page);
+		given(businessRepository.findByBusinessTypeId(eq(1), any(Pageable.class)))
+			.willReturn(page);
 
 		mockMvc.perform(get("/businesses").param("typeId", "1"))
 			.andExpect(status().isOk())
@@ -653,7 +668,8 @@ class BusinessControllerTest {
 	@DisplayName("GET /businesses?keyword=zzz -> returns empty results when no match")
 	void testSearchNoResults() throws Exception {
 		Page<Business> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
-		given(businessRepository.findByNameContaining(eq("zzz"), any(Pageable.class))).willReturn(emptyPage);
+		given(businessRepository.findByNameContaining(eq("zzz"), any(Pageable.class)))
+			.willReturn(emptyPage);
 
 		mockMvc.perform(get("/businesses").param("keyword", "zzz"))
 			.andExpect(status().isOk())
@@ -667,7 +683,8 @@ class BusinessControllerTest {
 		List<Business> results = List.of(business1, business2);
 		Page<Business> page = new PageImpl<>(results, PageRequest.of(0, 10), 2);
 		// Blank keyword should be normalised to null in the controller
-		given(businessRepository.findAll(any(Pageable.class))).willReturn(page);
+		given(businessRepository.findAll(any(Pageable.class)))
+			.willReturn(page);
 
 		mockMvc.perform(get("/businesses").param("keyword", "   "))
 			.andExpect(status().isOk())
