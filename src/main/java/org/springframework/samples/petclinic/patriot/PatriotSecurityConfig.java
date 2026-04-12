@@ -90,19 +90,24 @@ public class PatriotSecurityConfig {
 			.authenticationManager(patriotAuthenticationManager)
 			.csrf(csrf -> csrf.disable())
 			.authorizeHttpRequests(authorize -> authorize
+				// Public Patriot auth routes
 				.requestMatchers("/patriot", "/patriot/", "/patriot/register", "/patriot/login",
 						"/patriot/login-success")
 				.permitAll()
-				// Profile requires authentication even for GET
+				// Profile and delete require authentication even for GET
 				.requestMatchers("/patriot/profile", "/patriot/delete")
 				.authenticated()
+				// Edit routes (GET and POST) require MANAGE_BUSINESSES — must be
+				// declared BEFORE the broad GET permitAll below so they are matched first
+				.requestMatchers("/businesses/*/edit")
+				.hasAuthority("MANAGE_BUSINESSES")
+				// Creating a new business requires SUBMIT_BUSINESS or MANAGE_BUSINESSES
+				.requestMatchers("/businesses/new")
+				.hasAnyAuthority("SUBMIT_BUSINESS", "MANAGE_BUSINESSES")
+				// All other GET requests under /patriot/** and /businesses/** are public
 				.requestMatchers(org.springframework.http.HttpMethod.GET, "/patriot/**", "/businesses/**")
 				.permitAll()
-				.requestMatchers("/businesses/new")
-				.permitAll()
-				// Edit routes require MANAGE_BUSINESSES permission
-				.requestMatchers(org.springframework.http.HttpMethod.POST, "/businesses/*/edit")
-				.hasAuthority("MANAGE_BUSINESSES")
+				// Everything else requires authentication
 				.anyRequest()
 				.authenticated())
 			.httpBasic(AbstractHttpConfigurer::disable)
