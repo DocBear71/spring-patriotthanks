@@ -12,6 +12,53 @@
 
 <h2 th:text="#{businesses.title}">Businesses</h2>
 
+<!-- Search / Filter Form -->
+<form th:action="@{/businesses}" method="get" class="mb-3">
+  <div class="row g-2 align-items-end">
+    <!-- Keyword search -->
+    <div class="col-md-5">
+      <label class="form-label fw-bold" th:text="#{business.search.label}">Search by Name</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="fa fa-search"></i></span>
+        <input type="text" name="keyword" class="form-control"
+               th:value="${keyword}"
+               th:placeholder="#{business.search.placeholder}"/>
+      </div>
+    </div>
+    <!-- Type filter -->
+    <div class="col-md-4">
+      <label class="form-label fw-bold" th:text="#{business.search.typeLabel}">Filter by Type</label>
+      <select name="typeId" class="form-select">
+        <option value="" th:text="#{business.search.allTypes}">All Types</option>
+        <option th:each="type : ${types}"
+                th:value="${type.id}"
+                th:text="${type.name}"
+                th:selected="${selectedTypeId != null and selectedTypeId == type.id}">Type</option>
+      </select>
+    </div>
+    <!-- Buttons -->
+    <div class="col-md-3 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-search me-1"></i><span th:text="#{business.search.button}">Search</span>
+      </button>
+      <a th:href="@{/businesses}" class="btn btn-outline-secondary">
+        <i class="fa fa-times me-1"></i><span th:text="#{business.search.clear}">Clear</span>
+      </a>
+    </div>
+  </div>
+</form>
+
+<!-- Active filter indicator -->
+<div th:if="${keyword != null and !keyword.isEmpty() or selectedTypeId != null}" class="alert alert-info py-2 mb-3">
+  <i class="fa fa-filter me-1"></i>
+  <span th:text="#{business.search.resultsFor}">Showing results for:</span>
+  <strong th:if="${keyword != null and !keyword.isEmpty()}" th:text="' &quot;' + ${keyword} + '&quot;'">"keyword"</strong>
+  <span th:if="${keyword != null and !keyword.isEmpty() and selectedTypeId != null}"> &amp; </span>
+  <strong th:if="${selectedTypeId != null}"
+          th:text="${selectedTypeName}">Type</strong>
+  <span class="ms-2">(<span th:text="${totalItems}">0</span> <span th:text="#{business.search.found}">found</span>)</span>
+</div>
+
 <a class="btn btn-primary mb-3" th:href="@{/businesses/new}"
    sec:authorize="hasAuthority('SUBMIT_BUSINESS') or hasAuthority('MANAGE_BUSINESSES')"
    th:text="#{addBusiness}">Add Business</a>
@@ -71,7 +118,7 @@
         <!-- Previous Button -->
         <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
           <a class="page-link"
-             th:href="@{/businesses(page=${currentPage - 1})}"
+             th:href="@{/businesses(page=${currentPage - 1}, keyword=${keyword}, typeId=${selectedTypeId})}"
              th:text="#{pagination.previous}">Previous</a>
         </li>
 
@@ -80,14 +127,14 @@
             th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
             th:classappend="${pageNum == currentPage} ? 'active'">
           <a class="page-link"
-             th:href="@{/businesses(page=${pageNum})}"
+             th:href="@{/businesses(page=${pageNum}, keyword=${keyword}, typeId=${selectedTypeId})}"
              th:text="${pageNum}">1</a>
         </li>
 
         <!-- Next Button -->
         <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
           <a class="page-link"
-             th:href="@{/businesses(page=${currentPage + 1})}"
+             th:href="@{/businesses(page=${currentPage + 1}, keyword=${keyword}, typeId=${selectedTypeId})}"
              th:text="#{pagination.next}">Next</a>
         </li>
       </ul>

@@ -76,4 +76,49 @@ public interface BusinessRepository extends Repository<Business, Integer> {
 	@Transactional(readOnly = true)
 	Optional<Business> findBySlugWithDetails(@Param("slug") String slug);
 
+	/**
+	 * Retrieve a paginated list of businesses filtered by name keyword only
+	 * (case-insensitive partial match). Used when a keyword is provided but no type
+	 * filter. Avoids the {@code ? IS NULL} pattern unsupported by MySQL 5.7.
+	 * @param keyword the partial business name to search for
+	 * @param pageable pagination information
+	 * @return a {@link Page} of matching {@link Business} records
+	 */
+	@Query("SELECT b FROM Business b WHERE LOWER(b.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+	@Transactional(readOnly = true)
+	Page<Business> findByNameContaining(@Param("keyword") String keyword, Pageable pageable);
+
+	/**
+	 * Retrieve a paginated list of businesses filtered by business type only. Used when a
+	 * type ID is provided but no keyword. Avoids the {@code ? IS NULL} pattern
+	 * unsupported by MySQL 5.7.
+	 * @param typeId the ID of the {@link BusinessType} to filter by
+	 * @param pageable pagination information
+	 * @return a {@link Page} of matching {@link Business} records
+	 */
+	@Transactional(readOnly = true)
+	Page<Business> findByBusinessTypeId(Integer typeId, Pageable pageable);
+
+	/**
+	 * Retrieve a paginated list of businesses filtered by both name keyword and business
+	 * type. Used when both filters are provided. Avoids the {@code ? IS NULL} pattern
+	 * unsupported by MySQL 5.7.
+	 * @param keyword the partial business name to search for
+	 * @param typeId the ID of the {@link BusinessType} to filter by
+	 * @param pageable pagination information
+	 * @return a {@link Page} of matching {@link Business} records
+	 */
+	@Query("SELECT b FROM Business b WHERE LOWER(b.name) LIKE LOWER(CONCAT('%', :keyword, '%')) AND b.businessType.id = :typeId")
+	@Transactional(readOnly = true)
+	Page<Business> findByNameContainingAndTypeId(@Param("keyword") String keyword, @Param("typeId") Integer typeId,
+			Pageable pageable);
+
+	/**
+	 * Delete (soft-delete) a Business from the data store. The {@code @SQLDelete}
+	 * annotation on {@link Business} intercepts this call and sets
+	 * {@code deleted_at = NOW()} instead of issuing a physical DELETE.
+	 * @param business the Business to soft-delete
+	 */
+	void delete(Business business);
+
 }

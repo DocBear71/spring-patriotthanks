@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{patriot/patriotLayout :: patriotLayout (~{::body},'error')}">
+
+<body>
+
+<div class="container mt-5">
+
+  <!-- Red/Blue rule -->
+  <div class="text-center mb-4">
+    <span style="display:inline-block; width:80px; height:4px; background:#b22234;"></span>
+    <span style="display:inline-block; width:24px; height:4px; background:#1a2744; margin:0 6px;"></span>
+    <span style="display:inline-block; width:80px; height:4px; background:#b22234;"></span>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <div class="card border-0 shadow-lg">
+
+        <!-- Header -->
+        <div class="card-header text-white text-center py-4"
+             style="background: linear-gradient(135deg, #1a2744 0%, #2c3e6b 100%);">
+          <div style="font-size:5rem; font-weight:900; letter-spacing:8px; line-height:1;"
+               th:text="${status != null} ? ${status} : '500'">500</div>
+          <div style="font-size:0.85rem; letter-spacing:4px; text-transform:uppercase; opacity:0.8; margin-top:4px;">
+            <span th:text="#{patriotError.subtitle}">Mission Interrupted</span>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body text-center py-5 px-4" style="background:#f8f9fa;">
+
+          <!-- Star decoration -->
+          <div style="color:#d4a843; font-size:1.5rem; margin-bottom:1rem;">
+            &#9733; &nbsp; &#9733; &nbsp; &#9733;
+          </div>
+
+          <h2 class="mb-3" style="color:#1a2744; font-weight:700;"
+              th:text="#{patriotError.heading}">Something Went Wrong</h2>
+
+          <!-- Status-specific message -->
+          <p class="lead mb-2" style="color:#555;" th:switch="${status}">
+            <span th:case="404" th:text="#{error.404}">The requested page was not found.</span>
+            <span th:case="500" th:text="#{error.500}">An internal server error occurred.</span>
+            <span th:case="403" th:text="#{patriotError.403}">You do not have permission to access this page.</span>
+            <span th:case="*"   th:text="#{error.general}">An unexpected error occurred.</span>
+          </p>
+
+          <!-- Developer detail (shows only when message is available) -->
+          <p th:if="${message != null and !message.isEmpty()}"
+             class="mb-4 text-muted small font-monospace"
+             th:text="${message}">Error detail</p>
+
+          <hr style="border-color:#dee2e6; width:60%; margin:1.5rem auto;">
+
+          <!-- Action buttons -->
+          <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a th:href="@{/patriot}" class="btn btn-lg px-4"
+               style="background:#1a2744; color:#d4a843; border:2px solid #1a2744; font-weight:700;">
+              <i class="fa fa-home me-2"></i>
+              <span th:text="#{patriotError.home}">Patriot Thanks Home</span>
+            </a>
+            <a th:href="@{/businesses}" class="btn btn-lg px-4"
+               style="background:#d4a843; color:#1a2744; border:2px solid #d4a843; font-weight:700;">
+              <i class="fa fa-search me-2"></i>
+              <span th:text="#{patriotError.findBusinesses}">Find Businesses</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="card-footer text-center py-3"
+             style="background:#1a2744; color:rgba(255,255,255,0.7); font-size:0.8rem; letter-spacing:2px; text-transform:uppercase;">
+          Patriot Thanks &mdash; Honoring Those Who Serve
+        </div>
+      </div>
+
+      <!-- Bottom rule -->
+      <div class="text-center mt-4">
+        <span style="display:inline-block; width:80px; height:4px; background:#b22234;"></span>
+        <span style="display:inline-block; width:24px; height:4px; background:#1a2744; margin:0 6px;"></span>
+        <span style="display:inline-block; width:80px; height:4px; background:#b22234;"></span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

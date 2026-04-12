@@ -12,4 +12,4 @@ FROM mcr.microsoft.com/openjdk/jdk:17-ubuntu
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-Dspring.profiles.active=mysql", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=bluehost", "-jar", "app.jar"]

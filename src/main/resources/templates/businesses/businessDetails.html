@@ -107,20 +107,31 @@
 
   <!-- Incentives Section -->
   <div class="card mb-4">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
       <h4 class="mb-0" th:text="#{businessDetails.incentives}">Available Incentives</h4>
+      <a th:href="@{/businesses/__${business.slug}__/incentives/new}"
+         sec:authorize="hasAuthority('MANAGE_BUSINESSES')"
+         class="btn btn-sm btn-success">
+        <i class="fa fa-plus me-1"></i> <span th:text="#{incentive.addButton}">Add Incentive</span>
+      </a>
     </div>
     <div class="card-body">
       <div th:if="${business.incentives.isEmpty()}" class="text-center text-muted py-3">
         <p th:text="#{businessDetails.noIncentives}">No incentives available for this business.</p>
       </div>
       <div class="row" th:unless="${business.incentives.isEmpty()}">
-        <div class="col-md-6 mb-3" th:each="incentive : ${business.incentives}"
-             th:if="${incentive.isCurrentlyValid()}">
-          <div class="card h-100 incentive-card">
+        <div class="col-md-6 mb-3" th:each="incentive : ${business.incentives}">
+          <div class="card h-100 incentive-card"
+               th:classappend="${!incentive.isActive} ? 'border-secondary opacity-75' : ''">
             <div class="card-body">
-              <h5 class="card-title" th:text="${incentive.title}">10% Veteran Discount</h5>
-              <p class="card-text" th:text="${incentive.description}">Description of the incentive.</p>
+              <!-- Title row with inactive badge -->
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <h5 class="card-title mb-0" th:text="${incentive.title}">10% Veteran Discount</h5>
+                <span th:unless="${incentive.isActive}" class="badge bg-secondary ms-2"
+                      th:text="#{incentive.badge.inactive}">Inactive</span>
+              </div>
+
+              <p class="card-text mt-1" th:text="${incentive.description}">Description of the incentive.</p>
               <p>
                 <strong th:text="#{businessDetails.discount}">Discount:</strong>
                 <span th:text="${incentive.formattedDiscount}">10%</span>
@@ -135,22 +146,117 @@
                   <span th:text="${#temporals.format(incentive.endDate, 'MMM d, yyyy')}">Dec 31, 2026</span>
                 </small>
               </p>
-              <div th:if="${!incentive.incentiveTypes.isEmpty()}">
+              <div th:if="${!incentive.incentiveTypes.isEmpty()}" class="mb-2">
                 <span th:each="type : ${incentive.incentiveTypes}"
                       class="badge bg-primary me-1"
                       th:text="${type.name}">Veteran</span>
               </div>
+
+              <!-- Admin action buttons -->
+              <div sec:authorize="hasAuthority('MANAGE_BUSINESSES')" class="d-flex gap-2 mt-2">
+                <a th:href="@{/businesses/__${business.slug}__/incentives/__${incentive.id}__/edit}"
+                   class="btn btn-sm btn-outline-primary">
+                  <i class="fa fa-pencil me-1"></i><span th:text="#{button.edit}">Edit</span>
+                </a>
+                <!-- Toggle active/inactive -->
+                <form th:action="@{/businesses/__${business.slug}__/incentives/__${incentive.id}__/toggle}"
+                      method="post" class="d-inline">
+                  <button type="submit" class="btn btn-sm"
+                          th:classappend="${incentive.isActive} ? 'btn-outline-warning' : 'btn-outline-success'">
+                    <i class="fa me-1"
+                       th:classappend="${incentive.isActive} ? 'fa-toggle-on' : 'fa-toggle-off'"></i>
+                    <span th:text="${incentive.isActive} ? #{button.deactivate} : #{button.activate}">Toggle</span>
+                  </button>
+                </form>
+                <!-- Delete with confirmation modal trigger -->
+                <button type="button" class="btn btn-sm btn-outline-danger"
+                        data-bs-toggle="modal"
+                        th:data-bs-target="${'#deleteIncentiveModal-' + incentive.id}">
+                  <i class="fa fa-trash me-1"></i><span th:text="#{button.delete}">Delete</span>
+                </button>
+              </div>
             </div>
           </div>
+
+          <!-- Delete Confirmation Modal (one per incentive) -->
+          <div sec:authorize="hasAuthority('MANAGE_BUSINESSES')"
+               class="modal fade" th:id="${'deleteIncentiveModal-' + incentive.id}"
+               tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" th:text="#{incentive.delete.modalTitle}">Delete Incentive</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p>
+                    <span th:text="#{incentive.delete.confirm}">Are you sure you want to delete</span>
+                    <strong th:text="${incentive.title}">Incentive Title</strong>?
+                  </p>
+                  <p class="text-muted small" th:text="#{incentive.delete.warning}">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                          th:text="#{button.cancel}">Cancel</button>
+                  <form th:action="@{/businesses/__${business.slug}__/incentives/__${incentive.id}__/delete}"
+                        method="post">
+                    <button type="submit" class="btn btn-danger">
+                      <i class="fa fa-trash me-1"></i><span th:text="#{button.confirmDelete}">Yes, Delete</span>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Back Button -->
-  <a class="btn btn-secondary" th:href="@{/businesses}" th:text="#{businessDetails.backToList}">
-    Back to Business List
-  </a>
+  <!-- Back Button and Delete Business -->
+  <div class="d-flex justify-content-between align-items-center mt-2">
+    <a class="btn btn-secondary" th:href="@{/businesses}" th:text="#{businessDetails.backToList}">
+      Back to Business List
+    </a>
+    <!-- Delete Business button — admin only -->
+    <button sec:authorize="hasAuthority('MANAGE_BUSINESSES')"
+            type="button" class="btn btn-danger"
+            data-bs-toggle="modal" data-bs-target="#deleteBusinessModal">
+      <i class="fa fa-trash me-1"></i> <span th:text="#{business.delete.button}">Delete Business</span>
+    </button>
+  </div>
+
+  <!-- Delete Business Confirmation Modal -->
+  <div sec:authorize="hasAuthority('MANAGE_BUSINESSES')"
+       class="modal fade" id="deleteBusinessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" th:text="#{business.delete.modalTitle}">Delete Business</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            <span th:text="#{business.delete.confirm}">Are you sure you want to permanently delete</span>
+            <strong th:text="${business.name}">Business Name</strong>?
+          </p>
+          <p class="text-muted small" th:text="#{business.delete.warning}">
+            This will also remove all associated incentives and locations.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                  th:text="#{button.cancel}">Cancel</button>
+          <form th:action="@{/businesses/__${business.id}__/delete}" method="post">
+            <button type="submit" class="btn btn-danger">
+              <i class="fa fa-trash me-1"></i><span th:text="#{button.confirmDelete}">Yes, Delete</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>
 

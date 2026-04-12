@@ -65,8 +65,10 @@ public class PatriotSecurityConfig {
 	 * permitted</li>
 	 * <li>{@code /patriot/register} and {@code /patriot/login} accept POST without
 	 * authentication</li>
-	 * <li>{@code /businesses/new} accepts POST without authentication for form validation
-	 * testing</li>
+	 * <li>{@code /businesses/edit} and {@code /businesses/delete}, and all incentive CRUD
+	 * routes require the {@code MANAGE_BUSINESSES} permission</li>
+	 * <li>{@code /businesses/new} requires {@code SUBMIT_BUSINESS} or
+	 * {@code MANAGE_BUSINESSES}</li>
 	 * <li>All other POST/PUT/DELETE requests under the matched paths require
 	 * authentication</li>
 	 * <li>Custom login page at {@code /patriot/login} using the {@code email}
@@ -97,9 +99,14 @@ public class PatriotSecurityConfig {
 				// Profile and delete require authentication even for GET
 				.requestMatchers("/patriot/profile", "/patriot/delete")
 				.authenticated()
-				// Edit routes (GET and POST) require MANAGE_BUSINESSES — must be
+				// Edit and delete routes for businesses require MANAGE_BUSINESSES — must
+				// be
 				// declared BEFORE the broad GET permitAll below so they are matched first
-				.requestMatchers("/businesses/*/edit")
+				.requestMatchers("/businesses/*/edit", "/businesses/*/delete")
+				.hasAuthority("MANAGE_BUSINESSES")
+				// Incentive CRUD routes require MANAGE_BUSINESSES
+				.requestMatchers("/businesses/*/incentives/new", "/businesses/*/incentives/*/edit",
+						"/businesses/*/incentives/*/delete", "/businesses/*/incentives/*/toggle")
 				.hasAuthority("MANAGE_BUSINESSES")
 				// Creating a new business requires SUBMIT_BUSINESS or MANAGE_BUSINESSES
 				.requestMatchers("/businesses/new")

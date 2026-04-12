@@ -64,7 +64,6 @@ public class Incentive extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "business_id")
-	@NotNull
 	private Business business;
 
 	@Column(name = "submitted_by_user_id")
